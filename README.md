@@ -1,152 +1,170 @@
-# SDD-Docs - ソフトウェア設計ドキュメント管理スキル
+# Claude Code Skills
 
-Claude Codeのためのソフトウェア設計ドキュメント（SDD）作成・管理スキルです。EARS記法を用いた要件定義、技術設計、タスク管理の3つのドキュメントを構造化されたプロセスで作成します。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/windschord/claude_skils)
+[![Status](https://img.shields.io/badge/status-WIP-orange.svg)](https://github.com/windschord/claude_skils)
 
-## 概要
+> **注意**: このプロジェクトは現在開発中（Work In Progress）です。機能や仕様が変更される可能性があります。
 
-SDD-Docsは、ソフトウェアプロジェクトにおける以下の課題を解決します：
+Claude Code用のスキルコレクションです。各スキルは独立したディレクトリで管理され、プロジェクトのニーズに応じて選択・使用できます。
 
-- 曖昧で測定不可能な要件定義
-- 技術的決定事項の記録不足
-- タスク分解と進捗管理の困難さ
+---
 
-このスキルは、明確で、テスト可能で、追跡可能なドキュメントの作成を支援します。
+## インストール
 
-## 主な機能
+### Claude Codeでマーケットプレイスを追加
 
-### 3つの必須ドキュメント
+Claude Codeで以下のコマンドを実行します：
 
-1. **requirements.md** - 要件定義書
-   - EARS記法を用いたユーザーストーリー
-   - 測定可能な受入基準
-   - 機能要件と非機能要件の明確な定義
+```
+/plugin marketplace add https://github.com/windschord/claude_skils.git
+```
 
-2. **design.md** - 設計書
-   - システムアーキテクチャ
-   - コンポーネント設計
-   - 技術的決定事項と根拠
+これにより、このリポジトリがマーケットプレイスとして追加され、すべてのスキルが利用可能になります。
 
-3. **tasks.md** - タスク管理書
-   - 実装可能な粒度へのタスク分解
-   - 依存関係の明確化
-   - 進捗追跡とステータス管理
+### 追加を確認
 
-### EARS記法（Easy Approach to Requirements Syntax）
+マーケットプレイスが正しく追加されたか確認します：
 
-要件を明確で曖昧さのないものにする5つの基本パターン：
+```
+/plugin marketplace list
+```
 
-| パターン | 形式 | 例 |
-|---------|------|------|
-| 基本 | システムは〜しなければならない | システムはパスワードを暗号化しなければならない |
-| イベント | 〜の時、システムは〜しなければならない | ユーザーがログインした時、システムはトークンを生成しなければならない |
-| 条件 | もし〜ならば、システムは〜しなければならない | もし認証が失敗した場合、システムはエラーを表示しなければならない |
-| 継続 | 〜の間、システムは〜しなければならない | アップロード中、システムは進捗を表示しなければならない |
-| 場所 | 〜において、システムは〜しなければならない | EU地域において、システムはGDPR同意を取得しなければならない |
+`sdd-documentation-skills`がリストに表示されていれば成功です。
+
+### ローカル開発の場合
+
+ローカルで開発やカスタマイズを行う場合は、リポジトリをクローンしてローカルパスを指定します：
+
+```bash
+# リポジトリをクローン
+git clone https://github.com/windschord/claude_skils.git
+
+# Claude Codeでローカルマーケットプレイスを追加
+/plugin marketplace add /path/to/claude_skils
+```
+
+---
+
+## 利用可能なスキル
+
+### SDD-Docs
+
+ソフトウェア設計ドキュメント（SDD）を作成・管理するスキルです。
+
+**主な機能:**
+- EARS記法による要件定義（requirements.md）
+- 技術設計の文書化（design.md）
+- タスク管理と進捗追跡（tasks.md）
+
+**詳細:** [sdd-docs/README.md](sdd-docs/README.md)
+
+**使用開始:**
+```
+docsディレクトリを初期化してください
+```
+
+---
 
 ## ディレクトリ構造
 
 ```
 claude_skils/
-├── README.md                              # このファイル
-├── CLAUDE.md                              # Claude Code用のガイド
-├── LICENSE
-└── sdd-docs/                              # スキルのメインディレクトリ
-    ├── SKILL.md                           # スキル定義ファイル
+├── .claude-plugin/
+│   └── marketplace.json           # マーケットプレイス設定
+├── .gitignore                      # Git除外設定
+├── README.md                       # このファイル
+├── CLAUDE.md                       # Claude Code用ガイド
+├── LICENSE                         # MITライセンス
+└── sdd-docs/                       # SDD-Docsスキル
+    ├── SKILL.md                    # スキル定義
+    ├── README.md                   # スキル詳細ドキュメント
     ├── assets/
-    │   └── templates/                     # ドキュメントテンプレート
-    │       ├── requirements_template_ja.md
-    │       ├── design_template_ja.md
-    │       └── tasks_template_ja.md
-    └── references/                        # リファレンス資料
-        ├── ears_notation_ja.md            # EARS記法の詳細ガイド
-        └── examples_ja.md                 # 実装例集
+    │   └── templates/              # ドキュメントテンプレート
+    └── references/                 # リファレンス資料
 ```
 
-## 使い方
+---
 
-### Claude Codeでの使用
+## スキルの追加方法（開発者向け）
 
-このスキルは、Claude Codeのスキルシステムを通じて利用します。
+このリポジトリに新しいスキルを追加する場合：
 
-1. プロジェクトで「docsディレクトリを初期化してください」と依頼
-2. 要件、設計、タスクのテンプレートが自動生成される
-3. プロジェクトに応じてカスタマイズされたドキュメントが作成される
+1. **スキルディレクトリを作成**
+   ```bash
+   mkdir my-new-skill
+   cd my-new-skill
+   ```
 
-### 手動での使用
+2. **SKILL.mdを作成**
+   ```markdown
+   ---
+   name: my-new-skill
+   description: スキルの説明
+   ---
 
-テンプレートファイルを直接コピーして使用することも可能です：
+   # My New Skill
 
-```bash
-# プロジェクトのdocsディレクトリを作成
-mkdir -p docs
+   スキルの詳細な説明...
+   ```
 
-# テンプレートをコピー
-cp sdd-docs/assets/templates/requirements_template_ja.md docs/requirements.md
-cp sdd-docs/assets/templates/design_template_ja.md docs/design.md
-cp sdd-docs/assets/templates/tasks_template_ja.md docs/tasks.md
-```
+3. **README.mdを作成**
 
-## ワークフロー
+   スキルの使い方、機能、例などを記載します。
 
-```
-1. 要件定義（requirements.md）
-   ↓ 何を作るかを定義
-2. 設計（design.md）
-   ↓ どのように作るかを文書化
-3. タスク計画（tasks.md）
-   ↓ どのように実装するかを計画
-4. 実装とレビュー
-   ↓ タスクを実行し、ドキュメントを更新
-5. 反復
-```
+4. **marketplace.jsonに追加**
 
-## ベストプラクティス
+   `.claude-plugin/marketplace.json`の`plugins`配列に新しいスキルを追加します：
+   ```json
+   {
+     "name": "スキル名",
+     "description": "スキルの説明",
+     "source": "./",
+     "strict": false,
+     "skills": [
+       "./sdd-docs",
+       "./my-new-skill"
+     ]
+   }
+   ```
 
-1. **具体的な値を使用** - 「高速」ではなく「2秒以内」
-2. **1要件1文** - 複数の「しなければならない」を避ける
-3. **測定可能に** - すべての要件をテスト可能にする
-4. **依存関係を明記** - タスク間の関係を明確にする
-5. **図表を活用** - Mermaidでアーキテクチャを視覚化
-6. **継続的に更新** - プロジェクトの進展に合わせて同期
+---
 
-## リファレンス
+## 貢献
 
-- **EARS記法の詳細**: [sdd-docs/references/ears_notation_ja.md](sdd-docs/references/ears_notation_ja.md)
-- **実装例**: [sdd-docs/references/examples_ja.md](sdd-docs/references/examples_ja.md)
-  - ECショッピングカート（requirements.md）
-  - タスク管理API（design.md）
-  - ユーザー認証機能（tasks.md）
+貢献を歓迎します！以下の方法で参加できます：
 
-## 検証チェックリスト
+### イシューの報告
 
-### 要件定義書
-- ✅ すべての要件がEARS記法に従っている
-- ✅ 要件IDが一意である（REQ-XXX、NFR-XXX）
-- ✅ 各要件がテスト可能である
-- ✅ 非機能要件が含まれている
+バグや改善提案がある場合は、GitHubのIssuesで報告してください。
 
-### 設計書
-- ✅ アーキテクチャ概要がある
-- ✅ 主要コンポーネントが定義されている
-- ✅ 技術的決定事項と根拠が記載されている
-- ✅ 図表が含まれている
+### プルリクエスト
 
-### タスク管理書
-- ✅ タスクが適切な粒度に分解されている
-- ✅ 各タスクに受入基準がある
-- ✅ 依存関係が明確である
-- ✅ 見積もり時間が記載されている
+1. このリポジトリをフォーク
+2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
+3. 変更をコミット (`git commit -m 'Add amazing feature'`)
+4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+5. プルリクエストを作成
+
+### 新しいスキルの提案
+
+新しいスキルのアイデアがある場合は、Issueで提案してください。以下の情報を含めると検討がスムーズです：
+
+- スキルの目的
+- 解決する課題
+- 主な機能
+- 使用例
+
+---
 
 ## ライセンス
 
 このプロジェクトはMITライセンスの下で公開されています。詳細は[LICENSE](LICENSE)ファイルをご覧ください。
 
-## 貢献
+---
 
-イシューやプルリクエストを歓迎します。改善提案がある場合は、お気軽にご連絡ください。
+## サポート
 
-## 参考文献
+質問や問題がある場合は、GitHubのIssuesでお知らせください。
 
-- EARS - The Easy Approach to Requirements Syntax (Alistair Mavin et al.)
-- IEEE 830-1998 Standard for Software Requirements Specifications
-- ISO/IEC/IEEE 29148:2018 Requirements Engineering
+**リポジトリ**: https://github.com/windschord/claude_skils
