@@ -1,0 +1,21 @@
+{
+  "name": "sdd-documentation-skills",
+  "owner": {
+    "name": "Winds Chord"
+  },
+  "metadata": {
+    "description": "Software Design Documentation (SDD) skills for structured requirements, design, and task management using EARS notation",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "sdd-docs",
+      "description": "ソフトウェア設計ドキュメント（SDD）を作成・管理します。3つの主要ファイル - requirements.md（EARS記法によるユーザーストーリー）、design.md（技術アーキテクチャ）、tasks.md（実装計画）を管理します。構造化されたソフトウェアドキュメント作成、EARS記法での要件定義、技術仕様のdocsディレクトリ設定が必要な場合に使用してください。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./sdd-docs"
+      ]
+    }
+  ]
+}
