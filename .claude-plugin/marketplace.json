@@ -1,20 +1,29 @@
 {
-  "name": "sdd-documentation-skills",
+  "name": "claude-development-skills",
   "owner": {
     "name": "Winds Chord"
   },
   "metadata": {
-    "description": "Software Design Documentation (SDD) skills for structured requirements, design, and task management using EARS notation",
-    "version": "1.0.0"
+    "description": "Development skills for Claude Code including SDD documentation and automated task execution",
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "sdd-docs",
-      "description": "ソフトウェア設計ドキュメント（SDD）を作成・管理します。3つの主要ファイル - requirements.md（EARS記法によるユーザーストーリー）、design.md（技術アーキテクチャ）、tasks.md（実装計画）を管理します。構造化されたソフトウェアドキュメント作成、EARS記法での要件定義、技術仕様のdocsディレクトリ設定が必要な場合に使用してください。",
+      "description": "ソフトウェア設計ドキュメント（SDD）を作成・修正・更新・管理します。3つの主要ファイル - requirements.md（EARS記法によるユーザーストーリー）、design.md（技術アーキテクチャ）、tasks.md（実装計画）の新規作成、既存ドキュメントの編集、EARS記法への変換、要件・設計・タスクの追加や修正が必要な場合に使用してください。",
       "source": "./",
       "strict": false,
       "skills": [
         "./sdd-docs"
+      ]
+    },
+    {
+      "name": "task-executor",
+      "description": "docs/tasks.mdに記載されたタスクを読み取り、サブエージェントを使用して実装を自動実行します。並列実装可能なタスクは並列で処理し、タスクごとにコミットを作成します。タスク完了後はtasks.mdを更新して完了をマークします。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./task-executor"
       ]
     }
   ]
