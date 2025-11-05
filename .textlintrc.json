@@ -1,0 +1,40 @@
+{
+  "filters": {},
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": {
+        "max": 150
+      },
+      "max-comma": {
+        "max": 4
+      },
+      "max-ten": {
+        "max": 4
+      },
+      "no-exclamation-question-mark": false,
+      "no-doubled-joshi": {
+        "strict": false,
+        "allow": ["か", "も"]
+      },
+      "no-mix-dearu-desumasu": {
+        "preferInHeader": "",
+        "preferInBody": "ですます",
+        "preferInList": "である",
+        "strict": false
+      },
+      "ja-no-weak-phrase": false,
+      "ja-no-successive-word": false,
+      "ja-no-redundant-expression": true
+    },
+    "preset-ja-spacing": {
+      "ja-space-around-code": {
+        "before": true,
+        "after": true
+      },
+      "ja-space-between-half-and-full-width": {
+        "space": "always"
+      }
+    },
+    "spellcheck-tech-word": true
+  }
+}
