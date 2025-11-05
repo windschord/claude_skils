@@ -25,7 +25,6 @@ jobs:
 
       - name: Run textlint
         run: npm run textlint
-        continue-on-error: false
 
       - name: Comment PR on failure
         if: failure()

@@ -173,10 +173,9 @@ npm run textlint:fix
 
 **設定:**
 - `.textlintrc.json`: textlintのルール設定
-- 使用しているルール:
-  - `preset-ja-technical-writing`: 技術文書向け日本語ルール
-  - `preset-ja-spacing`: スペーシングルール
-  - `spellcheck-tech-word`: 技術用語のスペルチェック
+- `.textlintignore`: チェック対象外ファイルの設定（テンプレート、リファレンスファイルを除外）
+- 有効なルール:
+  - `preset-ja-technical-writing`: 技術文書向け日本語ルール（一部のルールは緩和設定）
 
 ---
 
