@@ -64,6 +64,23 @@ git clone https://github.com/windschord/claude_skils.git
 docsディレクトリを初期化してください
 ```
 
+### Task Executor
+
+docs/tasks.mdに記載されたタスクを自動的に実行するスキルです。
+
+**主な機能:**
+- サブエージェントを使用した自動実装
+- 並列実行可能なタスクの並列処理
+- タスクごとの自動コミット作成
+- タスク完了時のtasks.md自動更新
+
+**詳細:** [task-executor/README.md](task-executor/README.md)
+
+**使用開始:**
+```
+次のタスクを実行してください
+```
+
 ---
 
 ## ディレクトリ構造
@@ -76,12 +93,15 @@ claude_skils/
 ├── README.md                       # このファイル
 ├── CLAUDE.md                       # Claude Code用ガイド
 ├── LICENSE                         # MITライセンス
-└── sdd-docs/                       # SDD-Docsスキル
+├── sdd-docs/                       # SDD-Docsスキル
+│   ├── SKILL.md                    # スキル定義
+│   ├── README.md                   # スキル詳細ドキュメント
+│   ├── assets/
+│   │   └── templates/              # ドキュメントテンプレート
+│   └── references/                 # リファレンス資料
+└── task-executor/                  # Task Executorスキル
     ├── SKILL.md                    # スキル定義
-    ├── README.md                   # スキル詳細ドキュメント
-    ├── assets/
-    │   └── templates/              # ドキュメントテンプレート
-    └── references/                 # リファレンス資料
+    └── README.md                   # スキル詳細ドキュメント
 ```
 
 ---
