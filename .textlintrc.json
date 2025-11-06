@@ -22,8 +22,6 @@
       "ja-no-redundant-expression": false,
       "ja-no-mixed-period": false,
       "max-kanji-continuous-len": false
-    },
-    "preset-ja-spacing": false,
-    "spellcheck-tech-word": false
+    }
   }
 }
