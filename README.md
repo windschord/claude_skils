@@ -150,6 +150,35 @@ claude_skils/
 
 ---
 
+## 開発
+
+### 日本語文章チェック
+
+このプロジェクトでは、textlintを使用して日本語ドキュメントの品質を維持しています。
+
+**ローカルでチェック:**
+```bash
+# 依存関係のインストール
+npm install
+
+# textlintを実行
+npm run textlint
+
+# 自動修正を試みる
+npm run textlint:fix
+```
+
+**GitHub Actions:**
+プルリクエスト作成時に、自動的にtextlintが実行されます。エラーが検出された場合は、PRにコメントが追加されます。
+
+**設定:**
+- `.textlintrc.json`: textlintのルール設定
+- `.textlintignore`: チェック対象外ファイルの設定（テンプレート、リファレンスファイルを除外）
+- 有効なルール:
+  - `preset-ja-technical-writing`: 技術文書向け日本語ルール（一部のルールは緩和設定）
+
+---
+
 ## 貢献
 
 貢献を歓迎します！以下の方法で参加できます：

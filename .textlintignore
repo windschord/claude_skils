@@ -1,0 +1,9 @@
+# Node modules
+node_modules/
+
+# Templates and references (examples, not production docs)
+sdd-docs/assets/templates/**
+sdd-docs/references/**
+
+# Generated or external files
+LICENSE

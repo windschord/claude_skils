@@ -1,0 +1,27 @@
+{
+  "filters": {},
+  "rules": {
+    "preset-ja-technical-writing": {
+      "sentence-length": {
+        "max": 200
+      },
+      "max-comma": {
+        "max": 6
+      },
+      "max-ten": {
+        "max": 6
+      },
+      "no-exclamation-question-mark": false,
+      "no-doubled-joshi": {
+        "strict": false,
+        "allow": ["か", "も", "に", "を", "は"]
+      },
+      "no-mix-dearu-desumasu": false,
+      "ja-no-weak-phrase": false,
+      "ja-no-successive-word": false,
+      "ja-no-redundant-expression": false,
+      "ja-no-mixed-period": false,
+      "max-kanji-continuous-len": false
+    }
+  }
+}
