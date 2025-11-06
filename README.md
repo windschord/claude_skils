@@ -81,6 +81,25 @@ docs/tasks.mdに記載されたタスクを自動的に実行するスキルで�
 次のタスクを実行してください
 ```
 
+### Incident RCA
+
+インシデント調査で根本原因を特定するためのなぜなぜ分析ファシリテーションツールです。
+
+**主な機能:**
+- なぜなぜ分析による体系的な根本原因の特定
+- ユーザーの発言を漏らさず記録
+- リアルタイムマインドツリーの作成と可視化
+- ファシリテーターとしての中立的なサポート
+- 複合要因の分割と個別分析
+- 最低1つの根本原因の特定保証
+
+**詳細:** [incident-rca/README.md](incident-rca/README.md)
+
+**使用開始:**
+```
+インシデントの根本原因を分析したい
+```
+
 ---
 
 ## ディレクトリ構造
@@ -99,9 +118,15 @@ claude_skils/
 │   ├── assets/
 │   │   └── templates/              # ドキュメントテンプレート
 │   └── references/                 # リファレンス資料
-└── task-executor/                  # Task Executorスキル
+├── task-executor/                  # Task Executorスキル
+│   ├── SKILL.md                    # スキル定義
+│   └── README.md                   # スキル詳細ドキュメント
+└── incident-rca/                   # Incident RCAスキル
     ├── SKILL.md                    # スキル定義
-    └── README.md                   # スキル詳細ドキュメント
+    ├── README.md                   # スキル詳細ドキュメント
+    └── templates/                  # 分析テンプレート
+        ├── result_template.md      # 結果テンプレート
+        └── log_template.md         # ログテンプレート
 ```
 
 ---
