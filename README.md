@@ -100,6 +100,24 @@ docs/tasks.mdに記載されたタスクを自動的に実行するスキルで�
 インシデントの根本原因を分析したい
 ```
 
+### Jules CLI
+
+docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理するスキルです。
+
+**主な機能:**
+- タスクを日本語でフォーマットしてJulesに依頼
+- Julesの進捗状況を追跡・管理
+- 完了したタスクをtasks.mdで自動更新
+- 複数タスクの並行依頼サポート
+- 詳細な文脈提供による高品質な実装
+
+**詳細:** [jules-cli/README.md](jules-cli/README.md)
+
+**使用開始:**
+```
+次のタスクをJulesに依頼してください
+```
+
 ---
 
 ## ディレクトリ構造
@@ -121,12 +139,15 @@ claude_skils/
 ├── task-executor/                  # Task Executorスキル
 │   ├── SKILL.md                    # スキル定義
 │   └── README.md                   # スキル詳細ドキュメント
-└── incident-rca/                   # Incident RCAスキル
+├── incident-rca/                   # Incident RCAスキル
+│   ├── SKILL.md                    # スキル定義
+│   ├── README.md                   # スキル詳細ドキュメント
+│   └── templates/                  # 分析テンプレート
+│       ├── result_template.md      # 結果テンプレート
+│       └── log_template.md         # ログテンプレート
+└── jules-cli/                      # Jules CLIスキル
     ├── SKILL.md                    # スキル定義
-    ├── README.md                   # スキル詳細ドキュメント
-    └── templates/                  # 分析テンプレート
-        ├── result_template.md      # 結果テンプレート
-        └── log_template.md         # ログテンプレート
+    └── README.md                   # スキル詳細ドキュメント
 ```
 
 ---
