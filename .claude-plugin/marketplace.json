@@ -4,8 +4,8 @@
     "name": "Winds Chord"
   },
   "metadata": {
-    "description": "Development skills for Claude Code including SDD documentation and automated task execution",
-    "version": "1.1.0"
+    "description": "Development skills for Claude Code including SDD documentation, automated task execution, and Jules CLI integration",
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -33,6 +33,15 @@
       "strict": false,
       "skills": [
         "./incident-rca"
+      ]
+    },
+    {
+      "name": "jules-cli",
+      "description": "docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./jules-cli"
       ]
     }
   ]
