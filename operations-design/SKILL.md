@@ -231,6 +231,12 @@ WebSearchツールを使用して以下を調査:
    - セッション情報の記録
    - ユーザーへの通知
    ↓
+0.5. インフラパターンの選択
+   - クラウドネイティブ/サーバレス/Kubernetes
+   - クラウドインスタンス/IaaS
+   - オンプレミス
+   - 適切なテンプレートの選択
+   ↓
 1. 業界トレンド調査
    - 対象業界の調査
    - 最新技術トレンドの把握
@@ -297,13 +303,63 @@ WebSearchツールを使用して以下を調査:
                 長期間のセッションでもコンテキストを失うことなく
                 進めることができます。
 
-                それでは、業界トレンド調査から開始させてください。
+                それでは、インフラパターンの確認から開始させてください。
 ```
 
 **作成するファイルの内容**:
 - テンプレート: `assets/templates/conversation_log_template_ja.md`
 - ファイル名: `[YYYY-MM-DD]-[サービス名]-conversation-log.md`
 - セッション情報を記入（開始日時、対象サービス、コンサルタント、ユーザー）
+
+#### ステップ0.5: インフラパターンの選択
+
+**【重要】運用設計書のテンプレートを選択するため、インフラパターンを確認すること**
+
+```
+コンサルタント: （AskUserQuestionツールを使用）
+                運用設計書を作成する前に、インフラのパターンを確認させてください。
+
+                システムのインフラ構成はどれに該当しますか？
+
+                A) **クラウドネイティブ / サーバレス / Kubernetes** ⭐⭐⭐⭐⭐
+                   - Lambda, Cloud Functions, Cloud Run等のサーバレス
+                   - EKS, GKE, AKS等のKubernetes環境
+                   - マネージドサービス中心の構成
+                   - コンテナベースのアプリケーション
+
+                   推奨理由: 最新のクラウドネイティブ技術を活用
+                   考慮事項: 責任共有モデル、クラウドサービスのSLA依存
+
+                B) **クラウドインスタンス / IaaS（LAMP等）** ⭐⭐⭐⭐
+                   - EC2、GCE、Azure VM等のクラウドインスタンス
+                   - オンプレミスからのLift & Shift
+                   - LAMP/LEMP等の従来型Web構成
+                   - 仮想マシンベースのアプリケーション
+
+                   推奨理由: オンプレミスと同様の運用が可能、クラウドの柔軟性も活用
+                   考慮事項: OS・ミドルウェア管理が必要、一部クラウドサービス制限あり
+
+                C) **オンプレミス** ⭐⭐⭐
+                   - 自社データセンター
+                   - コロケーション施設
+                   - 物理サーバー/VMware、Hyper-V等
+                   - 完全な自社管理インフラ
+
+                   推奨理由: 完全なコントロールが可能
+                   考慮事項: スケーリングリードタイム（2〜4ヶ月）、リソース保有コスト、
+                            全責任範囲の管理が必要
+
+ユーザー: [回答]
+
+コンサルタント: ありがとうございます。[選択されたパターン]に適した運用設計書テンプレートを使用します。
+
+                [選択されたパターンに応じたテンプレートを使用]
+                - A選択時: operations_design_template_cloud_native_ja.md
+                - B選択時: operations_design_template_cloud_instance_ja.md
+                - C選択時: operations_design_template_onpremise_ja.md
+
+                それでは、業界トレンド調査に進みます。
+```
 
 #### ステップ1: 業界トレンド調査
 
@@ -955,7 +1011,14 @@ B) 99.95%を選択します。決済機能があるため、
 ## リソース
 
 ### assets/templates/
-- `operations_design_template_ja.md`: 日本語の運用設計書テンプレート
+
+**運用設計書テンプレート（インフラパターン別）**:
+- `operations_design_template_ja.md`: 汎用テンプレート（パターン未選択時）
+- `operations_design_template_cloud_native_ja.md`: クラウドネイティブ/サーバレス/Kubernetes対応
+- `operations_design_template_cloud_instance_ja.md`: クラウドインスタンス/IaaS対応（LAMP等）
+- `operations_design_template_onpremise_ja.md`: オンプレミス対応
+
+**その他のテンプレート**:
 - `conversation_log_template_ja.md`: 会話ログテンプレート
 
 ### references/
