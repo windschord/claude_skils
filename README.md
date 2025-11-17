@@ -1,7 +1,7 @@
 # Claude Code Skills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/windschord/claude_skils)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/windschord/claude_skils)
 [![Status](https://img.shields.io/badge/status-WIP-orange.svg)](https://github.com/windschord/claude_skils)
 
 > **注意**: このプロジェクトは現在開発中（Work In Progress）です。機能や仕様が変更される可能性があります。
@@ -118,6 +118,28 @@ docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理�
 次のタスクをJulesに依頼してください
 ```
 
+### SaaS Design
+
+SaaSサービスの包括的な設計書を作成するコンサルティングスキルです。
+
+**主な機能:**
+- 業界の最新トレンドを調査（WebSearch活用）
+- ビジネスモデルキャンバス設計（9要素）
+- 市場分析（TAM/SAM/SOM、競合分析）
+- 技術アーキテクチャ設計（Mermaid図付き）
+- KPI設計（ビジネス・プロダクト・技術・CS）
+- Go-to-Market戦略立案
+- プロダクトロードマップ作成
+- 推論禁止（必ずユーザーに質問）
+- サービス方針変更時の設計更新対応
+
+**詳細:** [saas-design/README.md](saas-design/README.md)
+
+**使用開始:**
+```
+中小企業向けのHR管理SaaSを作りたいので設計書を作ってほしい
+```
+
 ---
 
 ## ディレクトリ構造
@@ -145,9 +167,18 @@ claude_skils/
 │   └── templates/                  # 分析テンプレート
 │       ├── result_template.md      # 結果テンプレート
 │       └── log_template.md         # ログテンプレート
-└── jules-cli/                      # Jules CLIスキル
+├── jules-cli/                      # Jules CLIスキル
+│   ├── SKILL.md                    # スキル定義
+│   └── README.md                   # スキル詳細ドキュメント
+└── saas-design/                    # SaaS Designスキル
     ├── SKILL.md                    # スキル定義
-    └── README.md                   # スキル詳細ドキュメント
+    ├── README.md                   # スキル詳細ドキュメント
+    ├── assets/
+    │   └── templates/              # 設計書テンプレート
+    │       ├── saas_design_template_ja.md      # SaaS設計書テンプレート
+    │       └── interview_questions_ja.md       # ヒアリング質問リスト
+    └── references/                 # リファレンス・実例
+        └── example_taskflow_ja.md  # TaskFlow実例
 ```
 
 ---
@@ -183,12 +214,11 @@ claude_skils/
    `.claude-plugin/marketplace.json`の`plugins`配列に新しいスキルを追加します：
    ```json
    {
-     "name": "スキル名",
+     "name": "my-new-skill",
      "description": "スキルの説明",
      "source": "./",
      "strict": false,
      "skills": [
-       "./sdd-docs",
        "./my-new-skill"
      ]
    }
