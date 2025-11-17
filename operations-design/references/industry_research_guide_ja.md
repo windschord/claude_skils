@@ -41,7 +41,7 @@
 ### 調査のスコープ
 
 **必須調査項目**:
-- 業界の最新動向（2024-2025年）
+- 業界の最新動向
 - 主要な技術トレンド
 - セキュリティ・コンプライアンス要件
 - 一般的なSLO/SLA水準
@@ -79,12 +79,12 @@
 
 ```
 基本パターン:
-"[業界名] 運用設計 2024 2025 トレンド"
-"[業界名] IT運用 ベストプラクティス"
+"[業界名] 運用設計 最新トレンド"
+"[業界名] IT運用 ベストプラクティス 最新"
 "[サービスタイプ] SRE DevOps 事例"
 
 英語での検索（より多くの情報）:
-"[industry] operations design trends 2024 2025"
+"[industry] operations design latest trends"
 "[industry] IT operations best practices"
 "[service type] SRE case study"
 
@@ -94,7 +94,7 @@
 "DevOps [業界名] 導入"
 
 セキュリティ・コンプライアンス:
-"[業界名] セキュリティ 規制 2024"
+"[業界名] セキュリティ 規制 最新"
 "[業界名] コンプライアンス 要件"
 "[industry] security compliance requirements"
 ```
@@ -130,7 +130,7 @@
 **整理フォーマット**:
 
 ```markdown
-## [業界名]の最新トレンド（2024-2025）
+## [業界名]の最新トレンド
 
 ### トレンド1: [トレンド名]
 - **概要**: [トレンドの説明]
@@ -241,8 +241,8 @@
 ```
 "SaaS 可用性 ベストプラクティス"
 "マルチテナント アーキテクチャ 設計"
-"SaaS セキュリティ 2024"
-"API design best practices 2024"
+"SaaS セキュリティ 最新"
+"API design best practices"
 ```
 
 **主要参照先**:
@@ -319,7 +319,7 @@
 ```
 "金融システム 可用性 要件"
 "金融機関 セキュリティ ガイドライン"
-"fintech 規制 コンプライアンス 2024"
+"fintech 規制 コンプライアンス 最新"
 "banking system architecture"
 ```
 
@@ -357,7 +357,7 @@
 
 ```
 "動画配信 アーキテクチャ"
-"CDN ベストプラクティス 2024"
+"CDN ベストプラクティス 最新"
 "ライブストリーミング スケーラビリティ"
 "content delivery network optimization"
 ```
@@ -398,7 +398,7 @@
 "ヘルスケア システム セキュリティ"
 "HIPAA 準拠 要件"
 "電子カルテ 連携 標準"
-"healthcare IT security 2024"
+"healthcare IT security latest"
 ```
 
 **主要参照先**:
@@ -450,7 +450,7 @@
 
 ## 最新トレンドの把握
 
-### 2024-2025年の主要トレンド
+### 主要トレンド
 
 #### 1. 生成AI/LLMの運用への統合
 
@@ -467,10 +467,10 @@
 
 **検索クエリ**:
 ```
-"AI 運用自動化 2024"
+"AI 運用自動化 最新"
 "LLM インシデント対応"
 "generative AI operations"
-"AI ops automation 2024"
+"AI ops automation latest"
 ```
 
 #### 2. クラウドネイティブアーキテクチャ
@@ -487,10 +487,10 @@
 
 **検索クエリ**:
 ```
-"Kubernetes 運用 ベストプラクティス 2024"
+"Kubernetes 運用 ベストプラクティス 最新"
 "サーバーレス アーキテクチャ 事例"
 "cloud native operations"
-"service mesh adoption 2024"
+"service mesh adoption latest"
 ```
 
 #### 3. Platform Engineering
@@ -507,10 +507,10 @@
 
 **検索クエリ**:
 ```
-"プラットフォームエンジニアリング 2024"
+"プラットフォームエンジニアリング 最新"
 "Internal Developer Portal"
 "platform engineering best practices"
-"developer experience 2024"
+"developer experience latest"
 ```
 
 #### 4. FinOps（クラウドコスト最適化）
@@ -527,9 +527,9 @@
 
 **検索クエリ**:
 ```
-"FinOps ベストプラクティス 2024"
+"FinOps ベストプラクティス 最新"
 "クラウドコスト 最適化"
-"cloud cost optimization 2024"
+"cloud cost optimization latest"
 "FinOps framework"
 ```
 
@@ -547,10 +547,10 @@
 
 **検索クエリ**:
 ```
-"ゼロトラスト アーキテクチャ 2024"
+"ゼロトラスト アーキテクチャ 最新"
 "DevSecOps 実践"
 "zero trust implementation"
-"software supply chain security 2024"
+"software supply chain security latest"
 ```
 
 #### 6. SRE/DevOpsの成熟
@@ -567,9 +567,9 @@
 
 **検索クエリ**:
 ```
-"SRE 組織 2024"
+"SRE 組織 最新"
 "エラーバジェット 運用"
-"observability best practices 2024"
+"observability best practices latest"
 "chaos engineering adoption"
 ```
 
@@ -578,9 +578,9 @@
 **最新情報の判定基準**:
 
 1. **公開日の確認**
-   - 2024年以降: 最新情報として信頼度高
-   - 2023年: 比較的新しい、採用可
-   - 2022年以前: 古い可能性あり、他の情報源と照合
+   - 過去1年以内: 最新情報として信頼度高
+   - 過去2年以内: 比較的新しい、採用可
+   - 3年以上前: 古い可能性あり、他の情報源と照合
 
 2. **更新履歴の確認**
    - 定期的に更新されているドキュメントか
@@ -615,7 +615,7 @@
 
 ### 3.1 業界の最新動向
 
-**調査日**: 2024-XX-XX
+**調査日**: [調査実施日]
 
 **主要トレンド**:
 
@@ -748,7 +748,7 @@
    - 信頼性の高いソースの活用
 
 2. **最新情報の重視**
-   - 2024-2025年の情報を優先
+   - 直近の情報を優先
    - トレンドの把握
    - 技術の進化への対応
 
