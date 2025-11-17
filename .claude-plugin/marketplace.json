@@ -4,8 +4,8 @@
     "name": "Winds Chord"
   },
   "metadata": {
-    "description": "Development skills for Claude Code including SDD documentation, automated task execution, and Jules CLI integration",
-    "version": "1.2.0"
+    "description": "Development skills for Claude Code including SDD documentation, automated task execution, Jules CLI integration, and SaaS service design consulting",
+    "version": "1.3.0"
   },
   "plugins": [
     {
@@ -42,6 +42,15 @@
       "strict": false,
       "skills": [
         "./jules-cli"
+      ]
+    },
+    {
+      "name": "saas-design",
+      "description": "SaaSサービスの包括的な設計書を作成するコンサルティングスキルです。業界の最新トレンドを調査し、ビジネスモデルキャンバス、市場分析、技術アーキテクチャ、KPI設計、Go-to-Market戦略などを含む13セクションの設計書を作成します。新規サービス立ち上げ時やサービス方針変更時に使用してください。推論を避け、必ずユーザーに質問して情報を収集します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./saas-design"
       ]
     }
   ]
