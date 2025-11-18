@@ -43,6 +43,15 @@
       "skills": [
         "./jules-cli"
       ]
+    },
+    {
+      "name": "operations-design",
+      "description": "運用設計コンサルタントとして、対象業界の最新トレンドを調査し、サービス仕様をヒアリングした上で、ITIL 4・SRE・DevOpsのベストプラクティスに基づいた運用設計書を作成します。推論を避け、不明点は必ず質問し、一貫性を保つよう客観的にレビューします。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./operations-design"
+      ]
     }
   ]
 }

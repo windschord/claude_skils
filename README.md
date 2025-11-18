@@ -118,6 +118,25 @@ docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理�
 次のタスクをJulesに依頼してください
 ```
 
+### Operations Design
+
+運用設計コンサルタントとして、ITIL 4・SRE・DevOpsに基づいた運用設計書を作成するスキルです。
+
+**主な機能:**
+- 対象業界の最新トレンド調査
+- サービス仕様の体系的ヒアリング
+- インフラパターン別テンプレート（クラウドネイティブ/IaaS/オンプレミス）
+- 包括的な運用設計書の作成（20セクション）
+- 設計内容の一貫性チェックと客観的レビュー
+- 会話ログによるコンテキスト保持
+
+**詳細:** [operations-design/README.md](operations-design/README.md)
+
+**使用開始:**
+```
+運用設計書を作成したい
+```
+
 ---
 
 ## ディレクトリ構造
@@ -145,9 +164,17 @@ claude_skils/
 │   └── templates/                  # 分析テンプレート
 │       ├── result_template.md      # 結果テンプレート
 │       └── log_template.md         # ログテンプレート
-└── jules-cli/                      # Jules CLIスキル
+├── jules-cli/                      # Jules CLIスキル
+│   ├── SKILL.md                    # スキル定義
+│   └── README.md                   # スキル詳細ドキュメント
+└── operations-design/              # Operations Designスキル
     ├── SKILL.md                    # スキル定義
-    └── README.md                   # スキル詳細ドキュメント
+    ├── README.md                   # スキル詳細ドキュメント
+    ├── assets/
+    │   └── templates/              # 運用設計書テンプレート
+    ├── guides/                     # ガイドドキュメント
+    ├── hearing_items/              # ヒアリング項目
+    └── references/                 # リファレンス資料
 ```
 
 ---
