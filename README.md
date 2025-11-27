@@ -137,6 +137,24 @@ docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理�
 運用設計書を作成したい
 ```
 
+### SaaS Spec Document
+
+SaaSサービス向けのサービス仕様書を作成するスキルです。運用設計書や要件定義書をインプットとして活用し、経済産業省「SaaS向けSLAガイドライン」に準拠したサービス仕様書を生成します。
+
+**主な機能:**
+- 運用設計書・要件定義書からの情報抽出と活用
+- 経済産業省「SaaS向けSLAガイドライン」準拠
+- 7カテゴリの網羅（可用性、信頼性、データ管理、セキュリティ、サポート、拡張性、コンプライアンス）
+- 段階的な作成とユーザー確認
+- インプットドキュメントとの一貫性チェック
+
+**詳細:** [saas-spec-document/README.md](saas-spec-document/README.md)
+
+**使用開始:**
+```
+サービス仕様書を作成したい
+```
+
 ---
 
 ## ディレクトリ構造
@@ -167,13 +185,19 @@ claude_skils/
 ├── jules-cli/                      # Jules CLIスキル
 │   ├── SKILL.md                    # スキル定義
 │   └── README.md                   # スキル詳細ドキュメント
-└── operations-design/              # Operations Designスキル
+├── operations-design/              # Operations Designスキル
+│   ├── SKILL.md                    # スキル定義
+│   ├── README.md                   # スキル詳細ドキュメント
+│   ├── assets/
+│   │   └── templates/              # 運用設計書テンプレート
+│   ├── guides/                     # ガイドドキュメント
+│   ├── hearing_items/              # ヒアリング項目
+│   └── references/                 # リファレンス資料
+└── saas-spec-document/             # SaaS Spec Documentスキル
     ├── SKILL.md                    # スキル定義
     ├── README.md                   # スキル詳細ドキュメント
     ├── assets/
-    │   └── templates/              # 運用設計書テンプレート
-    ├── guides/                     # ガイドドキュメント
-    ├── hearing_items/              # ヒアリング項目
+    │   └── templates/              # サービス仕様書テンプレート
     └── references/                 # リファレンス資料
 ```
 
