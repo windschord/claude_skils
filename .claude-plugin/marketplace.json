@@ -52,6 +52,15 @@
       "skills": [
         "./operations-design"
       ]
+    },
+    {
+      "name": "saas-spec-document",
+      "description": "SaaSサービス向けのサービス仕様書を作成します。運用設計書や要件定義書をインプットとして活用し、経済産業省「SaaS向けSLAガイドライン」に準拠したサービス仕様書を生成します。可用性、信頼性、セキュリティ、データ管理、サポート、拡張性、コンプライアンスの7カテゴリを網羅します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./saas-spec-document"
+      ]
     }
   ]
 }
