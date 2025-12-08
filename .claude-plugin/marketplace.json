@@ -11,7 +11,7 @@
     {
       "name": "sdd-docs",
       "description": "ソフトウェア設計ドキュメント（SDD）を作成・修正・更新・管理します。3つの主要ファイル - requirements.md（EARS記法によるユーザーストーリー）、design.md（技術アーキテクチャ）、tasks.md（実装計画）の新規作成、既存ドキュメントの編集、EARS記法への変換、要件・設計・タスクの追加や修正が必要な場合に使用してください。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./sdd-docs"
@@ -20,7 +20,7 @@
     {
       "name": "task-executor",
       "description": "docs/tasks.mdに記載されたタスクを読み取り、サブエージェントを使用して実装を自動実行します。並列実装可能なタスクは並列で処理し、タスクごとにコミットを作成します。タスク完了後はtasks.mdを更新して完了をマークします。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./task-executor"
@@ -29,7 +29,7 @@
     {
       "name": "incident-rca",
       "description": "インシデント調査で根本原因を特定するためのなぜなぜ分析ファシリテーションツールです。推測を避け、ユーザーの発言を記録し、リアルタイムでマインドツリーを作成して全体を可視化します。複合要因を分割し、最低1つの根本原因を特定します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./incident-rca"
@@ -38,7 +38,7 @@
     {
       "name": "jules-cli",
       "description": "docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./jules-cli"
@@ -47,7 +47,7 @@
     {
       "name": "operations-design",
       "description": "運用設計コンサルタントとして、対象業界の最新トレンドを調査し、サービス仕様をヒアリングした上で、ITIL 4・SRE・DevOpsのベストプラクティスに基づいた運用設計書を作成します。推論を避け、不明点は必ず質問し、一貫性を保つよう客観的にレビューします。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./operations-design"
