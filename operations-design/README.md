@@ -277,6 +277,6 @@ Claude Codeで以下のように依頼してください：
 
 ## 関連スキル
 
-- `sdd-docs`: ソフトウェア設計ドキュメント作成スキル
+- `sdd-documentation`: ソフトウェア設計ドキュメント作成スキル
 - `incident-rca`: インシデント根本原因分析スキル
-- `task-executor`: タスク実行スキル
+- `auto-executor`: タスク実行スキル
