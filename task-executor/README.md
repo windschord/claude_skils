@@ -48,7 +48,7 @@ tasks.mdのすべてのTODOタスクを実行してください
 
 ## tasks.mdの形式
 
-このスキルは、sdd-docsスキルで作成されたtasks.mdファイルを想定しています：
+このスキルは、sdd-documentationスキルで作成されたtasks.mdファイルを想定しています：
 
 ```markdown
 #### タスク1.1: ユーザー認証APIエンドポイントの実装
@@ -140,12 +140,12 @@ JWTトークンを使用した認証方式を採用し、bcryptでパスワー�
 
 ### tasks.mdの作成
 
-tasks.mdは、sdd-docsスキルを使用して作成することを推奨します：
+tasks.mdは、sdd-documentationスキルを使用して作成することを推奨します：
 
 1. requirements.mdで要件を定義
 2. design.mdで設計を文書化
 3. tasks.mdでタスクに分解
-4. task-executorスキルで実行
+4. auto-executorスキルで実行
 
 ### タスクの粒度
 
