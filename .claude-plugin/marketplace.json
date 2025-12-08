@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "sdd-docs",
+      "name": "sdd-documentation",
       "description": "ソフトウェア設計ドキュメント（SDD）を作成・修正・更新・管理します。3つの主要ファイル - requirements.md（EARS記法によるユーザーストーリー）、design.md（技術アーキテクチャ）、tasks.md（実装計画）の新規作成、既存ドキュメントの編集、EARS記法への変換、要件・設計・タスクの追加や修正が必要な場合に使用してください。",
       "source": "./",
       "strict": false,
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "name": "task-executor",
+      "name": "auto-executor",
       "description": "docs/tasks.mdに記載されたタスクを読み取り、サブエージェントを使用して実装を自動実行します。並列実装可能なタスクは並列で処理し、タスクごとにコミットを作成します。タスク完了後はtasks.mdを更新して完了をマークします。",
       "source": "./",
       "strict": false,

@@ -1,5 +1,5 @@
 ---
-name: task-executor
+name: auto-executor
 description: docs/tasks.mdに記載されたタスクを読み取り、サブエージェントを使用して実装を自動実行します。並列実装可能なタスクは並列で処理し、タスクごとにコミットを作成します。タスク完了後はtasks.mdを更新して完了をマークします。
 ---
 
