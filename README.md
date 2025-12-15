@@ -137,6 +137,24 @@ docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理�
 運用設計書を作成したい
 ```
 
+### Executive Summary
+
+調査結果や分析レポートをエグゼクティブサマリー + 本編の2部構成で整理するスキルです。
+
+**主な機能:**
+- エグゼクティブサマリー + 本編の2部構成への変換
+- Mermaidダイアグラム（マインドマップ、フローチャート等）による全体像の可視化
+- 結論・推奨事項・重要ポイントを冒頭1〜2ページに要約
+- 詳細セクションへの内部リンクによるナビゲーション
+- GitHub/VSCodeで直接レンダリング可能なMarkdown形式
+
+**詳細:** [executive-summary/README.md](executive-summary/README.md)
+
+**使用開始:**
+```
+このドキュメントをエグゼクティブサマリー形式に変換してください
+```
+
 ---
 
 ## ディレクトリ構造
@@ -167,14 +185,19 @@ claude_skils/
 ├── jules-cli/                      # Jules CLIスキル
 │   ├── SKILL.md                    # スキル定義
 │   └── README.md                   # スキル詳細ドキュメント
-└── operations-design/              # Operations Designスキル
+├── operations-design/              # Operations Designスキル
+│   ├── SKILL.md                    # スキル定義
+│   ├── README.md                   # スキル詳細ドキュメント
+│   ├── assets/
+│   │   └── templates/              # 運用設計書テンプレート
+│   ├── guides/                     # ガイドドキュメント
+│   ├── hearing_items/              # ヒアリング項目
+│   └── references/                 # リファレンス資料
+└── executive-summary/              # Executive Summaryスキル
     ├── SKILL.md                    # スキル定義
     ├── README.md                   # スキル詳細ドキュメント
-    ├── assets/
-    │   └── templates/              # 運用設計書テンプレート
-    ├── guides/                     # ガイドドキュメント
-    ├── hearing_items/              # ヒアリング項目
-    └── references/                 # リファレンス資料
+    └── assets/
+        └── templates/              # エグゼクティブサマリーテンプレート
 ```
 
 ---

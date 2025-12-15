@@ -52,6 +52,15 @@
       "skills": [
         "./operations-design"
       ]
+    },
+    {
+      "name": "executive-summary",
+      "description": "調査結果や分析レポートをエグゼクティブサマリー + 本編の2部構成で整理します。Mermaidダイアグラムによる全体像の可視化、結論・推奨事項・重要ポイントの要約を冒頭に配置し、長大なドキュメントを意思決定者向けに読みやすく構造化します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./executive-summary"
+      ]
     }
   ]
 }
