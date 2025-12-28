@@ -8,12 +8,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## SDDスキル構成
 
-3つの独立したスキルがパイプライン連携で動作します：
+オーケストレータースキルと3つのサブスキルで構成されます：
 
 ```
-requirements-defining → software-designing → task-planning
-   (requirements.md)      (design.md)         (tasks.md)
+sdd-documentation（オーケストレーター）
+    │
+    ├── requirements-defining → docs/requirements.md
+    │
+    ├── software-designing   → docs/design.md
+    │
+    └── task-planning        → docs/tasks.md
 ```
+
+### sdd-documentation/
+SDDドキュメント全体を統括するオーケストレータースキル：
+- **SKILL.md** - 統合スキル定義（初期化・整合性チェック・逆順レビュー）
+- **references/workflow_guide_ja.md** - ワークフローガイド
 
 ### requirements-defining/
 EARS記法を用いた要件定義書を作成・管理するスキル：
@@ -36,8 +46,14 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 
 ## スキルの使用方法
 
-各スキルは独立して使用可能ですが、以下のワークフローで連携します：
+### 一括フロー（推奨）
+`sdd-documentation`スキルを使用：
+- ドキュメント一式の初期化
+- 3つのドキュメントを順に作成
+- 整合性チェック・逆順レビュー
 
+### 個別フロー
+各サブスキルを直接使用：
 1. **requirements-defining** - EARS記法で要件を定義 → `docs/requirements.md`
 2. **software-designing** - 要件を基に技術設計 → `docs/design.md`
 3. **task-planning** - 設計を基にタスク分解 → `docs/tasks.md`
@@ -161,10 +177,11 @@ tasks.md → design.md → requirements.md
 
 ## リファレンスの活用
 
+- ワークフローガイド: `sdd-documentation/references/workflow_guide_ja.md`
 - EARS記法ガイド: `requirements-defining/references/ears_notation_ja.md`
 - 設計パターン: `software-designing/references/design_patterns_ja.md`
 - タスクガイドライン: `task-planning/references/task_guidelines_ja.md`
-- テンプレート: 各スキルの`assets/templates/`配下
+- テンプレート: 各サブスキルの`assets/templates/`配下
 
 ## ベストプラクティス
 
