@@ -4,28 +4,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-このリポジトリは、Claude Codeのスキルとして使用するソフトウェア設計ドキュメント（SDD）管理システムです。EARS記法を用いた要件定義、技術設計、タスク管理の3つのドキュメントファイルを構造化されたプロセスで作成・管理します。
+このリポジトリは、Claude Codeのスキルとして使用するソフトウェア設計ドキュメント（SDD）管理システムです。EARS記法を用いた要件定義、技術設計、タスク管理の3つのスキルを提供し、構造化されたプロセスでドキュメントを作成・管理します。
 
-## 主要コンポーネント
+## SDDスキル構成
 
-### sdd-docs/
-プロジェクトのメインコンテンツを格納するディレクトリ：
-- **SKILL.md** - スキルの定義ファイル（Claude Codeがスキルとして認識）
-- **assets/templates/** - 3つのドキュメントテンプレート
-  - requirements_template_ja.md - 要件定義テンプレート
-  - design_template_ja.md - 設計テンプレート
-  - tasks_template_ja.md - タスク管理テンプレート
-- **references/** - リファレンスドキュメント
-  - ears_notation_ja.md - EARS記法の詳細ガイド
-  - examples_ja.md - 3つすべてのドキュメントタイプの実例
+3つの独立したスキルがパイプライン連携で動作します：
+
+```
+requirements-defining → software-designing → task-planning
+   (requirements.md)      (design.md)         (tasks.md)
+```
+
+### requirements-defining/
+EARS記法を用いた要件定義書を作成・管理するスキル：
+- **SKILL.md** - スキル定義ファイル
+- **assets/templates/requirements_template_ja.md** - 要件定義テンプレート
+- **references/ears_notation_ja.md** - EARS記法の詳細ガイド
+
+### software-designing/
+技術アーキテクチャ・設計書を作成・管理するスキル：
+- **SKILL.md** - スキル定義ファイル
+- **assets/templates/design_template_ja.md** - 設計テンプレート
+- **references/design_patterns_ja.md** - 設計パターンリファレンス
+- **references/ears_notation_ja.md** - EARS記法（要件参照用）
+
+### task-planning/
+AIエージェント向け実装タスクを作成・管理するスキル：
+- **SKILL.md** - スキル定義ファイル
+- **assets/templates/tasks_template_ja.md** - タスク管理テンプレート
+- **references/task_guidelines_ja.md** - タスク管理ガイドライン
 
 ## スキルの使用方法
 
-このスキルが有効化されると、以下の3つのドキュメントを`docs`ディレクトリに作成・管理します：
+各スキルは独立して使用可能ですが、以下のワークフローで連携します：
 
-1. **requirements.md** - EARS記法を用いたユーザーストーリーと受入基準
-2. **design.md** - 技術アーキテクチャ、コンポーネント、実装詳細
-3. **tasks.md** - 追跡可能な個別タスクへの作業分解
+1. **requirements-defining** - EARS記法で要件を定義 → `docs/requirements.md`
+2. **software-designing** - 要件を基に技術設計 → `docs/design.md`
+3. **task-planning** - 設計を基にタスク分解 → `docs/tasks.md`
 
 ### EARS記法の基本パターン
 
@@ -49,12 +64,11 @@ tasks.md (どのように実装するか)
 ```
 
 ### ワークフロー
-1. **初期化** - docsディレクトリとテンプレートファイルを作成
-2. **要件定義** - EARS記法を使って何を作るかを定義
-3. **設計** - どのように作るかを文書化
-4. **タスク計画** - 実装を計画
-5. **レビュー** - ドキュメントの品質をチェック
-6. **反復** - プロジェクトの進展に応じて更新
+1. **要件定義** - requirements-definingスキルでEARS記法を使って何を作るかを定義
+2. **設計** - software-designingスキルでどのように作るかを文書化
+3. **タスク計画** - task-planningスキルで実装を計画
+4. **逆順レビュー** - task-planningスキルでタスク→設計→要件の整合性をチェック
+5. **反復** - プロジェクトの進展に応じて各スキルで更新
 
 ## ドキュメント作成時の重要原則
 
@@ -147,9 +161,10 @@ tasks.md → design.md → requirements.md
 
 ## リファレンスの活用
 
-- 詳細なEARS記法のガイド: `sdd-docs/references/ears_notation_ja.md`
-- 実装例（ECショッピングカート、タスク管理API、ユーザー認証）: `sdd-docs/references/examples_ja.md`
-- テンプレートファイル: `sdd-docs/assets/templates/`
+- EARS記法ガイド: `requirements-defining/references/ears_notation_ja.md`
+- 設計パターン: `software-designing/references/design_patterns_ja.md`
+- タスクガイドライン: `task-planning/references/task_guidelines_ja.md`
+- テンプレート: 各スキルの`assets/templates/`配下
 
 ## ベストプラクティス
 
