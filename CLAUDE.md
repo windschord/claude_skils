@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## SDDスキル構成
 
-オーケストレータースキルと3つのサブスキルで構成されます：
+オーケストレータースキルと4つのサブスキルで構成されます：
 
 ```
 sdd-documentation（オーケストレーター）
@@ -17,7 +17,9 @@ sdd-documentation（オーケストレーター）
     │
     ├── software-designing   → docs/design.md
     │
-    └── task-planning        → docs/tasks.md
+    ├── task-planning        → docs/tasks.md
+    │
+    └── task-executing       → 実装コード（逆順レビュー付き）
 ```
 
 ### sdd-documentation/
@@ -44,12 +46,16 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 - **assets/templates/tasks_template_ja.md** - タスク管理テンプレート
 - **references/task_guidelines_ja.md** - タスク管理ガイドライン
 
+### task-executing/
+タスクを実行し、実装を行うスキル：
+- **SKILL.md** - スキル定義ファイル（逆順レビュー・コミットテンプレート含む）
+
 ## スキルの使用方法
 
 ### 一括フロー（推奨）
 `sdd-documentation`スキルを使用：
 - ドキュメント一式の初期化
-- 3つのドキュメントを順に作成
+- 4つのドキュメントを順に作成・実装
 - 整合性チェック・逆順レビュー
 
 ### 個別フロー
@@ -57,6 +63,7 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 1. **requirements-defining** - EARS記法で要件を定義 → `docs/requirements.md`
 2. **software-designing** - 要件を基に技術設計 → `docs/design.md`
 3. **task-planning** - 設計を基にタスク分解 → `docs/tasks.md`
+4. **task-executing** - タスクに沿って実装 → 実装コード
 
 ### EARS記法の基本パターン
 
@@ -83,8 +90,10 @@ tasks.md (どのように実装するか)
 1. **要件定義** - requirements-definingスキルでEARS記法を使って何を作るかを定義
 2. **設計** - software-designingスキルでどのように作るかを文書化
 3. **タスク計画** - task-planningスキルで実装を計画
-4. **逆順レビュー** - task-planningスキルでタスク→設計→要件の整合性をチェック
-5. **反復** - プロジェクトの進展に応じて各スキルで更新
+4. **ドキュメント逆順レビュー** - タスク→設計→要件の整合性をチェック
+5. **実装** - task-executingスキルでタスクに沿って実装
+6. **実装逆順レビュー** - 実装→タスク→設計→要件の整合性をチェック
+7. **反復** - プロジェクトの進展に応じて各スキルで更新
 
 ## ドキュメント作成時の重要原則
 

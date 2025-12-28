@@ -15,8 +15,11 @@ sdd-documentation（オーケストレーター）
     ├── software-designing（設計）
     │       └── docs/design.md
     │
-    └── task-planning（タスク計画）
-            └── docs/tasks.md
+    ├── task-planning（タスク計画）
+    │       └── docs/tasks.md
+    │
+    └── task-executing（タスク実行）
+            └── 実装コード
 ```
 
 ## ワークフロー詳細
