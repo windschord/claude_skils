@@ -160,6 +160,65 @@ sequenceDiagram
 ## エラー処理
 *エラー処理戦略と復旧メカニズムを記述してください。*
 
+## CI/CD設計
+
+### 品質ゲート
+
+| 項目 | 基準値 | 採用ツール |
+|------|--------|-----------|
+| テストカバレッジ | 80%以上 | [Jest/pytest/go test等] |
+| Linter | エラー0件 | [ESLint/Ruff/golangci-lint等] |
+| コード複雑性 | 循環的複雑度10以下 | [lizard/radon/gocyclo等] |
+
+### GitHub Actions設定
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup [言語/ランタイム]
+        uses: [適切なsetup-action]
+      - name: Install dependencies
+        run: [パッケージインストールコマンド]
+      - name: Run tests with coverage
+        run: [テスト実行コマンド]
+      - name: Check coverage threshold (80%)
+        run: [カバレッジ確認コマンド]
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run linter
+        run: [Linter実行コマンド]
+
+  complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check code complexity
+        run: [複雑性チェックコマンド]
+```
+
+### 明示された情報
+- [ユーザーから明示的に指定されたCI/CD要件]
+
+### 不明/要確認の情報
+- [ ] テストフレームワーク: [選択肢を記載]
+- [ ] Linterの設定: [厳格度、カスタムルール等]
+- [ ] デプロイ先: [Vercel/AWS/GCP等]
+
 ---
 
 ## 設計書作成のガイド
