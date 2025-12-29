@@ -140,6 +140,8 @@ sequenceDiagram
 - [ ] 情報の明確性チェックが完了している
 - [ ] 不明/要確認の情報がすべて解消されている
 - [ ] requirements.mdの全要件に対応する設計要素がある
+- [ ] CI/CD設計が含まれている（品質ゲート、GitHub Actions）
+- [ ] 品質基準が定義されている（カバレッジ80%、Linter、複雑性）
 
 ## 要件との整合性チェック
 
@@ -193,6 +195,96 @@ C) Vue.js + TypeScript
 
 どれを選択しますか？
 ```
+
+## CI/CD・品質基準の設計
+
+### 必須品質基準
+
+設計段階で以下の品質基準を定義し、GitHub Actionsで自動検証する：
+
+| 項目 | 基準値 | ツール例 |
+|------|--------|---------|
+| テストカバレッジ | 80%以上 | Jest, pytest, go test |
+| Linter | エラー0件 | ESLint, Ruff, golangci-lint |
+| コード複雑性 | 低（循環的複雑度10以下） | SonarQube, lizard, gocyclo |
+
+### GitHub Actions CI設定
+
+design.mdには以下のCI設定を含める：
+
+```yaml
+# .github/workflows/ci.yml の設計
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests with coverage
+        run: npm test -- --coverage
+      - name: Check coverage threshold
+        run: |
+          # カバレッジ80%未満で失敗
+          coverage=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          if (( $(echo "$coverage < 80" | bc -l) )); then
+            echo "Coverage ${coverage}% is below 80%"
+            exit 1
+          fi
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run linter
+        run: npm run lint
+
+  complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check code complexity
+        run: npx lizard -CCN 10 src/
+```
+
+### 設計書への記載項目
+
+design.mdの「技術的決定事項」セクションに以下を含める：
+
+```text
+## CI/CD設計
+
+### 品質ゲート
+- テストカバレッジ: 80%以上
+- Linter: [選択したツール]でエラー0件
+- コード複雑性: 循環的複雑度10以下
+
+### CI/CDパイプライン
+- トリガー: push/PRでmain/developブランチ
+- 必須チェック: test, lint, complexity
+- 成功条件: すべてのチェックがパス
+
+### 採用ツール
+- テスト: [Jest/pytest/etc.]
+- カバレッジ: [Istanbul/coverage.py/etc.]
+- Linter: [ESLint/Ruff/etc.]
+- 複雑性: [lizard/SonarQube/etc.]
+```
+
+### 言語別推奨ツール
+
+| 言語 | テスト/カバレッジ | Linter | 複雑性 |
+|------|------------------|--------|--------|
+| TypeScript/JS | Jest + Istanbul | ESLint | lizard |
+| Python | pytest + coverage.py | Ruff | radon |
+| Go | go test -cover | golangci-lint | gocyclo |
+| Rust | cargo test + tarpaulin | clippy | - |
 
 ## 後続スキルとの連携
 
