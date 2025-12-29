@@ -1,7 +1,7 @@
 # Claude Code Skills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/windschord/claude_skils)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/windschord/claude_skils)
 [![Status](https://img.shields.io/badge/status-WIP-orange.svg)](https://github.com/windschord/claude_skils)
 
 > **注意**: このプロジェクトは現在開発中（Work In Progress）です。機能や仕様が変更される可能性があります。
@@ -30,7 +30,7 @@ Claude Codeで以下のコマンドを実行します：
 /plugin marketplace list
 ```
 
-`sdd-documentation-skills`がリストに表示されていれば成功です。
+`claude-development-skills`がリストに表示されていれば成功です。
 
 ### ローカル開発の場合
 
@@ -297,12 +297,11 @@ claude_skils/
    `.claude-plugin/marketplace.json`の`plugins`配列に新しいスキルを追加します：
    ```json
    {
-     "name": "スキル名",
+     "name": "my-new-skill",
      "description": "スキルの説明",
      "source": "./",
      "strict": false,
      "skills": [
-       "./sdd-docs",
        "./my-new-skill"
      ]
    }
