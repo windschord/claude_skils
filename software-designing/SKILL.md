@@ -153,7 +153,7 @@ requirements.mdが存在する場合、以下を確認：
 
 ### 不整合発見時
 
-```
+```text
 設計と要件の整合性チェックで以下の不整合を発見しました：
 
 【設計 → 要件の不整合】
@@ -179,16 +179,16 @@ requirements.mdが存在する場合、以下を確認：
 
 ### 推奨度付き選択肢の提示
 
-```
+```text
 技術スタックについて確認させてください：
 
-A) Next.js + TypeScript ⭐⭐⭐⭐⭐
+A) Next.js + TypeScript
    推奨理由：モダンで型安全、SSR/SSG対応
 
-B) React + JavaScript ⭐⭐⭐
+B) React + JavaScript
    推奨理由：シンプルで導入が容易
 
-C) Vue.js + TypeScript ⭐⭐⭐⭐
+C) Vue.js + TypeScript
    推奨理由：学習コストが低い
 
 どれを選択しますか？

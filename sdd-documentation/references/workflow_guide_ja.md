@@ -6,7 +6,7 @@
 
 ## スキル構成
 
-```
+```text
 sdd-documentation（オーケストレーター）
     │
     ├── requirements-defining（要件定義）
@@ -34,7 +34,7 @@ sdd-documentation（オーケストレーター）
 3. プロジェクト情報を確認
 
 **成果物**:
-```
+```text
 docs/
 ├── requirements.md（テンプレート）
 ├── design.md（テンプレート）
@@ -108,7 +108,7 @@ docs/
 **目的**: 3ドキュメント間の整合性を確認
 
 **手順**:
-```
+```text
 tasks.md
    ↓ タスクが参照するコンポーネント/APIは設計に定義されているか
 design.md
@@ -132,7 +132,7 @@ requirements.md
 ### フェーズ6: 完了
 
 **成果物**:
-```
+```text
 docs/
 ├── requirements.md（完成版）
 ├── design.md（完成版）

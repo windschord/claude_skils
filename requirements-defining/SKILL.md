@@ -118,7 +118,7 @@ EARS記法（Easy Approach to Requirements Syntax）を用いて、明確でテ�
 
 ### 確認の形式
 
-```
+```text
 要件定義の前に、以下の点を確認させてください：
 
 【明示された情報】

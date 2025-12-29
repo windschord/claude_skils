@@ -45,7 +45,7 @@ description: ソフトウェア設計ドキュメント（SDD）を作成・管�
 
 ### 標準フロー（推奨）
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                   sdd-documentation                          │
 │                    （このスキル）                             │
@@ -79,7 +79,7 @@ description: ソフトウェア設計ドキュメント（SDD）を作成・管�
 
 ### 各ステップでのユーザー確認
 
-```
+```text
 requirements.md作成完了
   ↓
 ユーザー確認・承認
@@ -119,7 +119,7 @@ tasks.md作成完了
 
 ### レビューの流れ
 
-```
+```text
 tasks.md → design.md → requirements.md
 ```
 
@@ -142,7 +142,7 @@ tasks.md → design.md → requirements.md
 
 ### 不整合発見時の報告
 
-```
+```text
 ドキュメントの整合性チェックで以下の不整合を発見しました：
 
 【タスク → 設計の不整合】
@@ -209,7 +209,7 @@ tasks.md → design.md → requirements.md
 
 ### 確認の形式
 
-```
+```text
 ドキュメント作成の前に、以下の点を確認させてください：
 
 【明示された情報】
@@ -234,7 +234,7 @@ tasks.md → design.md → requirements.md
 task-executingスキルで使用するコミットテンプレート：
 
 ### 実装コミット
-```
+```text
 [タスクID] タスクタイトル
 
 ## 実装内容
@@ -254,7 +254,7 @@ task-executingスキルで使用するコミットテンプレート：
 ```
 
 ### ステータス更新コミット
-```
+```text
 Update tasks.md: タスクID completed
 
 タスクタイトルを完了としてマーク。

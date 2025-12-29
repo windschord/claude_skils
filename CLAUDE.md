@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 オーケストレータースキルと4つのサブスキルで構成されます：
 
-```
+```text
 sdd-documentation（オーケストレーター）
     │
     ├── requirements-defining → docs/requirements.md
@@ -78,7 +78,7 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 ## アーキテクチャ
 
 ### ドキュメントの関係性
-```
+```text
 requirements.md (何を作るか)
     ↓
 design.md (どのように作るか)
@@ -171,7 +171,7 @@ tasks.md (どのように実装するか)
 ドキュメント作成・修正後は、逆順（タスク → 設計 → 要件）でレビューを行い、矛盾や過不足を確認する：
 
 ### チェックの流れ
-```
+```text
 tasks.md → design.md → requirements.md
 ```
 
