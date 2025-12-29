@@ -48,36 +48,47 @@ git clone https://github.com/windschord/claude_skils.git
 
 ## 利用可能なスキル
 
-### SDD-Docs
+### SDD Documentation（オーケストレーター）
 
-ソフトウェア設計ドキュメント（SDD）を作成・管理するスキルです。
+ソフトウェア設計ドキュメント（SDD）を作成・管理・実装するスキルです。4つのサブスキルを統括し、要件定義から実装までの全工程を管理します。
+
+**サブスキル構成:**
+
+| サブスキル | 役割 | 成果物 |
+|-----------|------|--------|
+| requirements-defining | EARS記法による要件定義 | docs/requirements.md |
+| software-designing | 技術アーキテクチャ設計 | docs/design.md |
+| task-planning | AIエージェント向けタスク分解 | docs/tasks.md |
+| task-executing | タスク実行・逆順レビュー | 実装コード |
 
 **主な機能:**
 - EARS記法による要件定義（requirements.md）
 - 技術設計の文書化（design.md）
 - タスク管理と進捗追跡（tasks.md）
+- タスク実行と逆順レビュー
+- ドキュメント間の整合性チェック
 
-**詳細:** [sdd-docs/README.md](sdd-docs/README.md)
+**詳細:** [sdd-documentation/SKILL.md](sdd-documentation/SKILL.md)
 
 **使用開始:**
-```
+```text
 docsディレクトリを初期化してください
 ```
 
-### Task Executor
+### Task Executing
 
-docs/tasks.mdに記載されたタスクを自動的に実行するスキルです。
+docs/tasks.mdに記載されたタスクを実行し、SDDワークフローに沿った実装を行うスキルです。
 
 **主な機能:**
-- サブエージェントを使用した自動実装
+- タスクごとのステータス管理（TODO → IN_PROGRESS → DONE）
+- 統一されたGitコミットテンプレート
+- 実装後の逆順レビュー（実装→タスク→設計→要件）
 - 並列実行可能なタスクの並列処理
-- タスクごとの自動コミット作成
-- タスク完了時のtasks.md自動更新
 
-**詳細:** [task-executor/README.md](task-executor/README.md)
+**詳細:** [task-executing/SKILL.md](task-executing/SKILL.md)
 
 **使用開始:**
-```
+```text
 次のタスクを実行してください
 ```
 
@@ -137,7 +148,7 @@ docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理�
 運用設計書を作成したい
 ```
 
-### Executive Summary
+### Report Summarizing
 
 調査結果や分析レポートをエグゼクティブサマリー + 本編の2部構成で整理するスキルです。
 
@@ -148,56 +159,109 @@ docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理�
 - 詳細セクションへの内部リンクによるナビゲーション
 - GitHub/VSCodeで直接レンダリング可能なMarkdown形式
 
-**詳細:** [executive-summary/README.md](executive-summary/README.md)
+**詳細:** [report-summarizing/SKILL.md](report-summarizing/SKILL.md)
 
 **使用開始:**
-```
+```text
 このドキュメントをエグゼクティブサマリー形式に変換してください
+```
+
+### Depth Interviewing (Career)
+
+社員のキャリア観・働きがい・職場環境をデプスインタビュー形式で聞き出すスキルです。
+
+**主な機能:**
+- オープンエンドな質問による本音の引き出し
+- キャリア観、働きがい、職場環境の体系的なヒアリング
+- 構造化された分析レポートの作成
+- インサイトの発見と可視化
+
+**詳細:** [depth-interviewing-career/SKILL.md](depth-interviewing-career/SKILL.md)
+
+**使用開始:**
+```text
+社員インタビューを開始してください
+```
+
+### Depth Interviewing (Product)
+
+製品やサービスに対するユーザーの利用実態・満足度・改善要望をデプスインタビュー形式で聞き出すスキルです。
+
+**主な機能:**
+- ユーザーの利用実態の深掘り
+- 満足度・不満点の体系的なヒアリング
+- 顧客インサイトの発見
+- 構造化された分析レポートの作成
+
+**詳細:** [depth-interviewing-product/SKILL.md](depth-interviewing-product/SKILL.md)
+
+**使用開始:**
+```text
+ユーザーインタビューを開始してください
 ```
 
 ---
 
 ## ディレクトリ構造
 
-```
+```text
 claude_skils/
 ├── .claude-plugin/
-│   └── marketplace.json           # マーケットプレイス設定
-├── .gitignore                      # Git除外設定
-├── README.md                       # このファイル
-├── CLAUDE.md                       # Claude Code用ガイド
-├── LICENSE                         # MITライセンス
-├── sdd-docs/                       # SDD-Docsスキル
-│   ├── SKILL.md                    # スキル定義
-│   ├── README.md                   # スキル詳細ドキュメント
-│   ├── assets/
-│   │   └── templates/              # ドキュメントテンプレート
-│   └── references/                 # リファレンス資料
-├── task-executor/                  # Task Executorスキル
-│   ├── SKILL.md                    # スキル定義
-│   └── README.md                   # スキル詳細ドキュメント
-├── incident-rca/                   # Incident RCAスキル
-│   ├── SKILL.md                    # スキル定義
-│   ├── README.md                   # スキル詳細ドキュメント
-│   └── templates/                  # 分析テンプレート
-│       ├── result_template.md      # 結果テンプレート
-│       └── log_template.md         # ログテンプレート
-├── jules-cli/                      # Jules CLIスキル
-│   ├── SKILL.md                    # スキル定義
-│   └── README.md                   # スキル詳細ドキュメント
-├── operations-design/              # Operations Designスキル
-│   ├── SKILL.md                    # スキル定義
-│   ├── README.md                   # スキル詳細ドキュメント
-│   ├── assets/
-│   │   └── templates/              # 運用設計書テンプレート
-│   ├── guides/                     # ガイドドキュメント
-│   ├── hearing_items/              # ヒアリング項目
-│   └── references/                 # リファレンス資料
-└── executive-summary/              # Executive Summaryスキル
-    ├── SKILL.md                    # スキル定義
-    ├── README.md                   # スキル詳細ドキュメント
-    └── assets/
-        └── templates/              # エグゼクティブサマリーテンプレート
+│   └── marketplace.json              # マーケットプレイス設定
+├── .gitignore                         # Git除外設定
+├── README.md                          # このファイル
+├── CLAUDE.md                          # Claude Code用ガイド
+├── LICENSE                            # MITライセンス
+│
+├── sdd-documentation/                 # SDDオーケストレータースキル
+│   ├── SKILL.md                       # スキル定義（統括）
+│   └── references/                    # ワークフローガイド
+│
+├── requirements-defining/             # 要件定義サブスキル
+│   ├── SKILL.md                       # スキル定義
+│   ├── assets/templates/              # 要件定義テンプレート
+│   └── references/                    # EARS記法リファレンス
+│
+├── software-designing/                # 設計サブスキル
+│   ├── SKILL.md                       # スキル定義
+│   ├── assets/templates/              # 設計テンプレート
+│   └── references/                    # 設計パターンリファレンス
+│
+├── task-planning/                     # タスク計画サブスキル
+│   ├── SKILL.md                       # スキル定義
+│   ├── assets/templates/              # タスク管理テンプレート
+│   └── references/                    # タスク管理ガイドライン
+│
+├── task-executing/                    # タスク実行サブスキル
+│   ├── SKILL.md                       # スキル定義
+│   └── README.md                      # スキル詳細ドキュメント
+│
+├── incident-rca/                      # Incident RCAスキル
+│   ├── SKILL.md                       # スキル定義
+│   ├── README.md                      # スキル詳細ドキュメント
+│   └── templates/                     # 分析テンプレート
+│
+├── jules-cli/                         # Jules CLIスキル
+│   ├── SKILL.md                       # スキル定義
+│   └── README.md                      # スキル詳細ドキュメント
+│
+├── operations-design/                 # Operations Designスキル
+│   ├── SKILL.md                       # スキル定義
+│   ├── README.md                      # スキル詳細ドキュメント
+│   ├── assets/templates/              # 運用設計書テンプレート
+│   ├── guides/                        # ガイドドキュメント
+│   ├── hearing_items/                 # ヒアリング項目
+│   └── references/                    # リファレンス資料
+│
+├── report-summarizing/                # Report Summarizingスキル
+│   ├── SKILL.md                       # スキル定義
+│   └── assets/templates/              # サマリーテンプレート
+│
+├── depth-interviewing-career/         # キャリアインタビュースキル
+│   └── SKILL.md                       # スキル定義
+│
+└── depth-interviewing-product/        # 製品インタビュースキル
+    └── SKILL.md                       # スキル定義
 ```
 
 ---
