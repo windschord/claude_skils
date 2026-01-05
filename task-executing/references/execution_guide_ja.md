@@ -69,7 +69,7 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 ### ステップ5: コミット作成
 
 コミットテンプレートに従ってコミットを作成。
-詳細は `references/commit_templates_ja.md` を参照。
+詳細は `commit_templates_ja.md` を参照。
 
 ### ステップ6: 逆順レビュー
 
