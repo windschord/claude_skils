@@ -1,6 +1,6 @@
 ---
 name: software-designing
-description: 技術設計書（design.md）を作成・編集します。アーキテクチャ設計、コンポーネント定義、API設計、データベーススキーマの文書化が必要な場合に使用してください。requirements.mdが存在する場合は整合性を確認します。
+description: 技術設計書を作成・編集します。アーキテクチャ設計、コンポーネント定義、API設計、データベーススキーマの文書化が必要な場合に使用してください。requirements/が存在する場合は整合性を確認します。
 ---
 
 # 設計スキル
@@ -10,7 +10,29 @@ description: 技術設計書（design.md）を作成・編集します。アー�
 ## 概要
 
 このスキルは、以下の成果物を作成・管理します：
-- **docs/design.md**: 技術アーキテクチャ、コンポーネント、実装詳細
+- **docs/design/index.md**: 設計概要（目次）
+- **docs/design/components/*.md**: コンポーネント詳細
+- **docs/design/api/*.md**: API設計詳細
+- **docs/design/database/schema.md**: データベーススキーマ
+- **docs/design/decisions/DEC-XXX.md**: 技術的決定事項
+
+## ドキュメント構成
+
+```
+docs/design/
+├── index.md                 # 目次・アーキテクチャ概要
+├── components/
+│   ├── component-a.md       # コンポーネント詳細
+│   └── component-b.md
+├── api/
+│   ├── users.md             # API設計詳細
+│   └── items.md
+├── database/
+│   └── schema.md            # データベーススキーマ
+└── decisions/
+    ├── DEC-001.md           # 技術的決定事項
+    └── DEC-002.md
+```
 
 ## このスキルを使用する場面
 
@@ -22,58 +44,18 @@ description: 技術設計書（design.md）を作成・編集します。アー�
 - 技術的決定事項を記録したい場合
 
 ### 既存ドキュメントの修正時
-- docs/design.mdの設計内容を更新・変更する場合
+- docs/design/の設計内容を更新・変更する場合
 - 新しいコンポーネントを追加する場合
 - API仕様を変更する場合
 - アーキテクチャの見直しが必要な場合
 
 ## 前提条件
 
-### requirements.mdとの連携
-requirements.mdが存在する場合：
+### requirements/との連携
+docs/requirements/が存在する場合：
 1. 要件を読み込み、設計との整合性を確認
 2. すべての要件（REQ-XXX）に対応する設計要素があるか確認
 3. 要件にない機能が設計に含まれていないか確認
-
-## ドキュメント構造
-
-```markdown
-# 設計
-
-## 情報の明確性チェック
-### ユーザーから明示された情報
-- 技術スタック: [明示されている場合は記載]
-- アーキテクチャパターン: [明示されている場合は記載]
-
-### 不明/要確認の情報
-| 項目 | 現状の理解 | 確認状況 |
-|------|-----------|----------|
-| [項目名] | [推測内容] | [ ] 未確認 |
-
-## アーキテクチャ概要
-[システムアーキテクチャの高レベルな概要とMermaid図]
-
-## コンポーネント
-### コンポーネント1: [名前]
-**目的**: [機能]
-**責務**: [リスト]
-**インターフェース**: [API/メソッド]
-
-## API設計
-### エンドポイント: [/api/resource]
-**メソッド**: GET/POST/PUT/DELETE
-**リクエスト/レスポンス**: [JSON形式]
-
-## データベーススキーマ
-### テーブル: [table_name]
-| カラム | 型 | 制約 | 説明 |
-
-## 技術的決定事項
-### 決定1: [選択]
-**検討した選択肢**: [リスト]
-**決定**: [選択肢]
-**根拠**: [理由]
-```
 
 ## 設計原則
 
@@ -120,15 +102,27 @@ sequenceDiagram
 
 ## ワークフロー
 
-1. **要件確認**: requirements.mdが存在すれば内容を確認
+### 新規作成フロー
+
+1. **要件確認**: docs/requirements/が存在すれば内容を確認
 2. **情報分類**: 明示された情報と不明な情報を分類
 3. **不明点確認**: 必要な情報をユーザーに確認
-4. **アーキテクチャ設計**: 全体構成を設計
-5. **コンポーネント定義**: 各コンポーネントの責務を明確化
-6. **API設計**: インターフェースを定義
-7. **データベース設計**: スキーマを設計
-8. **整合性確認**: requirements.mdとの整合性をチェック
-9. **ユーザー確認**: 承認を得て完了
+4. **ディレクトリ作成**: `docs/design/` 以下のサブディレクトリを作成
+5. **index.md作成**: 目次とアーキテクチャ概要を記述
+6. **コンポーネント設計**: 各コンポーネントを `components/*.md` に記述
+7. **API設計**: 各APIを `api/*.md` に記述
+8. **データベース設計**: `database/schema.md` を作成
+9. **技術的決定**: 重要な決定を `decisions/DEC-XXX.md` に記録
+10. **index.md更新**: 作成した各ドキュメントへのリンクを追加
+11. **整合性確認**: requirements/との整合性をチェック
+12. **ユーザー確認**: 承認を得て完了
+
+### コンポーネント追加フロー
+
+1. **新規ファイル作成**: `components/[name].md` を作成
+2. **コンポーネントテンプレートに従う**: 目的・責務・インターフェースを記述
+3. **index.md更新**: コンポーネント一覧テーブルにリンクを追加
+4. **関連ドキュメント更新**: 依存関係のあるコンポーネントに相互リンクを追加
 
 ## 検証チェックリスト
 
@@ -139,19 +133,19 @@ sequenceDiagram
 - [ ] 必要に応じて図表が含まれている
 - [ ] 情報の明確性チェックが完了している
 - [ ] 不明/要確認の情報がすべて解消されている
-- [ ] requirements.mdの全要件に対応する設計要素がある
+- [ ] requirements/の全要件に対応する設計要素がある
 - [ ] CI/CD設計が含まれている（品質ゲート、GitHub Actions）
 - [ ] 品質基準が定義されている（カバレッジ80%、Linter、複雑性）
 
 ## 要件との整合性チェック
 
-requirements.mdが存在する場合、以下を確認：
+docs/requirements/が存在する場合、以下を確認：
 
 | チェック項目 | 確認内容 |
 |-------------|---------|
 | 機能カバレッジ | すべての要件（REQ-XXX）に対応する設計要素があるか |
 | 非機能要件対応 | NFR-XXXの要件が設計に反映されているか |
-| 過剰設計チェック | requirements.mdにない機能が設計に含まれていないか |
+| 過剰設計チェック | requirements/にない機能が設計に含まれていないか |
 
 ### 不整合発見時
 
@@ -159,7 +153,7 @@ requirements.mdが存在する場合、以下を確認：
 設計と要件の整合性チェックで以下の不整合を発見しました：
 
 【設計 → 要件の不整合】
-1. design.mdに「通知機能」がありますが、requirements.mdに対応する要件がありません
+1. design/components/に「通知機能」がありますが、requirements/storiesに対応する要件がありません
 
 【要件 → 設計の不整合】
 2. REQ-005（レポート出力機能）に対応する設計がありません
@@ -288,13 +282,28 @@ design.mdの「技術的決定事項」セクションに以下を含める：
 
 ## 後続スキルとの連携
 
-design.mdの作成完了後：
-- **task-planning**: design.mdを基にタスクを分解
+docs/design/の作成完了後：
+- **task-planning**: design/を基にタスクを分解
 
 task-planningスキルで逆順レビュー（タスク → 設計 → 要件）が行われます。
 
 ## リソース
 
-- テンプレート: `assets/templates/design_template_ja.md`
+### テンプレート
+- 目次テンプレート: `assets/templates/design_index_template_ja.md`
+- コンポーネントテンプレート: `assets/templates/component_template_ja.md`
+- APIテンプレート: `assets/templates/api_template_ja.md`
+- データベーステンプレート: `assets/templates/database_template_ja.md`
+- 技術的決定テンプレート: `assets/templates/decision_template_ja.md`
+
+### リファレンス
 - 設計パターン: `references/design_patterns_ja.md`
 - EARS記法（要件参照用）: `references/ears_notation_ja.md`
+
+### 命名規則
+
+| ファイル種別 | 命名規則 | 例 |
+|-------------|---------|-----|
+| コンポーネント | ケバブケース | `user-service.md`, `auth-handler.md` |
+| API | リソース名 | `users.md`, `items.md` |
+| 技術的決定 | `DEC-XXX.md` | `DEC-001.md`, `DEC-002.md` |

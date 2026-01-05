@@ -1,6 +1,6 @@
 ---
 name: sdd-documentation
-description: ソフトウェア設計ドキュメント（SDD）を作成・管理・実装します。requirements.md、design.md、tasks.mdの作成から、タスク実行・逆順レビューまでの全工程を統括します。SDDワークフロー全体の管理が必要な場合に使用してください。
+description: ソフトウェア設計ドキュメント（SDD）を作成・管理・実装します。requirements/、design/、tasks/の作成から、タスク実行・逆順レビューまでの全工程を統括します。SDDワークフロー全体の管理が必要な場合に使用してください。
 ---
 
 # SDD ドキュメンテーションスキル
@@ -13,16 +13,42 @@ description: ソフトウェア設計ドキュメント（SDD）を作成・管�
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| **requirements-defining** | EARS記法による要件定義 | docs/requirements.md |
-| **software-designing** | 技術アーキテクチャ設計 | docs/design.md |
-| **task-planning** | AIエージェント向けタスク分解 | docs/tasks.md |
+| **requirements-defining** | EARS記法による要件定義 | docs/requirements/ |
+| **software-designing** | 技術アーキテクチャ設計 | docs/design/ |
+| **task-planning** | AIエージェント向けタスク分解 | docs/tasks/ |
 | **task-executing** | タスク実行・逆順レビュー | 実装コード |
+
+## ドキュメント構成
+
+```
+docs/
+├── requirements/           # 要件定義
+│   ├── index.md           # 目次・概要
+│   ├── stories/           # ユーザーストーリー詳細
+│   │   └── US-XXX.md
+│   └── nfr/               # 非機能要件
+│       └── performance.md
+├── design/                # 設計
+│   ├── index.md           # 目次・アーキテクチャ概要
+│   ├── components/        # コンポーネント詳細
+│   │   └── [name].md
+│   ├── api/               # API設計詳細
+│   │   └── [name].md
+│   ├── database/          # データベーススキーマ
+│   │   └── schema.md
+│   └── decisions/         # 技術的決定事項
+│       └── DEC-XXX.md
+└── tasks/                 # タスク管理
+    ├── index.md           # 目次・進捗サマリ
+    └── phase-N/           # フェーズ別タスク
+        └── TASK-XXX.md
+```
 
 ## このスキルを使用する場面
 
 ### 一括初期化
 - 新規プロジェクトでSDDドキュメント一式が必要な場合
-- docsディレクトリと3つのテンプレートファイルを作成したい場合
+- docsディレクトリと3つのドキュメントカテゴリを作成したい場合
 
 ### 全体管理
 - 3つのドキュメント間の整合性を確認したい場合
@@ -30,7 +56,7 @@ description: ソフトウェア設計ドキュメント（SDD）を作成・管�
 - ドキュメント全体の品質をチェックしたい場合
 
 ### 実装フェーズ
-- tasks.mdに沿って実装を行う場合
+- docs/tasks/に沿って実装を行う場合
 - 実装後の逆順レビュー（実装→タスク→設計→要件）が必要な場合
 - タスクのステータス管理とGitコミットを統一したい場合
 
@@ -51,27 +77,27 @@ description: ソフトウェア設計ドキュメント（SDD）を作成・管�
 │                    （このスキル）                             │
 │                                                              │
 │  1. 初期化                                                   │
-│     └─ docsディレクトリと3つのテンプレートを作成             │
+│     └─ docs/ディレクトリ構造を作成                          │
 │                          ↓                                   │
 │  2. requirements-defining                                    │
-│     └─ EARS記法で要件定義 → requirements.md                  │
+│     └─ EARS記法で要件定義 → docs/requirements/               │
 │                          ↓                                   │
 │  3. software-designing                                       │
-│     └─ 技術設計を文書化 → design.md                          │
+│     └─ 技術設計を文書化 → docs/design/                       │
 │                          ↓                                   │
 │  4. task-planning                                            │
-│     └─ タスク分解 → tasks.md                                 │
+│     └─ タスク分解 → docs/tasks/                              │
 │                          ↓                                   │
 │  5. ドキュメント逆順レビュー                                 │
-│     └─ tasks → design → requirements の整合性確認           │
+│     └─ tasks/ → design/ → requirements/ の整合性確認        │
 │                          ↓                                   │
 │  6. task-executing                                           │
 │     └─ タスク実行 → 実装コード                               │
-│     └─ ステータス更新 → tasks.md                             │
+│     └─ ステータス更新 → tasks/index.md                       │
 │     └─ コミットテンプレート → Git                            │
 │                          ↓                                   │
 │  7. 実装逆順レビュー                                         │
-│     └─ 実装 → tasks → design → requirements の整合性確認    │
+│     └─ 実装 → tasks/ → design/ → requirements/ の整合性確認 │
 │                          ↓                                   │
 │  8. 完了                                                     │
 └─────────────────────────────────────────────────────────────┘
@@ -80,15 +106,15 @@ description: ソフトウェア設計ドキュメント（SDD）を作成・管�
 ### 各ステップでのユーザー確認
 
 ```text
-requirements.md作成完了
+docs/requirements/ 作成完了
   ↓
 ユーザー確認・承認
   ↓
-design.md作成完了
+docs/design/ 作成完了
   ↓
 ユーザー確認・承認
   ↓
-tasks.md作成完了
+docs/tasks/ 作成完了
   ↓
 ユーザー確認・承認
   ↓
@@ -107,30 +133,47 @@ tasks.md作成完了
 
 「docsディレクトリを初期化してください」「SDDドキュメントを作成してください」と依頼されたら：
 
-1. **docsディレクトリの作成**
-2. **requirements.md（要件定義書）の作成**
-   - テンプレート: `requirements-defining/assets/templates/requirements_template_ja.md`
-3. **design.md（設計書）の作成**
-   - テンプレート: `software-designing/assets/templates/design_template_ja.md`
-4. **tasks.md（タスク管理書）の作成**
-   - テンプレート: `task-planning/assets/templates/tasks_template_ja.md`
+1. **docsディレクトリ構造の作成**
+   ```
+   docs/
+   ├── requirements/
+   │   ├── stories/
+   │   └── nfr/
+   ├── design/
+   │   ├── components/
+   │   ├── api/
+   │   ├── database/
+   │   └── decisions/
+   └── tasks/
+       ├── phase-1/
+       └── phase-2/
+   ```
+
+2. **requirements/index.md（要件定義書目次）の作成**
+   - テンプレート: `requirements-defining/assets/templates/requirements_index_template_ja.md`
+
+3. **design/index.md（設計書目次）の作成**
+   - テンプレート: `software-designing/assets/templates/design_index_template_ja.md`
+
+4. **tasks/index.md（タスク管理書目次）の作成**
+   - テンプレート: `task-planning/assets/templates/tasks_index_template_ja.md`
 
 ## 逆順レビュープロセス
 
 ### レビューの流れ
 
 ```text
-tasks.md → design.md → requirements.md
+docs/tasks/ → docs/design/ → docs/requirements/
 ```
 
 ### ステップ1: タスク → 設計の整合性チェック
 
 | チェック項目 | 確認内容 |
 |-------------|---------|
-| コンポーネント対応 | タスクが参照するコンポーネントはdesign.mdに定義されているか |
-| API対応 | タスクで実装するAPIはdesign.mdのAPI設計と一致しているか |
-| データモデル対応 | タスクで使用するデータ構造はdesign.mdのスキーマと一致しているか |
-| 技術スタック | タスクで使用する技術はdesign.mdの技術的決定事項と一致しているか |
+| コンポーネント対応 | タスクが参照するコンポーネントはdesign/components/に定義されているか |
+| API対応 | タスクで実装するAPIはdesign/api/と一致しているか |
+| データモデル対応 | タスクで使用するデータ構造はdesign/database/と一致しているか |
+| 技術スタック | タスクで使用する技術はdesign/decisions/と一致しているか |
 
 ### ステップ2: 設計 → 要件の整合性チェック
 
@@ -138,7 +181,7 @@ tasks.md → design.md → requirements.md
 |-------------|---------|
 | 機能カバレッジ | すべての要件（REQ-XXX）に対応する設計要素があるか |
 | 非機能要件対応 | NFR-XXXの要件が設計に反映されているか |
-| 過剰設計チェック | requirements.mdにない機能が設計に含まれていないか |
+| 過剰設計チェック | requirements/にない機能が設計に含まれていないか |
 
 ### 不整合発見時の報告
 
@@ -146,12 +189,12 @@ tasks.md → design.md → requirements.md
 ドキュメントの整合性チェックで以下の不整合を発見しました：
 
 【タスク → 設計の不整合】
-1. タスク2.1で「PaymentService」を実装するとありますが、
-   design.mdにPaymentServiceの定義がありません。
+1. tasks/phase-2/TASK-003.mdで「PaymentService」を実装するとありますが、
+   design/components/にPaymentServiceの定義がありません。
 
 【設計 → 要件の不整合】
-2. design.mdに「通知機能」がありますが、
-   requirements.mdに対応する要件がありません。
+2. design/components/に「通知機能」がありますが、
+   requirements/stories/に対応する要件がありません。
 
 【過不足】
 3. REQ-005（レポート出力機能）に対応するタスクがありません。
@@ -165,8 +208,8 @@ tasks.md → design.md → requirements.md
 ## 検証チェックリスト
 
 ### 全体チェック
-- [ ] docsディレクトリが存在する
-- [ ] requirements.md、design.md、tasks.mdの3ファイルが存在する
+- [ ] docs/ディレクトリ構造が存在する
+- [ ] requirements/index.md、design/index.md、tasks/index.mdが存在する
 - [ ] 3ドキュメント間の整合性が取れている
 - [ ] 逆順レビューが完了している
 
@@ -245,9 +288,9 @@ task-executingスキルで使用するコミットテンプレート：
 - [x] 基準2
 
 ## 関連ドキュメント
-- docs/tasks.md: タスクID
-- docs/design.md: 関連コンポーネント
-- docs/requirements.md: 関連要件ID
+- docs/tasks/[phase]/TASK-XXX.md: タスク詳細
+- docs/design/components/[name].md: 関連コンポーネント
+- docs/requirements/stories/US-XXX.md: 関連要件
 
 ## テスト
 - テスト実行結果

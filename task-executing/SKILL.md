@@ -1,11 +1,11 @@
 ---
 name: task-executing
-description: docs/tasks.mdに記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで使用してください。
+description: docs/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで使用してください。
 ---
 
 # タスク実行スキル
 
-docs/tasks.mdに記載されたタスクを実行し、SDDワークフローに沿った実装を行います。
+docs/tasks/に記載されたタスクを実行し、SDDワークフローに沿った実装を行います。
 
 ## 概要
 
@@ -13,11 +13,11 @@ docs/tasks.mdに記載されたタスクを実行し、SDDワークフローに�
 
 ```text
 requirements-defining → software-designing → task-planning → task-executing
-   (requirements.md)      (design.md)         (tasks.md)      (実装)
+   (requirements/)         (design/)           (tasks/)         (実装)
 ```
 
 ### 主な機能
-- docs/tasks.mdからタスクを読み取り、実行順序を決定
+- docs/tasks/からタスクを読み取り、実行順序を決定
 - タスクごとのステータス更新（TODO → IN_PROGRESS → DONE）
 - 統一されたコミットテンプレートによるGit管理
 - 実装後の逆順レビュー（実装→タスク→設計→要件の整合性確認）
@@ -26,7 +26,7 @@ requirements-defining → software-designing → task-planning → task-executin
 ## このスキルを使用する場面
 
 ### 実装フェーズ
-- docs/tasks.mdのタスクを実行する場合
+- docs/tasks/のタスクを実行する場合
 - SDDに沿った実装を行う場合
 - タスクの進捗を管理したい場合
 
@@ -39,25 +39,27 @@ requirements-defining → software-designing → task-planning → task-executin
 ### 実行フロー
 
 ```text
-1. tasks.md読み取り
+1. docs/tasks/index.md読み取り
    ↓
 2. 実行可能なタスクを特定
    ↓
-3. ステータスをIN_PROGRESSに更新
+3. 個別タスクファイルを読み込み（docs/tasks/[phase]/TASK-XXX.md）
    ↓
-4. サブエージェントで実装
+4. ステータスをIN_PROGRESSに更新
    ↓
-5. 受入基準の確認
+5. サブエージェントで実装
    ↓
-6. コミット作成（テンプレート使用）
+6. 受入基準の確認
    ↓
-7. ステータスをDONEに更新
+7. コミット作成（テンプレート使用）
    ↓
-8. tasks.md更新をコミット
+8. ステータスをDONEに更新
    ↓
-9. 逆順レビュー（実装→タスク→設計→要件）
+9. タスクファイルとindex.md更新をコミット
    ↓
-10. 次のタスクへ（または完了）
+10. 逆順レビュー（実装→タスク→設計→要件）
+   ↓
+11. 次のタスクへ（または完了）
 ```
 
 ## タスクステータス管理
@@ -76,9 +78,9 @@ TODO → IN_PROGRESS → DONE
 
 | タイミング | ステータス | アクション |
 |-----------|-----------|-----------|
-| タスク開始時 | `IN_PROGRESS` | tasks.mdを更新、コミット |
-| タスク完了時 | `DONE` | 完了サマリー追加、tasks.mdを更新、コミット |
-| 問題発生時 | `BLOCKED` | ブロック理由を記載、tasks.mdを更新 |
+| タスク開始時 | `IN_PROGRESS` | タスクファイルとindex.mdを更新、コミット |
+| タスク完了時 | `DONE` | 完了サマリー追加、タスクファイルとindex.mdを更新、コミット |
+| 問題発生時 | `BLOCKED` | ブロック理由を記載、タスクファイルを更新 |
 
 ### ステータス更新の形式
 
@@ -107,9 +109,9 @@ TODO → IN_PROGRESS → DONE
 - [x] 基準2
 
 ## 関連ドキュメント
-- docs/tasks.md: タスクID
-- docs/design.md: 関連コンポーネント
-- docs/requirements.md: 関連要件ID
+- docs/tasks/[phase]/TASK-XXX.md: タスク詳細
+- docs/design/components/[name].md: 関連コンポーネント
+- docs/requirements/stories/US-XXX.md: 関連要件
 
 ## テスト
 - テスト実行結果（npm test等）
@@ -133,9 +135,9 @@ TODO → IN_PROGRESS → DONE
 - [x] ユニットテストが実装され、すべて通過する
 
 ## 関連ドキュメント
-- docs/tasks.md: Task 1.1
-- docs/design.md: AuthenticationComponent
-- docs/requirements.md: REQ-001, REQ-002
+- docs/tasks/phase-1/TASK-001.md: タスク詳細
+- docs/design/components/authentication.md: AuthenticationComponent
+- docs/requirements/stories/US-001.md: REQ-001, REQ-002
 
 ## テスト
 npm test: 15 passed, 0 failed
@@ -175,7 +177,7 @@ Update tasks.md: Task 1.1 completed
 ### レビューの流れ
 
 ```text
-実装 → tasks.md → design.md → requirements.md
+実装 → docs/tasks/ → docs/design/ → docs/requirements/
 ```
 
 ### チェック項目
@@ -193,9 +195,9 @@ Update tasks.md: Task 1.1 completed
 
 | チェック項目 | 確認内容 |
 |-------------|---------|
-| コンポーネント対応 | 実装がdesign.mdのコンポーネント定義と一致するか |
-| API対応 | APIの実装がdesign.mdの仕様と一致するか |
-| データモデル対応 | データ構造がdesign.mdのスキーマと一致するか |
+| コンポーネント対応 | 実装がdesign/components/のコンポーネント定義と一致するか |
+| API対応 | APIの実装がdesign/api/の仕様と一致するか |
+| データモデル対応 | データ構造がdesign/database/のスキーマと一致するか |
 
 #### 3. 設計 → 要件の整合性
 
@@ -217,7 +219,7 @@ Update tasks.md: Task 1.1 completed
 
 【タスク → 設計の不整合】
 2. 実装したUserServiceにvalidateEmail()メソッドがありますが、
-   design.mdのUserService定義に含まれていません。
+   design/components/user-service.mdのUserService定義に含まれていません。
 
 【設計 → 要件の不整合】
 3. REQ-003「パスワードリセット機能」に対応する実装がありません。
@@ -233,8 +235,10 @@ Update tasks.md: Task 1.1 completed
 ### ステップ1: タスクの読み取りと分析
 
 ```markdown
-1. docs/tasks.mdを読み取る
-2. 各タスクの情報を抽出
+1. docs/tasks/index.mdを読み取る
+2. TODO状態のタスクをフィルタリング
+3. 各タスクの詳細ファイル（docs/tasks/[phase]/TASK-XXX.md）を読み込む
+4. 各タスクの情報を抽出
    - タスクID
    - タスクタイトル
    - 説明
@@ -242,8 +246,7 @@ Update tasks.md: Task 1.1 completed
    - 依存関係
    - ステータス
    - 推定工数
-3. TODO状態のタスクをフィルタリング
-4. 依存関係を確認
+5. 依存関係を確認
 ```
 
 ### ステップ2: 実行計画の提示
@@ -270,11 +273,11 @@ Update tasks.md: Task 1.1 completed
 ### ステップ3: 実装実行
 
 サブエージェントに以下の情報を提供：
-- タスクの完全な説明
+- タスクファイル（TASK-XXX.md）の完全な内容
 - 受入基準
 - 技術的文脈
 - 参照すべき既存コード
-- design.md、requirements.mdの関連セクション
+- design/、requirements/の関連ファイル
 
 ### ステップ4: 受入基準の確認
 
@@ -313,11 +316,12 @@ Update tasks.md: Task 1.1 completed
 
 ```text
 【並列実行の手順】
-1. tasks.mdを分析し、並列実行可能なタスクを特定
-2. 各タスクに対してAgentを起動（1つのメッセージで複数のTaskツールを呼び出す）
-3. 各Agentは独立してタスクを実装
-4. すべてのAgentが完了後、結果を統合
-5. 逆順レビューを実施
+1. docs/tasks/index.mdを分析し、並列実行可能なタスクを特定
+2. 各タスクの詳細ファイルを読み込む
+3. 各タスクに対してAgentを起動（1つのメッセージで複数のTaskツールを呼び出す）
+4. 各Agentは独立してタスクを実装
+5. すべてのAgentが完了後、結果を統合
+6. 逆順レビューを実施
 ```
 
 ### Agent起動の例
@@ -406,9 +410,9 @@ Task 1.1: BLOCKED
 sdd-documentationスキルは、以下の順序でサブスキルを呼び出します：
 
 ```text
-1. requirements-defining → requirements.md作成
-2. software-designing → design.md作成
-3. task-planning → tasks.md作成
+1. requirements-defining → docs/requirements/作成
+2. software-designing → docs/design/作成
+3. task-planning → docs/tasks/作成
 4. task-executing → 実装＆逆順レビュー（このスキル）
 ```
 

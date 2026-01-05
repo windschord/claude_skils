@@ -10,13 +10,23 @@
 sdd-documentation（オーケストレーター）
     │
     ├── requirements-defining（要件定義）
-    │       └── docs/requirements.md
+    │       └── docs/requirements/
+    │               ├── index.md
+    │               ├── stories/US-XXX.md
+    │               └── nfr/*.md
     │
     ├── software-designing（設計）
-    │       └── docs/design.md
+    │       └── docs/design/
+    │               ├── index.md
+    │               ├── components/*.md
+    │               ├── api/*.md
+    │               ├── database/schema.md
+    │               └── decisions/DEC-XXX.md
     │
     ├── task-planning（タスク計画）
-    │       └── docs/tasks.md
+    │       └── docs/tasks/
+    │               ├── index.md
+    │               └── phase-N/TASK-XXX.md
     │
     └── task-executing（タスク実行）
             └── 実装コード
@@ -29,16 +39,27 @@ sdd-documentation（オーケストレーター）
 **目的**: プロジェクトのドキュメント基盤を構築
 
 **手順**:
-1. docsディレクトリを作成
-2. 3つのテンプレートファイルを配置
+1. docsディレクトリ構造を作成
+2. 各index.mdテンプレートを配置
 3. プロジェクト情報を確認
 
 **成果物**:
 ```text
 docs/
-├── requirements.md（テンプレート）
-├── design.md（テンプレート）
-└── tasks.md（テンプレート）
+├── requirements/
+│   ├── index.md（テンプレート）
+│   ├── stories/
+│   └── nfr/
+├── design/
+│   ├── index.md（テンプレート）
+│   ├── components/
+│   ├── api/
+│   ├── database/
+│   └── decisions/
+└── tasks/
+    ├── index.md（テンプレート）
+    ├── phase-1/
+    └── phase-2/
 ```
 
 ### フェーズ2: 要件定義
@@ -49,15 +70,18 @@ docs/
 
 **手順**:
 1. プロジェクトの目的・対象ユーザーを確認
-2. ユーザーストーリーを作成
-3. EARS記法で受入基準を定義
-4. 非機能要件を追加
-5. ユーザー確認・承認
+2. requirements/index.mdに概要を記述
+3. 各ユーザーストーリーをstories/US-XXX.mdとして作成
+4. EARS記法で受入基準を定義
+5. 非機能要件をnfr/*.mdに追加
+6. index.mdのリンクを更新
+7. ユーザー確認・承認
 
 **チェックポイント**:
 - [ ] すべての要件がEARS記法に従っている
 - [ ] 要件IDが一意である
 - [ ] 各要件がテスト可能である
+- [ ] index.mdに全ストーリーへのリンクがある
 - [ ] ユーザーの承認を得た
 
 ### フェーズ3: 設計
@@ -67,18 +91,22 @@ docs/
 **目的**: どのように作るかを文書化
 
 **手順**:
-1. requirements.mdを読み込む
+1. requirements/を読み込む
 2. 不明点をユーザーに確認
-3. アーキテクチャを設計
-4. コンポーネントを定義
-5. API・データベースを設計
-6. 要件との整合性を確認
-7. ユーザー確認・承認
+3. design/index.mdにアーキテクチャ概要を記述
+4. 各コンポーネントをcomponents/*.mdに定義
+5. API設計をapi/*.mdに記述
+6. データベーススキーマをdatabase/schema.mdに定義
+7. 技術的決定をdecisions/DEC-XXX.mdに記録
+8. index.mdのリンクを更新
+9. 要件との整合性を確認
+10. ユーザー確認・承認
 
 **チェックポイント**:
 - [ ] すべての要件に対応する設計要素がある
 - [ ] 技術的決定事項と根拠が記載されている
 - [ ] 情報の明確性チェックが完了している
+- [ ] index.mdに全設計ドキュメントへのリンクがある
 - [ ] ユーザーの承認を得た
 
 ### フェーズ4: タスク計画
@@ -88,17 +116,21 @@ docs/
 **目的**: どのように実装するかを計画
 
 **手順**:
-1. requirements.md、design.mdを読み込む
+1. requirements/、design/を読み込む
 2. 不明点をユーザーに確認
-3. フェーズに分けてタスクを分解
-4. 各タスクにTDD手順を追加
-5. 依存関係を整理
-6. ユーザー確認・承認
+3. tasks/index.mdに進捗サマリを記述
+4. フェーズ別ディレクトリ（phase-N/）を作成
+5. 各タスクをphase-N/TASK-XXX.mdとして作成
+6. 各タスクにTDD手順を追加
+7. 依存関係を整理
+8. index.mdのリンクを更新
+9. ユーザー確認・承認
 
 **チェックポイント**:
 - [ ] タスクが適切な粒度である（20-40分）
 - [ ] 各タスクに受入基準がある
 - [ ] 推測に基づく実装指示がない
+- [ ] index.mdに全タスクへのリンクがある
 - [ ] ユーザーの承認を得た
 
 ### フェーズ5: 逆順レビュー
@@ -109,11 +141,11 @@ docs/
 
 **手順**:
 ```text
-tasks.md
+docs/tasks/
    ↓ タスクが参照するコンポーネント/APIは設計に定義されているか
-design.md
+docs/design/
    ↓ すべての要件に対応する設計要素があるか
-requirements.md
+docs/requirements/
 ```
 
 **チェック項目**:
@@ -134,13 +166,24 @@ requirements.md
 **成果物**:
 ```text
 docs/
-├── requirements.md（完成版）
-├── design.md（完成版）
-└── tasks.md（完成版）
+├── requirements/
+│   ├── index.md（完成版）
+│   ├── stories/（各ユーザーストーリー）
+│   └── nfr/（非機能要件）
+├── design/
+│   ├── index.md（完成版）
+│   ├── components/（コンポーネント設計）
+│   ├── api/（API設計）
+│   ├── database/（スキーマ）
+│   └── decisions/（技術的決定）
+└── tasks/
+    ├── index.md（完成版）
+    └── phase-N/（タスク詳細）
 ```
 
 **最終チェック**:
 - [ ] 3ドキュメントすべてが完成している
+- [ ] 各index.mdに全ファイルへのリンクがある
 - [ ] 逆順レビューが完了している
 - [ ] 不整合がすべて解消されている
 - [ ] ユーザーの最終承認を得た
@@ -176,9 +219,9 @@ docs/
 
 ### 不整合が多い場合
 
-1. まず要件定義（requirements.md）を見直す
-2. 要件が明確になったら設計を修正
-3. 最後にタスクを更新
+1. まず要件定義（requirements/）を見直す
+2. 要件が明確になったら設計（design/）を修正
+3. 最後にタスク（tasks/）を更新
 
 ### 情報が不足している場合
 
