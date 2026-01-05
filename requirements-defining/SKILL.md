@@ -1,6 +1,7 @@
 ---
 name: requirements-defining
 description: EARS記法を用いた要件定義書を作成・編集します。ユーザーストーリーの作成、受入基準の定義、非機能要件の整理が必要な場合に使用してください。
+version: "1.0.0"
 ---
 
 # 要件定義スキル

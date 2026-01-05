@@ -1,6 +1,7 @@
 ---
 name: task-planning
 description: 実装タスク管理書を作成・編集します。設計書からタスク分解、AIエージェント向けの具体的な実装指示、TDD手順の定義が必要な場合に使用してください。requirements/、design/との整合性を逆順レビューで確認します。
+version: "1.0.0"
 ---
 
 # タスク計画スキル
