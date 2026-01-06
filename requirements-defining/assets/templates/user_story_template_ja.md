@@ -24,7 +24,7 @@
 
 ## 関連ストーリー
 
-- [US-YYY](US-YYY.md): [関連の説明]
+- [US-YYY](US-YYY.md) @US-YYY.md: [関連の説明]
 
 ## 備考
 

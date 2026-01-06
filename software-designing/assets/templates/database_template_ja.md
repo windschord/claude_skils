@@ -132,5 +132,5 @@ erDiagram
 
 ## 関連要件
 
-- [REQ-XXX](../../requirements/stories/US-XXX.md): [関連の説明]
-- [NFR-XXX](../../requirements/nfr/performance.md): [関連の説明]
+- [REQ-XXX](../../requirements/stories/US-XXX.md) @../../requirements/stories/US-XXX.md: [関連の説明]
+- [NFR-XXX](../../requirements/nfr/performance.md) @../../requirements/nfr/performance.md: [関連の説明]

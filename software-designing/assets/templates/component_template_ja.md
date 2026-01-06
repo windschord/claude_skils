@@ -48,10 +48,10 @@ const result = component.methodName('value', 123);
 ## 依存関係
 
 ### 依存するコンポーネント
-- [ComponentB](component-b.md): [依存の理由]
+- [ComponentB](component-b.md) @component-b.md: [依存の理由]
 
 ### 依存されるコンポーネント
-- [ComponentC](component-c.md): [依存の理由]
+- [ComponentC](component-c.md) @component-c.md: [依存の理由]
 
 ## データフロー
 
@@ -105,5 +105,5 @@ classDiagram
 
 ## 関連要件
 
-- [REQ-XXX](../../requirements/stories/US-XXX.md): [関連の説明]
-- [NFR-XXX](../../requirements/nfr/performance.md): [関連の説明]
+- [REQ-XXX](../../requirements/stories/US-XXX.md) @../../requirements/stories/US-XXX.md: [関連の説明]
+- [NFR-XXX](../../requirements/nfr/performance.md) @../../requirements/nfr/performance.md: [関連の説明]

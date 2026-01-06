@@ -161,9 +161,9 @@
 
 ## 関連コンポーネント
 
-- [ComponentA](../components/component-a.md): リクエスト処理
-- [ComponentB](../components/component-b.md): データ永続化
+- [ComponentA](../components/component-a.md) @../components/component-a.md: リクエスト処理
+- [ComponentB](../components/component-b.md) @../components/component-b.md: データ永続化
 
 ## 関連要件
 
-- [REQ-XXX](../../requirements/stories/US-XXX.md): [関連の説明]
+- [REQ-XXX](../../requirements/stories/US-XXX.md) @../../requirements/stories/US-XXX.md: [関連の説明]

@@ -95,8 +95,8 @@
 ## 影響
 
 ### 影響を受けるコンポーネント
-- [ComponentA](../components/component-a.md): [影響の説明]
-- [ComponentB](../components/component-b.md): [影響の説明]
+- [ComponentA](../components/component-a.md) @../components/component-a.md: [影響の説明]
+- [ComponentB](../components/component-b.md) @../components/component-b.md: [影響の説明]
 
 ### 必要な変更
 - 変更1
@@ -108,7 +108,7 @@
 
 ## 関連要件
 
-- [REQ-XXX](../../requirements/stories/US-XXX.md): [関連の説明]
+- [REQ-XXX](../../requirements/stories/US-XXX.md) @../../requirements/stories/US-XXX.md: [関連の説明]
 
 ## 参考資料
 

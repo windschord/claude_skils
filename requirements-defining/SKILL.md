@@ -17,7 +17,7 @@ EARS記法（Easy Approach to Requirements Syntax）を用いて、明確でテ�
 
 ## ドキュメント構成
 
-```
+```text
 docs/requirements/
 ├── index.md                 # 目次・概要・要件サマリ
 ├── stories/

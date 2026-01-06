@@ -21,7 +21,7 @@ version: "1.0.0"
 
 ## ドキュメント構成
 
-```
+```text
 docs/
 ├── requirements/           # 要件定義
 │   ├── index.md           # 目次・概要

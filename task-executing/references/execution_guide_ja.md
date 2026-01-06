@@ -6,7 +6,7 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 
 ### ステップ1: タスクの読み取りと分析
 
-```markdown
+```text
 1. docs/tasks/index.mdを読み取る
 2. TODO状態のタスクをフィルタリング
 3. 各タスクの詳細ファイル（docs/tasks/[phase]/TASK-XXX.md）を読み込む
@@ -49,7 +49,7 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 - 受入基準
 - 技術的文脈
 - 参照すべき既存コード
-- design/、requirements/の関連ファイル
+- docs/design/、docs/requirements/の関連ファイル
 
 ### ステップ4: 受入基準の確認
 
@@ -113,7 +113,7 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 
 各Agentには以下の情報を渡します：
 - タスクの詳細（説明、受入基準）
-- 関連するdesign.md、requirements.mdのセクション
+- 関連するdocs/design/、docs/requirements/の該当ファイル
 - コーディング規約とコミットテンプレート
 - テスト要件（カバレッジ80%以上）
 ```
@@ -201,7 +201,7 @@ Task 1.1: BLOCKED
 【実装 → タスクの不整合】
 1. Task 1.1の受入基準「エラーハンドリングが適切に実装されている」
    が満たされていません。
-   → 400エラー時のレスポンス形式がdesign.mdと異なります。
+   → 400エラー時のレスポンス形式がdocs/design/の仕様と異なります。
 
 【タスク → 設計の不整合】
 2. 実装したUserServiceにvalidateEmail()メソッドがありますが、

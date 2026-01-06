@@ -19,7 +19,7 @@ version: "1.0.0"
 
 ## ドキュメント構成
 
-```
+```text
 docs/design/
 ├── index.md                 # 目次・アーキテクチャ概要
 ├── components/

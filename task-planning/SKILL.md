@@ -16,7 +16,7 @@ version: "1.0.0"
 
 ## ドキュメント構成
 
-```
+```text
 docs/tasks/
 ├── index.md                 # 目次・進捗サマリ
 ├── phase-1/
@@ -108,7 +108,7 @@ docs/tasks/
 
 ### 基本サイクル
 
-```
+```text
 1. テストを書く
    ↓
 2. テスト実行（失敗確認）
@@ -165,7 +165,7 @@ docs/tasks/
 
 ### レビューの流れ
 
-```
+```text
 docs/tasks/ → docs/design/ → docs/requirements/
 （実装計画）   （技術設計）    （要件定義）
 ```
@@ -189,7 +189,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 
 ### 不整合発見時の報告
 
-```
+```text
 ドキュメントの整合性チェックで以下の不整合を発見しました：
 
 【タスク → 設計の不整合】
