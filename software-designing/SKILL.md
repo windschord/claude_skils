@@ -154,3 +154,14 @@ task-planningスキルで逆順レビュー（タスク → 設計 → 要件）
 | コンポーネント | ケバブケース | `user-service.md`, `auth-handler.md` |
 | API | リソース名 | `users.md`, `items.md` |
 | 技術的決定 | `DEC-XXX.md` | `DEC-001.md`, `DEC-002.md` |
+
+### リンク形式
+
+index.mdから個別ファイルへのリンクは、マークダウン形式と`@`形式の両方を記載：
+
+```markdown
+| ComponentA | 目的 | [詳細](components/component-a.md) @components/component-a.md |
+```
+
+- **マークダウン形式**: `[詳細](components/component-a.md)` - GitHub等での閲覧用
+- **@形式**: `@components/component-a.md` - Claude Codeがファイルを参照する際に使用

@@ -166,3 +166,14 @@ requirements.mdの作成完了後：
 | ユーザビリティ要件 | `usability.md` | - |
 | 可用性要件 | `availability.md` | - |
 | 保守性要件 | `maintainability.md` | - |
+
+### リンク形式
+
+index.mdから個別ファイルへのリンクは、マークダウン形式と`@`形式の両方を記載：
+
+```markdown
+| US-001 | タイトル | 高 | 承認済 | [詳細](stories/US-001.md) @stories/US-001.md |
+```
+
+- **マークダウン形式**: `[詳細](stories/US-001.md)` - GitHub等での閲覧用
+- **@形式**: `@stories/US-001.md` - Claude Codeがファイルを参照する際に使用

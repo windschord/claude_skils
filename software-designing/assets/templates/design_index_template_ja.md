@@ -47,29 +47,29 @@ graph TD
 
 | コンポーネント名 | 目的 | 詳細リンク |
 |-----------------|------|-----------|
-| [ComponentA] | [簡潔な目的] | [詳細](components/component-a.md) |
-| [ComponentB] | [簡潔な目的] | [詳細](components/component-b.md) |
+| [ComponentA] | [簡潔な目的] | [詳細](components/component-a.md) @components/component-a.md |
+| [ComponentB] | [簡潔な目的] | [詳細](components/component-b.md) @components/component-b.md |
 
 ## API一覧
 
 | エンドポイント | メソッド | 目的 | 詳細リンク |
 |---------------|---------|------|-----------|
-| /api/users | GET, POST | ユーザー管理 | [詳細](api/users.md) |
-| /api/items | GET, POST, PUT, DELETE | アイテム管理 | [詳細](api/items.md) |
+| /api/users | GET, POST | ユーザー管理 | [詳細](api/users.md) @api/users.md |
+| /api/items | GET, POST, PUT, DELETE | アイテム管理 | [詳細](api/items.md) @api/items.md |
 
 ## データベーススキーマ
 
 | テーブル名 | 概要 | 詳細リンク |
 |-----------|------|-----------|
-| users | ユーザー情報 | [詳細](database/schema.md#users) |
-| items | アイテム情報 | [詳細](database/schema.md#items) |
+| users | ユーザー情報 | [詳細](database/schema.md#users) @database/schema.md |
+| items | アイテム情報 | [詳細](database/schema.md#items) @database/schema.md |
 
 ## 技術的決定事項
 
 | ID | 決定内容 | ステータス | 詳細リンク |
 |----|---------|-----------|-----------|
-| DEC-001 | [決定の概要] | 承認済/検討中 | [詳細](decisions/DEC-001.md) |
-| DEC-002 | [決定の概要] | 承認済/検討中 | [詳細](decisions/DEC-002.md) |
+| DEC-001 | [決定の概要] | 承認済/検討中 | [詳細](decisions/DEC-001.md) @decisions/DEC-001.md |
+| DEC-002 | [決定の概要] | 承認済/検討中 | [詳細](decisions/DEC-002.md) @decisions/DEC-002.md |
 
 ## セキュリティ考慮事項
 *セキュリティ対策と考慮事項を記述してください。*
@@ -89,6 +89,14 @@ graph TD
 | テストカバレッジ | 80%以上 | [Jest/pytest/go test等] |
 | Linter | エラー0件 | [ESLint/Ruff/golangci-lint等] |
 | コード複雑性 | 循環的複雑度10以下 | [lizard/radon/gocyclo等] |
+
+---
+
+## リンク形式について
+
+詳細ファイルへのリンクは、マークダウン形式と`@`形式の両方を記載してください：
+- **マークダウン形式**: `[詳細](components/component-a.md)` - GitHub等での閲覧用
+- **@形式**: `@components/component-a.md` - Claude Codeがファイルを参照する際に使用
 
 ---
 

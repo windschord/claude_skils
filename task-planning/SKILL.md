@@ -281,3 +281,14 @@ docs/tasks/ → docs/design/ → docs/requirements/
 - プロジェクト全体で一意のIDを割り当て
 - フェーズをまたいでも連番を維持
 - 例: Phase 1で TASK-001〜003、Phase 2で TASK-004〜 と続ける
+
+### リンク形式
+
+index.mdから個別ファイルへのリンクは、マークダウン形式と`@`形式の両方を記載：
+
+```markdown
+| TASK-001 | タイトル | TODO | - | 30min | [詳細](phase-1/TASK-001.md) @phase-1/TASK-001.md |
+```
+
+- **マークダウン形式**: `[詳細](phase-1/TASK-001.md)` - GitHub等での閲覧用
+- **@形式**: `@phase-1/TASK-001.md` - Claude Codeがファイルを参照する際に使用
