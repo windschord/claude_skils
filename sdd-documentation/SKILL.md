@@ -18,6 +18,7 @@ version: "1.0.0"
 | **software-designing** | 技術アーキテクチャ設計 | docs/design/ |
 | **task-planning** | AIエージェント向けタスク分解 | docs/tasks/ |
 | **task-executing** | タスク実行・逆順レビュー | 実装コード |
+| **sdd-troubleshooting** | 問題分析・修正方針策定 | docs/troubleshooting/, docs/tasks/ |
 
 ## ドキュメント構成
 
@@ -51,14 +52,22 @@ docs/
 - docs/tasks/に沿って実装を行う場合
 - 実装後の逆順レビューが必要な場合
 
+### トラブルシューティング
+- システムの動作不良や問題が報告された場合
+- 問題の根本原因を分析したい場合
+- 修正方針の策定と承認が必要な場合
+
 ### 個別作業が必要な場合
 特定の工程のみ実施する場合は、各サブスキルを直接使用：
 - 要件定義のみ → `requirements-defining`
 - 設計のみ → `software-designing`
 - タスク計画のみ → `task-planning`
 - 実装のみ → `task-executing`
+- 問題分析のみ → `sdd-troubleshooting`
 
 ## ワークフロー
+
+### 新規開発フロー
 
 ```text
 1. 初期化 → docs/ディレクトリ構造を作成
@@ -74,6 +83,24 @@ docs/
 6. task-executing → 実装コード
       ↓
 7. 実装逆順レビュー → 完了
+```
+
+### トラブルシューティングフロー
+
+```text
+1. 問題事象の確認
+      ↓
+2. 根本原因の分析
+      ↓
+3. 仕様との照合（docs/requirements/, docs/design/）
+      ↓
+4. 修正方針の策定
+      ↓
+5. ★ ユーザー承認 ★（必須ゲート）
+      ↓
+6. タスク分割 → docs/tasks/に追加
+      ↓
+7. task-executing → 修正実装
 ```
 
 ## ドキュメント初期化
@@ -136,3 +163,4 @@ docs/tasks/ → docs/design/ → docs/requirements/
 - 設計: `software-designing/SKILL.md`
 - タスク計画: `task-planning/SKILL.md`
 - タスク実行: `task-executing/SKILL.md`
+- トラブルシューティング: `sdd-troubleshooting/SKILL.md`
