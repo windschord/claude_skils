@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## SDDスキル構成
 
-オーケストレータースキルと4つのサブスキルで構成されます：
+オーケストレータースキルと5つのサブスキルで構成されます：
 
 ```text
 sdd-documentation（オーケストレーター）
@@ -19,7 +19,9 @@ sdd-documentation（オーケストレーター）
     │
     ├── task-planning        → docs/tasks/
     │
-    └── task-executing       → 実装コード（逆順レビュー付き）
+    ├── task-executing       → 実装コード（逆順レビュー付き）
+    │
+    └── sdd-troubleshooting  → 問題分析・修正タスク（承認フロー付き）
 ```
 
 ### 出力ドキュメント構成
@@ -38,10 +40,13 @@ docs/
 │   ├── api/               # API設計詳細
 │   ├── database/          # データベーススキーマ
 │   └── decisions/         # 技術的決定事項
-└── tasks/                 # タスク管理
-    ├── index.md           # 目次・進捗サマリ
-    └── phase-N/           # フェーズ別タスク
-        └── TASK-XXX.md
+├── tasks/                 # タスク管理
+│   ├── index.md           # 目次・進捗サマリ
+│   └── phase-N/           # フェーズ別タスク
+│       └── TASK-XXX.md
+└── troubleshooting/       # トラブルシューティング
+    └── [YYYY-MM-DD]-[issue-name]/
+        └── analysis.md    # 分析レポート
 ```
 
 ### sdd-documentation/
@@ -79,6 +84,16 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 タスクを実行し、実装を行うスキル：
 - **SKILL.md** - スキル定義ファイル（逆順レビュー・コミットテンプレート含む）
 
+### sdd-troubleshooting/
+動作不良や問題を分析し、修正方針を策定するスキル：
+- **SKILL.md** - スキル定義ファイル（問題確認・原因分析・承認フロー）
+- **references/analysis_guide_ja.md** - 分析ガイドライン
+- 問題事象の確認と再現手順の把握
+- 根本原因の分析とコード調査
+- 仕様（要件定義・設計）との照合
+- 修正方針の策定と**ユーザー承認**（必須ゲート）
+- 修正タスクの分割とdocs/tasks/への追加
+
 ## その他のスキル
 
 ### depth-interviewing-career/
@@ -107,6 +122,7 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 2. **software-designing** - 要件を基に技術設計 → `docs/design/`
 3. **task-planning** - 設計を基にタスク分解 → `docs/tasks/`
 4. **task-executing** - タスクに沿って実装 → 実装コード
+5. **sdd-troubleshooting** - 問題分析・修正方針策定 → `docs/troubleshooting/`, `docs/tasks/`
 
 ### EARS記法の基本パターン
 
@@ -129,7 +145,7 @@ docs/design/ (どのように作るか)
 docs/tasks/ (どのように実装するか)
 ```
 
-### ワークフロー
+### ワークフロー（新規開発）
 1. **要件定義** - requirements-definingスキルでEARS記法を使って何を作るかを定義
 2. **設計** - software-designingスキルでどのように作るかを文書化
 3. **タスク計画** - task-planningスキルで実装を計画
@@ -137,6 +153,15 @@ docs/tasks/ (どのように実装するか)
 5. **実装** - task-executingスキルでタスクに沿って実装
 6. **実装逆順レビュー** - 実装→タスク→設計→要件の整合性をチェック
 7. **反復** - プロジェクトの進展に応じて各スキルで更新
+
+### ワークフロー（トラブルシューティング）
+1. **問題事象の確認** - 現象・再現手順・期待動作を把握
+2. **根本原因の分析** - コード調査で原因を特定
+3. **仕様との照合** - 要件定義・設計に対する乖離を確認
+4. **修正方針の策定** - 修正アプローチ・影響範囲を検討
+5. **ユーザー承認** - 修正方針について**必ず承認を得る**（必須ゲート）
+6. **タスク分割** - 修正タスクをdocs/tasks/に追加
+7. **実装** - task-executingスキルで修正を実装
 
 ## ドキュメント作成時の重要原則
 
@@ -234,6 +259,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 - EARS記法ガイド: `requirements-defining/references/ears_notation_ja.md`
 - 設計パターン: `software-designing/references/design_patterns_ja.md`
 - タスクガイドライン: `task-planning/references/task_guidelines_ja.md`
+- 分析ガイドライン: `sdd-troubleshooting/references/analysis_guide_ja.md`
 - テンプレート: 各サブスキルの`assets/templates/`配下
 
 ## ベストプラクティス
