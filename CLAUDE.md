@@ -8,20 +8,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## SDDスキル構成
 
-オーケストレータースキルと5つのサブスキルで構成されます：
+オーケストレータースキルと6つのサブスキルで構成されます：
 
 ```text
 sdd-documentation（オーケストレーター）
     │
-    ├── requirements-defining → docs/requirements/
+    ├── requirements-defining    → docs/requirements/
     │
-    ├── software-designing   → docs/design/
+    ├── software-designing       → docs/design/
     │
-    ├── task-planning        → docs/tasks/
+    ├── task-planning            → docs/tasks/
     │
-    ├── task-executing       → 実装コード（逆順レビュー付き）
+    ├── task-executing           → 実装コード（逆順レビュー付き）
     │
-    └── sdd-troubleshooting  → 問題分析・修正タスク（承認フロー付き）
+    ├── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
+    │
+    └── sdd-document-management  → ドキュメント管理・メンテナンス（承認フロー付き）
 ```
 
 ### 出力ドキュメント構成
@@ -44,9 +46,18 @@ docs/
 │   ├── index.md           # 目次・進捗サマリ
 │   └── phase-N/           # フェーズ別タスク
 │       └── TASK-XXX.md
-└── troubleshooting/       # トラブルシューティング
-    └── [YYYY-MM-DD]-[issue-name]/
-        └── analysis.md    # 分析レポート
+├── troubleshooting/       # トラブルシューティング
+│   └── [YYYY-MM-DD]-[issue-name]/
+│       └── analysis.md    # 分析レポート
+├── archive/               # アーカイブ（完了済み）
+│   ├── tasks/             # 完了済みタスク
+│   ├── decisions/         # 古い決定事項
+│   └── troubleshooting/   # 完了した問題分析
+└── reports/               # 管理レポート
+    ├── consistency/       # 整合性チェックレポート
+    ├── sync/              # 実装同期チェックレポート
+    ├── archive/           # アーカイブレポート
+    └── optimize/          # 最適化レポート
 ```
 
 ### sdd-documentation/
@@ -94,6 +105,16 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 - 修正方針の策定と**ユーザー承認**（必須ゲート）
 - 修正タスクの分割とdocs/tasks/への追加
 
+### sdd-document-management/
+ドキュメントのメンテナンス・整理を行うスキル：
+- **SKILL.md** - スキル定義ファイル（4機能の定義・承認フロー）
+- **references/management_guide_ja.md** - 管理ガイドライン
+- **整合性チェック**: requirements ↔ design ↔ tasks間の矛盾検出
+- **実装同期チェック**: 実装コードとドキュメントの乖離検出
+- **アーカイブ**: 完了タスク・古い決定事項の整理
+- **ファイル最適化**: 肥大化ファイルの分割・重複統合
+- すべての操作で**ユーザー承認**（必須ゲート）
+
 ## その他のスキル
 
 ### depth-interviewing-career/
@@ -123,6 +144,7 @@ AIエージェント向け実装タスクを作成・管理するスキル：
 3. **task-planning** - 設計を基にタスク分解 → `docs/tasks/`
 4. **task-executing** - タスクに沿って実装 → 実装コード
 5. **sdd-troubleshooting** - 問題分析・修正方針策定 → `docs/troubleshooting/`, `docs/tasks/`
+6. **sdd-document-management** - ドキュメント整理・メンテナンス → `docs/archive/`, `docs/reports/`
 
 ### EARS記法の基本パターン
 
@@ -260,6 +282,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 - 設計パターン: `software-designing/references/design_patterns_ja.md`
 - タスクガイドライン: `task-planning/references/task_guidelines_ja.md`
 - 分析ガイドライン: `sdd-troubleshooting/references/analysis_guide_ja.md`
+- 管理ガイドライン: `sdd-document-management/references/management_guide_ja.md`
 - テンプレート: 各サブスキルの`assets/templates/`配下
 
 ## ベストプラクティス

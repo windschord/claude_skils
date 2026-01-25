@@ -10,7 +10,7 @@ version: "1.0.0"
 
 ## 概要
 
-このスキルは、以下の4つのサブスキルを連携させて、要件定義から実装までの全工程を管理します：
+このスキルは、以下の6つのサブスキルを連携させて、要件定義から実装・メンテナンスまでの全工程を管理します：
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
@@ -19,6 +19,7 @@ version: "1.0.0"
 | **task-planning** | AIエージェント向けタスク分解 | docs/tasks/ |
 | **task-executing** | タスク実行・逆順レビュー | 実装コード |
 | **sdd-troubleshooting** | 問題分析・修正方針策定 | docs/troubleshooting/, docs/tasks/ |
+| **sdd-document-management** | ドキュメント管理・メンテナンス | docs/archive/, docs/reports/ |
 
 ## ドキュメント構成
 
@@ -34,9 +35,20 @@ docs/
 │   ├── api/*.md           # API設計詳細
 │   ├── database/schema.md # データベーススキーマ
 │   └── decisions/DEC-XXX.md # 技術的決定事項
-└── tasks/                 # タスク管理
-    ├── index.md           # 目次・進捗サマリ
-    └── phase-N/TASK-XXX.md # タスク詳細
+├── tasks/                 # タスク管理
+│   ├── index.md           # 目次・進捗サマリ
+│   └── phase-N/TASK-XXX.md # タスク詳細
+├── troubleshooting/       # トラブルシューティング
+│   └── [YYYY-MM-DD]-[issue-name]/
+├── archive/               # アーカイブ（完了済み）
+│   ├── tasks/             # 完了済みタスク
+│   ├── decisions/         # 古い決定事項
+│   └── troubleshooting/   # 完了した問題分析
+└── reports/               # 管理レポート
+    ├── consistency/       # 整合性チェックレポート
+    ├── sync/              # 実装同期チェックレポート
+    ├── archive/           # アーカイブレポート
+    └── optimize/          # 最適化レポート
 ```
 
 ## このスキルを使用する場面
@@ -57,6 +69,12 @@ docs/
 - 問題の根本原因を分析したい場合
 - 修正方針の策定と承認が必要な場合
 
+### ドキュメント管理
+- ドキュメント間の矛盾を検出・解消したい場合
+- 実装とドキュメントの同期を確認したい場合
+- 完了済みタスクをアーカイブしたい場合
+- 肥大化したファイルを整理したい場合
+
 ### 個別作業が必要な場合
 特定の工程のみ実施する場合は、各サブスキルを直接使用：
 - 要件定義のみ → `requirements-defining`
@@ -64,6 +82,7 @@ docs/
 - タスク計画のみ → `task-planning`
 - 実装のみ → `task-executing`
 - 問題分析のみ → `sdd-troubleshooting`
+- ドキュメント管理のみ → `sdd-document-management`
 
 ## ワークフロー
 
@@ -164,3 +183,4 @@ docs/tasks/ → docs/design/ → docs/requirements/
 - タスク計画: `task-planning/SKILL.md`
 - タスク実行: `task-executing/SKILL.md`
 - トラブルシューティング: `sdd-troubleshooting/SKILL.md`
+- ドキュメント管理: `sdd-document-management/SKILL.md`
