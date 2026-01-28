@@ -18,7 +18,9 @@
         "./requirements-defining",
         "./software-designing",
         "./task-planning",
-        "./task-executing"
+        "./task-executing",
+        "./sdd-troubleshooting",
+        "./sdd-document-management"
       ]
     },
     {
