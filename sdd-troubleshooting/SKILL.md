@@ -1,10 +1,6 @@
 ---
 name: sdd-troubleshooting
-description: |
-  Analyzes and resolves errors, bugs, and system issues through systematic root cause analysis.
-  Handles test failures, build errors, runtime exceptions, and unexpected behavior.
-  Compares issues against specifications (requirements/design docs) and creates fix plans with user approval.
-  Use when: tests fail, builds break, runtime errors occur, features malfunction, or bugs are reported.
+description: エラー・バグ・システム問題を体系的な根本原因分析で解決します。テストエラー、ビルドエラー、実行時例外、動作不良を分析し、仕様（要件定義・設計）と照合して修正方針を策定します。テスト失敗、ビルドエラー、実行時エラー、機能不良、バグ報告があった場合に使用してください。
 version: "1.0.0"
 ---
 
@@ -45,7 +41,7 @@ version: "1.0.0"
 
 **詳細な分析手法**: [references/analysis_guide_ja.md](references/analysis_guide_ja.md)
 
-## 使用場面
+## このスキルを使用する場面
 
 **以下のいずれかに該当する場合は、このスキルを使用する。**
 
