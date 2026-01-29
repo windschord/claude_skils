@@ -299,7 +299,7 @@ claude_skils/
    {
      "name": "my-new-skill",
      "description": "スキルの説明",
-     "source": "../",
+     "source": "./",
      "strict": false,
      "skills": [
        "./my-new-skill"

@@ -11,7 +11,7 @@
     {
       "name": "sdd-documentation",
       "description": "ソフトウェア設計ドキュメント（SDD）を作成・管理・実装します。4つのサブスキル（requirements-defining、software-designing、task-planning、task-executing）を統括し、requirements.md（EARS記法）、design.md（技術設計）、tasks.md（タスク計画）の作成から実装・逆順レビューまでの全工程を管理します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./sdd-documentation",
@@ -26,7 +26,7 @@
     {
       "name": "task-executing",
       "description": "docs/tasks.mdに記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで使用してください。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./task-executing"
@@ -35,7 +35,7 @@
     {
       "name": "incident-rca",
       "description": "インシデント調査で根本原因を特定するためのなぜなぜ分析ファシリテーションツールです。推測を避け、ユーザーの発言を記録し、リアルタイムでマインドツリーを作成して全体を可視化します。複合要因を分割し、最低1つの根本原因を特定します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./incident-rca"
@@ -44,7 +44,7 @@
     {
       "name": "jules-cli",
       "description": "docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./jules-cli"
@@ -53,7 +53,7 @@
     {
       "name": "operations-design",
       "description": "運用設計コンサルタントとして、対象業界の最新トレンドを調査し、サービス仕様をヒアリングした上で、ITIL 4・SRE・DevOpsのベストプラクティスに基づいた運用設計書を作成します。推論を避け、不明点は必ず質問し、一貫性を保つよう客観的にレビューします。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./operations-design"
@@ -62,7 +62,7 @@
     {
       "name": "report-summarizing",
       "description": "調査結果や分析レポートをエグゼクティブサマリー + 本編の2部構成で整理します。Mermaidダイアグラムによる全体像の可視化、結論・推奨事項・重要ポイントの要約を冒頭に配置し、長大なドキュメントを意思決定者向けに読みやすく構造化します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./report-summarizing"
@@ -71,7 +71,7 @@
     {
       "name": "depth-interviewing-career",
       "description": "社員のキャリア観・働きがい・職場環境をデプスインタビュー形式で聞き出すスキルです。オープンエンドな質問を通じて本音を引き出し、構造化された分析レポートを作成します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./depth-interviewing-career"
@@ -80,7 +80,7 @@
     {
       "name": "depth-interviewing-product",
       "description": "製品やサービスに対するユーザーの利用実態・満足度・改善要望をデプスインタビュー形式で聞き出すスキルです。顧客インサイトを発見し、構造化された分析レポートを作成します。",
-      "source": "../",
+      "source": "./",
       "strict": false,
       "skills": [
         "./depth-interviewing-product"
