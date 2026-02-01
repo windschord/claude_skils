@@ -1,14 +1,14 @@
 # Task Executing
 
-docs/tasks/に記載されたタスクを自動的に実行するClaude Codeスキル/サブエージェントです。
+docs/tasks/に記載されたタスクを自動的に実行するClaude Codeサブエージェントです。
 
 ## 概要
 
-Task Executingは、SDDワークフローの実装フェーズを担当します。プロジェクトのdocs/tasks/ファイルからタスクを読み取り、自動的に実装を行います。並列実行可能なタスクは並列で処理し、各タスク完了後に適切なコミットを作成します。
+Task Executingは、SDDワークフローの実装フェーズを担当するサブエージェントです。プロジェクトのdocs/tasks/ファイルからタスクを読み取り、自動的に実装を行います。並列実行可能なタスクは並列で処理し、各タスク完了後に適切なコミットを作成します。
 
 ## インストール
 
-このスキル/エージェントは `claude_skils` プラグインの一部として提供されます。
+このエージェントは `claude_skils` プラグインの一部として提供されます。
 
 ### GitHub からのインストール
 
@@ -41,7 +41,6 @@ claude_skils/
 ├── agents/
 │   └── task-executing.md    # サブエージェント定義
 └── task-executing/
-    ├── SKILL.md             # スキル定義
     ├── references/
     │   ├── execution_guide_ja.md
     │   └── commit_templates_ja.md
@@ -50,11 +49,11 @@ claude_skils/
 
 ## 使用方法
 
-### スキルとして使用
-
-スキルはClaudeが自動的に認識し、タスク実行時に適用されます。
-
 ### サブエージェントとして使用
+
+Claudeがタスク実行が必要と判断した場合、自動的にこのエージェントに委譲されます。
+
+明示的に呼び出す場合:
 
 ```
 task-executingエージェントを使ってタスクを実行してください
