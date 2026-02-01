@@ -30,6 +30,9 @@
       "strict": false,
       "skills": [
         "./task-executing"
+      ],
+      "agents": [
+        "./agents/task-executing.md"
       ]
     },
     {
