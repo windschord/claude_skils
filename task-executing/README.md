@@ -13,13 +13,13 @@ Task Executingは、SDDワークフローの実装フェーズを担当するサ
 ### GitHub からのインストール
 
 ```bash
-claude /plugin install https://github.com/windschord/claude_skils
+/plugin marketplace add https://github.com/windschord/claude_skils.git
 ```
 
 ### ローカル開発・テスト
 
 ```bash
-claude --plugin-dir /path/to/claude_skils
+/plugin marketplace add /path/to/claude_skils
 ```
 
 ## 主な機能
@@ -68,7 +68,7 @@ docs/tasks/のタスクを進めてください
 ### 複数タスクの実行
 
 ```
-tasks/のすべてのTODOタスクを実行してください
+docs/tasks/のすべてのTODOタスクを実行してください
 ```
 
 ## タスクの実行フロー
@@ -104,7 +104,7 @@ tasks/のすべてのTODOタスクを実行してください
 ### 対象カテゴリ
 
 | カテゴリ | 対象 |
-|---------|------|
+| --------- | ------ |
 | UI変更 | フロントエンドコンポーネント、CSS/スタイル変更、レイアウト |
 | 外部システム連携 | Docker/コンテナ、Git操作、外部API連携 |
 | データ操作 | データベース操作、ファイル読み書き、リスト/配列処理 |

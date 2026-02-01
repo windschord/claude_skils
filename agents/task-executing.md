@@ -212,7 +212,7 @@ Task 1.3: ユーザー一覧コンポーネントのサイドバー対応
 ### ステータス更新コミット
 
 ```text
-Update tasks.md: タスクID completed
+Update docs/tasks/index.md: タスクID completed
 
 タスクタイトルを完了としてマーク。
 完了サマリー: [1行の要約]
