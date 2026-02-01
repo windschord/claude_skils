@@ -1,23 +1,25 @@
-# Task Executing Plugin
+# Task Executing
 
-docs/tasks/に記載されたタスクを自動的に実行するClaude Codeプラグインです。
+docs/tasks/に記載されたタスクを自動的に実行するClaude Codeスキル/サブエージェントです。
 
 ## 概要
 
-Task Executingプラグインは、SDDワークフローの実装フェーズを担当するサブエージェントを提供します。プロジェクトのdocs/tasks/ファイルからタスクを読み取り、自動的に実装を行います。並列実行可能なタスクは並列で処理し、各タスク完了後に適切なコミットを作成します。
+Task Executingは、SDDワークフローの実装フェーズを担当します。プロジェクトのdocs/tasks/ファイルからタスクを読み取り、自動的に実装を行います。並列実行可能なタスクは並列で処理し、各タスク完了後に適切なコミットを作成します。
 
 ## インストール
+
+このスキル/エージェントは `claude_skils` プラグインの一部として提供されます。
 
 ### GitHub からのインストール
 
 ```bash
-claude /plugin install https://github.com/windschord/claude_skils/tree/main/task-executing
+claude /plugin install https://github.com/windschord/claude_skils
 ```
 
 ### ローカル開発・テスト
 
 ```bash
-claude --plugin-dir ./task-executing
+claude --plugin-dir /path/to/claude_skils
 ```
 
 ## 主な機能
@@ -30,25 +32,29 @@ claude --plugin-dir ./task-executing
 - 逆順レビュー（実装 → タスク → 設計 → 要件）
 - 絵文字を使用しないクリーンなメッセージ
 
-## ディレクトリ構成
+## ファイル構成
 
 ```
-task-executing/
+claude_skils/
 ├── .claude-plugin/
-│   └── plugin.json          # プラグインマニフェスト
+│   └── marketplace.json     # プラグインマニフェスト
 ├── agents/
 │   └── task-executing.md    # サブエージェント定義
-├── references/
-│   ├── execution_guide_ja.md    # 実行ガイド
-│   └── commit_templates_ja.md   # コミットテンプレート
-└── README.md
+└── task-executing/
+    ├── SKILL.md             # スキル定義
+    ├── references/
+    │   ├── execution_guide_ja.md
+    │   └── commit_templates_ja.md
+    └── README.md
 ```
 
 ## 使用方法
 
-### 基本的な使い方
+### スキルとして使用
 
-プラグインをインストールすると、`task-executing` サブエージェントが自動的に利用可能になります。
+スキルはClaudeが自動的に認識し、タスク実行時に適用されます。
+
+### サブエージェントとして使用
 
 ```
 task-executingエージェントを使ってタスクを実行してください
