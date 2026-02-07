@@ -294,9 +294,84 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 - 逆順レビューで不整合がない（または解消済み）
 - すべてのコミットが作成済み
 
+## TodoWrite同期
+
+### タスク状態の同期
+
+タスクのステータスを変更するたびに、TodoWriteも更新してユーザーに進捗を可視化します。
+
+### 同期手順
+
+```text
+1. タスク開始時:
+   - docs/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
+   - TodoWriteで該当タスク（[TASK-XXX]を含むtodo）をin_progressに更新
+   - コミット
+
+2. タスク完了時:
+   - docs/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
+   - TodoWriteで該当タスクをcompletedに更新
+   - コミット
+
+3. タスクブロック時:
+   - docs/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
+   - TodoWriteで該当タスクのcontentに[BLOCKED]を付記
+```
+
+### TodoWrite更新の形式
+
+```text
+TodoWriteの更新では、既存のtodoリスト全体を渡す。
+対象タスクのstatusのみ変更し、他のタスクはそのまま維持:
+
+todos = [
+  { content: "[TASK-001] 完了タスク", status: "completed", activeForm: "..." },
+  { content: "[TASK-002] 実行中タスク", status: "in_progress", activeForm: "..." },
+  { content: "[TASK-003] 未着手タスク", status: "pending", activeForm: "..." },
+  ...
+]
+```
+
+## エージェントチームモード
+
+### チームメンバーとしての動作
+
+このエージェントがエージェントチームのメンバーとしてスポーンされた場合:
+
+1. **スポーンプロンプトからタスクを特定**: 指定されたTASK-XXX.mdを読み取る
+2. **独立して実行**: 他のチームメンバーと異なるファイルを対象に実装
+3. **完了報告**: タスク完了後、リーダーにメッセージを送信
+4. **TodoWrite更新はリーダーに委任**: チームメンバーはdocs/tasks/のステータスのみ更新し、TodoWriteの更新はリーダーが行う
+
+### チームメンバーの注意事項
+
+- **ファイル競合回避**: 自分の担当ファイルのみ編集する
+- **docs/tasks/index.mdの更新**: 自分のタスクのステータスのみ更新する（他メンバーの行を編集しない）
+- **完了通知**: 実装完了後にリーダーへメッセージを送信:
+
+```text
+TASK-XXX が完了しました。
+- 受入基準: すべて達成
+- コミット: [コミットハッシュ]
+- 変更ファイル: [ファイルリスト]
+```
+
+### リーダーとしての動作
+
+このエージェントのワークフローがリーダーとして実行される場合:
+
+1. **並列実行可能なタスクを特定**: 依存関係のないタスクをグループ化
+2. **チームメンバーをスポーン**: 各タスクに1チームメンバーを割り当て
+3. **プラン承認を要求**: リスクの高いタスクではプラン承認を必須に
+4. **完了待機**: すべてのチームメンバーの完了を待つ
+5. **TodoWrite一括更新**: 完了したタスクをまとめてTodoWriteで更新
+6. **逆順レビュー**: すべてのタスク完了後に逆順レビューを実施
+
 ## リソース
 
 ### リファレンス
 
 - コミットテンプレート: `task-executing/references/commit_templates_ja.md`
 - 実行ガイド: `task-executing/references/execution_guide_ja.md`
+- エージェントチームガイド: `sdd-documentation/references/agent_teams_guide_ja.md`
+- タスク同期ガイド: `sdd-documentation/references/task_sync_guide_ja.md`

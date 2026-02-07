@@ -209,6 +209,96 @@ docs/tasks/ → docs/design/ → docs/requirements/
 3. REQ-005のタスクを追加しますか？
 ```
 
+## タスク同期（TodoWrite連携）
+
+### 概要
+
+docs/tasks/にタスクを作成・更新した際、Claude CodeのTodoWriteツールにも同期してタスクを登録します。これにより、ユーザーはClaude CodeのUI上でリアルタイムに進捗を確認できます。
+
+### 同期タイミング
+
+1. **タスク計画完了時**: すべてのTASK-XXX.mdを作成した後、TodoWriteでタスク一覧をセット
+2. **タスク追加時**: 新しいタスクを追加した際、TodoWriteにも追加
+
+### 同期の実装手順
+
+タスク計画が完了したら、以下の手順でTodoWriteを更新:
+
+```text
+1. docs/tasks/index.mdから全タスクのID・タイトル・ステータスを取得
+2. TodoWriteを呼び出し、以下の形式でタスクを登録:
+
+todos = [
+  {
+    content: "[TASK-001] ユーザー認証APIの実装",
+    status: "pending",
+    activeForm: "[TASK-001] ユーザー認証APIを実装中"
+  },
+  {
+    content: "[TASK-002] データモデルの定義",
+    status: "pending",
+    activeForm: "[TASK-002] データモデルを定義中"
+  },
+  ...
+]
+```
+
+### ステータスマッピング
+
+| SDD (docs/tasks/) | TodoWrite | 説明 |
+|-------------------|-----------|------|
+| `TODO` | `pending` | 未着手 |
+| `IN_PROGRESS` | `in_progress` | 実行中 |
+| `DONE` | `completed` | 完了 |
+| `BLOCKED` | `pending`（contentに[BLOCKED]付記） | ブロック中 |
+| `REVIEW` | `in_progress` | レビュー中 |
+
+### 注意事項
+
+- **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載、TodoWriteは可視化用
+- **タスクIDを必ず含める**: `[TASK-XXX]`形式でcontentに記載し、対応関係を明確にする
+- **エージェントチームとの連携**: チームメンバーがタスクを完了した場合もTodoWriteの更新をリーダーが行う
+
+## エージェントチーム向けタスク設計
+
+### チーム実行を考慮したタスク分割
+
+エージェントチームで並列実行する場合、以下の点を考慮してタスクを設計:
+
+1. **ファイル独立性**: 各タスクが異なるファイルセットを対象とするよう分割
+2. **依存関係の最小化**: 並列実行可能なタスクグループを明示
+3. **コンテキストの完全性**: 各タスクがスポーンプロンプトだけで実行できるよう情報を記載
+
+### 並列実行グループの記載
+
+index.mdに並列実行可能なグループを明示:
+
+```markdown
+### 並列実行グループ
+
+| グループ | タスク | 条件 |
+|---------|--------|------|
+| Group A | TASK-001, TASK-002, TASK-003 | 依存なし、ファイル独立 |
+| Group B | TASK-004, TASK-005 | Group A完了後、ファイル独立 |
+| 順次実行 | TASK-006 | Group B完了後 |
+```
+
+### チームメンバー向けスポーンプロンプトの生成
+
+各タスクに、チームメンバーとしてスポーンする際のプロンプトテンプレートを含める:
+
+```markdown
+#### チームメンバー向けプロンプト
+
+以下のタスクを実行してください:
+- タスクファイル: docs/tasks/phase-1/TASK-001.md
+- 対象ファイル: src/auth/authenticate.ts, src/auth/authenticate.test.ts
+- 参照設計: docs/design/components/auth.md
+- 実装手順: タスクファイルのTDD手順に従う
+- 完了条件: 受入基準をすべて満たし、テストが通過すること
+- 完了後: ステータスをDONEに更新し、コミットを作成
+```
+
 ## 検証チェックリスト
 
 - [ ] タスクが適切な粒度に分解されている（20-40分程度）
@@ -221,6 +311,8 @@ docs/tasks/ → docs/design/ → docs/requirements/
 - [ ] TDD手順が含まれている
 - [ ] すべてのタスクがdesign/のコンポーネント/APIに対応している
 - [ ] すべての設計要素がrequirements/に対応している
+- [ ] TodoWriteにタスク一覧が同期されている
+- [ ] 並列実行グループが明示されている（チーム実行時）
 
 ## ユーザーとの対話ガイドライン
 

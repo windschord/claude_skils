@@ -185,11 +185,200 @@ docs/tasks/ → docs/design/ → docs/requirements/
 上記の不明点について教えていただけますか？
 ```
 
+## エージェントチームモード
+
+### 概要
+
+SDDワークフローでは、エージェントチーム機能を活用して並列作業を行うことができます。エージェントチームを使用することで、独立したタスクを複数のチームメンバーが同時に処理し、効率的にプロジェクトを進めることができます。
+
+**前提条件**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が有効であること（settings.jsonまたは環境変数で設定）
+
+### チーム活用パターン
+
+#### パターン1: 並列タスク実行
+
+docs/tasks/に依存関係のない複数タスクがある場合、エージェントチームを使用して並列実行します。
+
+```text
+チームリーダー（sdd-documentation）
+    │
+    ├── チームメンバーA: TASK-001（認証API実装）
+    ├── チームメンバーB: TASK-002（データモデル定義）
+    └── チームメンバーC: TASK-003（設定ファイル作成）
+```
+
+**スポーンプロンプト例**:
+
+```text
+エージェントチームを作成して、以下のタスクを並列実行してください。
+各チームメンバーにはtask-executingエージェントの手順に従って実装を進めてもらいます。
+
+- チームメンバー1: docs/tasks/phase-1/TASK-001.md を実行
+- チームメンバー2: docs/tasks/phase-1/TASK-002.md を実行
+- チームメンバー3: docs/tasks/phase-1/TASK-003.md を実行
+
+各タスクの詳細はファイルに記載されています。
+タスクの完了後はステータスをDONEに更新し、コミットを作成してください。
+ファイル競合を避けるため、各チームメンバーは担当タスクのファイルのみ編集してください。
+```
+
+**適用条件**:
+- 3つ以上の独立したタスクがある
+- 各タスクが異なるファイル・コンポーネントを対象としている
+- タスク間に依存関係がない
+
+#### パターン2: 並列調査・レビュー
+
+トラブルシューティングや逆順レビューで複数の視点から同時に調査します。
+
+```text
+チームリーダー（sdd-documentation）
+    │
+    ├── チームメンバーA: 要件↔設計の整合性チェック
+    ├── チームメンバーB: 設計↔タスクの整合性チェック
+    └── チームメンバーC: 実装↔ドキュメントの同期チェック
+```
+
+#### パターン3: 競合仮説によるデバッグ
+
+バグの原因が不明な場合、複数のチームメンバーが異なる仮説を並列で調査します。
+
+```text
+チームリーダー（sdd-troubleshooting）
+    │
+    ├── チームメンバーA: 仮説1を調査（データフロー問題）
+    ├── チームメンバーB: 仮説2を調査（認証トークン問題）
+    └── チームメンバーC: 仮説3を調査（非同期処理問題）
+```
+
+**重要**: チームメンバー間で互いの発見を共有し、仮説を検証・反証させる。
+
+#### パターン4: クロスレイヤー開発
+
+フロントエンド・バックエンド・テストにまたがる変更を並列で実装します。
+
+```text
+チームリーダー（sdd-documentation）
+    │
+    ├── チームメンバーA: フロントエンドコンポーネント実装
+    ├── チームメンバーB: バックエンドAPI実装
+    └── チームメンバーC: テスト作成
+```
+
+### チームを使用しない場面
+
+以下の場合はサブエージェント（従来のTask tool）を使用:
+
+| 状況 | 理由 |
+|------|------|
+| 順序依存のタスク | 前のタスクの結果が次に必要 |
+| 同一ファイルの編集 | ファイル競合が発生する |
+| 1-2個のタスク | チームのオーバーヘッドが利益を超える |
+| 結果のみ必要 | チームメンバー間の議論が不要 |
+
+### チーム運用ルール
+
+1. **デリゲートモード推奨**: リーダーは調整に専念し、自ら実装しない（Shift+Tabで切替）
+2. **プラン承認を要求**: リスクの高いタスクではチームメンバーにプラン承認を要求
+3. **ファイル競合回避**: 各チームメンバーが異なるファイルセットを所有
+4. **タスク同期**: チームメンバーのタスク完了時にdocs/tasks/とTodoWriteの両方を更新
+5. **完了待機**: リーダーはチームメンバーの完了を待ってから次のフェーズに進む
+
+### チーム活用ワークフロー（新規開発）
+
+```text
+1. 初期化 → docs/ディレクトリ構造を作成
+      ↓
+2. requirements-defining → docs/requirements/
+      ↓ ユーザー確認・承認
+3. software-designing → docs/design/
+      ↓ ユーザー確認・承認
+4. task-planning → docs/tasks/
+      ↓ ユーザー確認・承認
+      ↓ ★ TodoWriteにタスク一覧を同期 ★
+5. ドキュメント逆順レビュー
+      ↓ （エージェントチームで並列レビュー可能）
+6. task-executing → 実装コード
+      ↓ ★ エージェントチームで並列実行 ★
+      ↓ ★ 完了ごとにTodoWriteのステータスも更新 ★
+7. 実装逆順レビュー → 完了
+```
+
+## タスク同期プロトコル
+
+### 概要
+
+SDDスキルで管理するdocs/tasks/のタスクと、Claude Codeが内部で管理するTodoWriteのタスクを同期します。これにより、ユーザーはClaude CodeのUI上でリアルタイムにタスクの進捗を確認でき、docs/tasks/には詳細な実装仕様が残ります。
+
+### 同期のタイミング
+
+| イベント | SDD (docs/tasks/) | TodoWrite | 方向 |
+|---------|-------------------|-----------|------|
+| タスク計画完了時 | TASK-XXX.md作成 | todoを作成 | SDD → TodoWrite |
+| タスク開始時 | ステータス: IN_PROGRESS | status: in_progress | SDD → TodoWrite |
+| タスク完了時 | ステータス: DONE | status: completed | SDD → TodoWrite |
+| タスクブロック時 | ステータス: BLOCKED | （備考追記） | SDD → TodoWrite |
+| トラブルシュートでタスク追加 | 新規TASK-XXX.md | todoを追加 | SDD → TodoWrite |
+
+### ステータスマッピング
+
+| SDD (docs/tasks/) | TodoWrite | 説明 |
+|-------------------|-----------|------|
+| `TODO` | `pending` | 未着手 |
+| `IN_PROGRESS` | `in_progress` | 実行中 |
+| `DONE` | `completed` | 完了 |
+| `BLOCKED` | `pending`（備考付き） | ブロック中 |
+| `REVIEW` | `in_progress` | レビュー中 |
+
+### 同期の実装方法
+
+#### タスク計画完了時（task-planning）
+
+docs/tasks/のタスクを作成した後、TodoWriteを呼び出してタスク一覧をセットする:
+
+```text
+【TodoWrite同期】
+task-planningでタスクを作成した後、以下の形式でTodoWriteを更新:
+
+todos = [
+  { content: "[TASK-001] タスクタイトル", status: "pending", activeForm: "[TASK-001] タスクタイトルを実装中" },
+  { content: "[TASK-002] タスクタイトル", status: "pending", activeForm: "[TASK-002] タスクタイトルを実装中" },
+  ...
+]
+```
+
+#### タスク実行時（task-executing）
+
+各タスクの開始・完了時にTodoWriteのステータスも更新:
+
+```text
+1. タスク開始 → TASK-XXX.mdをIN_PROGRESSに → TodoWriteでin_progressに
+2. タスク完了 → TASK-XXX.mdをDONEに → TodoWriteでcompletedに
+3. 次のタスクへ → 次のTASK-XXXをin_progressに
+```
+
+#### トラブルシュート時（sdd-troubleshooting）
+
+修正タスクが追加された場合、TodoWriteにも追加:
+
+```text
+修正タスク追加 → docs/tasks/にTASK-XXX.md追加 → TodoWriteにpendingで追加
+```
+
+### 注意事項
+
+- **SDDが正（Source of Truth）**: 詳細な仕様・受入基準・TDD手順はdocs/tasks/に記載
+- **TodoWriteは可視化用**: ユーザーへの進捗表示が主目的
+- **タスクIDを含める**: TodoWriteのcontentには必ず`[TASK-XXX]`を含め、対応を明確にする
+- **フェーズ情報を含める**: 必要に応じて`[Phase-1/TASK-001]`の形式でフェーズも記載
+
 ## リソース
 
 ### リファレンス
 - ワークフローガイド: `references/workflow_guide_ja.md`
 - 検証チェックリスト: `references/checklist_ja.md`
+- エージェントチームガイド: `references/agent_teams_guide_ja.md`
+- タスク同期ガイド: `references/task_sync_guide_ja.md`
 
 ### サブスキル
 - 要件定義: `requirements-defining/SKILL.md`
