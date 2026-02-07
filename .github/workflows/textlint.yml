@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - '**.md'
+      - 'package.json'
+      - 'package-lock.json'
 
 jobs:
   textlint:
