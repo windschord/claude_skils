@@ -163,141 +163,43 @@ docs/tasks/
 
 ## 逆順レビュープロセス
 
-### レビューの流れ
-
 ```text
 docs/tasks/ → docs/design/ → docs/requirements/
-（実装計画）   （技術設計）    （要件定義）
 ```
 
-### ステップ1: タスク → 設計の整合性チェック
+| チェック | 確認内容 |
+|---------|---------|
+| タスク → 設計 | コンポーネント、API、データモデル、技術スタックの整合性 |
+| 設計 → 要件 | 機能カバレッジ、非機能要件対応、過剰設計チェック |
+| 過不足 | 要件にない機能がないか、実装漏れがないか |
 
-| チェック項目 | 確認内容 |
-|-------------|---------|
-| コンポーネント対応 | タスクが参照するコンポーネントはdesign/components/に定義されているか |
-| API対応 | タスクで実装するAPIはdesign/api/と一致しているか |
-| データモデル対応 | タスクで使用するデータ構造はdesign/database/と一致しているか |
-| 技術スタック | タスクで使用する技術はdesign/decisions/と一致しているか |
-
-### ステップ2: 設計 → 要件の整合性チェック
-
-| チェック項目 | 確認内容 |
-|-------------|---------|
-| 機能カバレッジ | すべての要件（REQ-XXX）に対応する設計要素があるか |
-| 非機能要件対応 | NFR-XXXの要件が設計に反映されているか |
-| 過剰設計チェック | requirements/にない機能が設計に含まれていないか |
-
-### 不整合発見時の報告
-
-```text
-ドキュメントの整合性チェックで以下の不整合を発見しました：
-
-【タスク → 設計の不整合】
-1. tasks/phase-2/TASK-003.mdで「PaymentService」を実装するとありますが、
-   design/components/にPaymentServiceの定義がありません。
-
-【設計 → 要件の不整合】
-2. design/components/に「通知機能」がありますが、
-   requirements/stories/に対応する要件がありません。
-
-【過不足】
-3. REQ-005（レポート出力機能）に対応するタスクがありません。
-
-これらについて確認させてください：
-1. PaymentServiceの設計を追加しますか？
-2. 通知機能は必要ですか？
-3. REQ-005のタスクを追加しますか？
-```
+不整合を発見した場合はリストアップしてユーザーに確認してから修正する。
 
 ## タスク同期（TodoWrite連携）
 
-### 概要
+タスク計画完了時にTodoWriteへ同期し、ユーザーにリアルタイムで進捗を表示する。
 
-docs/tasks/にタスクを作成・更新した際、Claude CodeのTodoWriteツールにも同期してタスクを登録します。これにより、ユーザーはClaude CodeのUI上でリアルタイムに進捗を確認できます。
+| SDD (docs/tasks/) | TodoWrite |
+|-------------------|-----------|
+| `TODO` | `pending` |
+| `IN_PROGRESS` | `in_progress` |
+| `DONE` | `completed` |
+| `BLOCKED` | `pending`（[BLOCKED]付記） |
 
-### 同期タイミング
+- **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載
+- **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載
 
-1. **タスク計画完了時**: すべてのTASK-XXX.mdを作成した後、TodoWriteでタスク一覧をセット
-2. **タスク追加時**: 新しいタスクを追加した際、TodoWriteにも追加
-
-### 同期の実装手順
-
-タスク計画が完了したら、以下の手順でTodoWriteを更新:
-
-```text
-1. docs/tasks/index.mdから全タスクのID・タイトル・ステータスを取得
-2. TodoWriteを呼び出し、以下の形式でタスクを登録:
-
-todos = [
-  {
-    content: "[TASK-001] ユーザー認証APIの実装",
-    status: "pending",
-    activeForm: "[TASK-001] ユーザー認証APIを実装中"
-  },
-  {
-    content: "[TASK-002] データモデルの定義",
-    status: "pending",
-    activeForm: "[TASK-002] データモデルを定義中"
-  },
-  ...
-]
-```
-
-### ステータスマッピング
-
-| SDD (docs/tasks/) | TodoWrite | 説明 |
-|-------------------|-----------|------|
-| `TODO` | `pending` | 未着手 |
-| `IN_PROGRESS` | `in_progress` | 実行中 |
-| `DONE` | `completed` | 完了 |
-| `BLOCKED` | `pending`（contentに[BLOCKED]付記） | ブロック中 |
-| `REVIEW` | `in_progress` | レビュー中 |
-
-### 注意事項
-
-- **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載、TodoWriteは可視化用
-- **タスクIDを必ず含める**: `[TASK-XXX]`形式でcontentに記載し、対応関係を明確にする
-- **エージェントチームとの連携**: チームメンバーがタスクを完了した場合もTodoWriteの更新をリーダーが行う
+**詳細**: `sdd-documentation/references/task_sync_guide_ja.md`
 
 ## エージェントチーム向けタスク設計
 
-### チーム実行を考慮したタスク分割
-
-エージェントチームで並列実行する場合、以下の点を考慮してタスクを設計:
+チームで並列実行する場合、以下を考慮してタスクを設計:
 
 1. **ファイル独立性**: 各タスクが異なるファイルセットを対象とするよう分割
-2. **依存関係の最小化**: 並列実行可能なタスクグループを明示
+2. **依存関係の最小化**: 並列実行可能なタスクグループをindex.mdに明示
 3. **コンテキストの完全性**: 各タスクがスポーンプロンプトだけで実行できるよう情報を記載
 
-### 並列実行グループの記載
-
-index.mdに並列実行可能なグループを明示:
-
-```markdown
-### 並列実行グループ
-
-| グループ | タスク | 条件 |
-|---------|--------|------|
-| Group A | TASK-001, TASK-002, TASK-003 | 依存なし、ファイル独立 |
-| Group B | TASK-004, TASK-005 | Group A完了後、ファイル独立 |
-| 順次実行 | TASK-006 | Group B完了後 |
-```
-
-### チームメンバー向けスポーンプロンプトの生成
-
-各タスクに、チームメンバーとしてスポーンする際のプロンプトテンプレートを含める:
-
-```markdown
-#### チームメンバー向けプロンプト
-
-以下のタスクを実行してください:
-- タスクファイル: docs/tasks/phase-1/TASK-001.md
-- 対象ファイル: src/auth/authenticate.ts, src/auth/authenticate.test.ts
-- 参照設計: docs/design/components/auth.md
-- 実装手順: タスクファイルのTDD手順に従う
-- 完了条件: 受入基準をすべて満たし、テストが通過すること
-- 完了後: ステータスをDONEに更新し、コミットを作成
-```
+**詳細**: `sdd-documentation/references/agent_teams_guide_ja.md`
 
 ## 検証チェックリスト
 
