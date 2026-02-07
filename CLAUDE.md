@@ -62,8 +62,10 @@ docs/
 
 ### sdd-documentation/
 SDDドキュメント全体を統括するオーケストレータースキル：
-- **SKILL.md** - 統合スキル定義（初期化・整合性チェック・逆順レビュー）
+- **SKILL.md** - 統合スキル定義（初期化・整合性チェック・逆順レビュー・エージェントチーム・タスク同期）
 - **references/workflow_guide_ja.md** - ワークフローガイド
+- **references/agent_teams_guide_ja.md** - エージェントチーム活用ガイド
+- **references/task_sync_guide_ja.md** - タスク同期（TodoWrite連携）ガイド
 
 ### requirements-defining/
 EARS記法を用いた要件定義書を作成・管理するスキル：
@@ -171,10 +173,11 @@ docs/tasks/ (どのように実装するか)
 1. **要件定義** - requirements-definingスキルでEARS記法を使って何を作るかを定義
 2. **設計** - software-designingスキルでどのように作るかを文書化
 3. **タスク計画** - task-planningスキルで実装を計画
-4. **ドキュメント逆順レビュー** - タスク→設計→要件の整合性をチェック
-5. **実装** - task-executingスキルでタスクに沿って実装
-6. **実装逆順レビュー** - 実装→タスク→設計→要件の整合性をチェック
-7. **反復** - プロジェクトの進展に応じて各スキルで更新
+4. **タスク同期** - TodoWriteにタスク一覧を同期（進捗可視化）
+5. **ドキュメント逆順レビュー** - タスク→設計→要件の整合性をチェック（エージェントチームで並列レビュー可能）
+6. **実装** - task-executingスキルでタスクに沿って実装（エージェントチームで並列実行可能）
+7. **実装逆順レビュー** - 実装→タスク→設計→要件の整合性をチェック
+8. **反復** - プロジェクトの進展に応じて各スキルで更新
 
 ### ワークフロー（トラブルシューティング）
 1. **問題事象の確認** - 現象・再現手順・期待動作を把握
@@ -313,9 +316,69 @@ docs/tasks/ → docs/design/ → docs/requirements/
 ### 不整合発見時
 矛盾や過不足を発見した場合は、**ユーザーに確認してからドキュメントを修正する**
 
+## エージェントチーム活用
+
+SDDワークフローでは、エージェントチーム機能を活用して並列作業を行うことができます。
+
+### 前提条件
+
+`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` を有効にする（settings.jsonまたは環境変数）
+
+### 活用パターン
+
+| パターン | 使用フェーズ | 説明 |
+|---------|------------|------|
+| 並列タスク実行 | task-executing | 依存関係のないタスクをチームメンバーが並列実装 |
+| 並列レビュー | 逆順レビュー | requirements↔design↔tasksの整合性を並列チェック |
+| 競合仮説デバッグ | sdd-troubleshooting | 複数仮説を並列調査、相互反証 |
+| 並列ドキュメントチェック | sdd-document-management | 4機能（整合性・同期・アーカイブ・最適化）を並列実行 |
+
+### チーム運用ルール
+
+1. **デリゲートモード**: リーダーは調整に専念し自ら実装しない
+2. **ファイル競合回避**: 各チームメンバーが異なるファイルセットを所有
+3. **プラン承認**: リスクの高いタスクではプラン承認を要求
+4. **完了待機**: チームメンバーの完了を待ってから次のフェーズに進む
+5. **タスク同期**: 完了時にdocs/tasks/とTodoWriteの両方を更新
+
+詳細: `sdd-documentation/references/agent_teams_guide_ja.md`
+
+## タスク同期（TodoWrite連携）
+
+docs/tasks/のタスクとClaude CodeのTodoWriteを同期し、ユーザーにリアルタイムで進捗を表示します。
+
+### 同期ルール
+
+| タイミング | SDD操作 | TodoWrite操作 |
+|-----------|---------|---------------|
+| タスク計画完了 | TASK-XXX.md作成 | pendingで登録 |
+| タスク開始 | ステータス: IN_PROGRESS | status: in_progress |
+| タスク完了 | ステータス: DONE | status: completed |
+| タスク追加 | 新規TASK-XXX.md | pendingで追加 |
+
+### ステータスマッピング
+
+| SDD | TodoWrite |
+|-----|-----------|
+| TODO | pending |
+| IN_PROGRESS | in_progress |
+| DONE | completed |
+| BLOCKED | pending（[BLOCKED]付記） |
+| REVIEW | in_progress（[REVIEW]付記） |
+
+### 原則
+
+- **SDDが正**: 詳細仕様はdocs/tasks/に記載
+- **TodoWriteは可視化用**: 進捗表示が主目的
+- **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載
+
+詳細: `sdd-documentation/references/task_sync_guide_ja.md`
+
 ## リファレンスの活用
 
 - ワークフローガイド: `sdd-documentation/references/workflow_guide_ja.md`
+- エージェントチームガイド: `sdd-documentation/references/agent_teams_guide_ja.md`
+- タスク同期ガイド: `sdd-documentation/references/task_sync_guide_ja.md`
 - EARS記法ガイド: `requirements-defining/references/ears_notation_ja.md`
 - 設計パターン: `software-designing/references/design_patterns_ja.md`
 - タスクガイドライン: `task-planning/references/task_guidelines_ja.md`
@@ -333,3 +396,5 @@ docs/tasks/ → docs/design/ → docs/requirements/
 6. **最新を保つ** - 作業の進行に応じてステータスを更新
 7. **情報を分類する** - 明示された情報と不明な情報を常に区別する
 8. **推測しない** - 「おそらく〜」は「不明」として扱い、必ず確認する
+9. **タスクを同期する** - docs/tasks/の変更時はTodoWriteも更新して進捗を可視化
+10. **チームを活用する** - 並列化可能な作業はエージェントチームで効率化

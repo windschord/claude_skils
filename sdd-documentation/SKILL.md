@@ -185,11 +185,55 @@ docs/tasks/ → docs/design/ → docs/requirements/
 上記の不明点について教えていただけますか？
 ```
 
+## エージェントチームモード
+
+SDDワークフローでは、エージェントチーム機能を活用して並列作業を行うことができます。
+
+**前提条件**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` が有効であること
+
+### チーム活用パターン
+
+| パターン | 用途 |
+|---------|------|
+| 並列タスク実行 | 依存関係のない複数タスクをチームメンバーが同時実装 |
+| 並列レビュー | 要件↔設計↔タスクの整合性を並列チェック |
+| 競合仮説デバッグ | 複数仮説を並列調査、相互反証 |
+| クロスレイヤー開発 | フロントエンド・バックエンド・テストを並列実装 |
+
+### チーム運用ルール
+
+1. **デリゲートモード推奨**: リーダーは調整に専念
+2. **ファイル競合回避**: 各チームメンバーが異なるファイルセットを所有
+3. **完了待機**: チームメンバーの完了を待ってから次のフェーズへ
+
+**詳細**: [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md)
+
+## タスク同期プロトコル
+
+docs/tasks/のタスクとTodoWriteを同期し、ユーザーにリアルタイムで進捗を表示します。
+
+### ステータスマッピング
+
+| SDD (docs/tasks/) | TodoWrite |
+|-------------------|-----------|
+| `TODO` | `pending` |
+| `IN_PROGRESS` | `in_progress` |
+| `DONE` | `completed` |
+| `BLOCKED` | `pending`（[BLOCKED]付記） |
+| `REVIEW` | `in_progress`（[REVIEW]付記） |
+
+- **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載
+- **TodoWriteは可視化用**: `[TASK-XXX]`形式でcontentに記載
+
+**詳細**: [references/task_sync_guide_ja.md](references/task_sync_guide_ja.md)
+
 ## リソース
 
 ### リファレンス
 - ワークフローガイド: `references/workflow_guide_ja.md`
 - 検証チェックリスト: `references/checklist_ja.md`
+- エージェントチームガイド: `references/agent_teams_guide_ja.md`
+- タスク同期ガイド: `references/task_sync_guide_ja.md`
 
 ### サブスキル
 - 要件定義: `requirements-defining/SKILL.md`
