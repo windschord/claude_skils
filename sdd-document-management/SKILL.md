@@ -132,7 +132,7 @@ docs/reports/
 ## TodoWrite連携
 
 - **アーカイブ時**: タスクをアーカイブしたらTodoWriteからも該当タスクを除外
-- **整合性チェックでタスク追加時**: `[TASK-XXX] [DocFix] 修正内容` 形式でTodoWriteにpendingで追加
+- **整合性チェックによるタスク追加時**: `[TASK-XXX] [DocFix] 修正内容` の形式でTodoWriteにpendingとして追加
 
 ## リソース
 
