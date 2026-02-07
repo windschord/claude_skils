@@ -63,4 +63,4 @@ E) 今回は実行せずレポートのみ保存
 
 ## レポートテンプレート
 
-`assets/templates/optimize_report_template_ja.md` を参照。
+`../assets/templates/optimize_report_template_ja.md` を参照。

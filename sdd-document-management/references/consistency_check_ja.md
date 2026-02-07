@@ -57,4 +57,4 @@ C) 今回は修正せずレポートのみ保存
 
 ## レポートテンプレート
 
-`assets/templates/consistency_report_template_ja.md` を参照。
+`../assets/templates/consistency_report_template_ja.md` を参照。

@@ -364,6 +364,7 @@ docs/tasks/のタスクとClaude CodeのTodoWriteを同期し、ユーザーに�
 | IN_PROGRESS | in_progress |
 | DONE | completed |
 | BLOCKED | pending（[BLOCKED]付記） |
+| REVIEW | in_progress（[REVIEW]付記） |
 
 ### 原則
 

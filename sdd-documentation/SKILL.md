@@ -220,6 +220,7 @@ docs/tasks/のタスクとTodoWriteを同期し、ユーザーにリアルタイ
 | `IN_PROGRESS` | `in_progress` |
 | `DONE` | `completed` |
 | `BLOCKED` | `pending`（[BLOCKED]付記） |
+| `REVIEW` | `in_progress`（[REVIEW]付記） |
 
 - **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載
 - **TodoWriteは可視化用**: `[TASK-XXX]`形式でcontentに記載

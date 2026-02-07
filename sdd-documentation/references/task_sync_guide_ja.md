@@ -51,20 +51,23 @@ TodoWrite({
     {
       content: "[Phase-1/TASK-001] ユーザー認証APIの実装",
       status: "pending",
-      activeForm: "[TASK-001] ユーザー認証APIを実装中"
+      activeForm: "[TASK-001] ユーザー認証APIの実装"
     },
     {
       content: "[Phase-1/TASK-002] データモデルの定義",
       status: "pending",
-      activeForm: "[TASK-002] データモデルを定義中"
+      activeForm: "[TASK-002] データモデルの定義"
     },
     {
       content: "[Phase-2/TASK-003] API統合テスト",
       status: "pending",
-      activeForm: "[TASK-003] API統合テストを実装中"
+      activeForm: "[TASK-003] API統合テスト"
     }
   ]
 })
+
+注意: activeFormはin_progress時にUIに表示される。pending登録時はcontentと同等の
+静的な表現を使用し、「〜を実装中」のような進行形はin_progressへの遷移時に設定する。
 ```
 
 **命名規則**:
@@ -168,14 +171,15 @@ status: "pending"
 
 ### チームメンバーの責務
 
-チームメンバーはdocs/tasks/のステータスのみ更新します:
+チームメンバーは自分の担当TASK-XXX.mdのステータスのみ更新します:
 
 ```text
 1. 自分の担当TASK-XXX.mdのステータスをIN_PROGRESSに更新
 2. 実装を実行
-3. ステータスをDONEに更新
+3. TASK-XXX.mdのステータスをDONEに更新
 4. リーダーに完了メッセージを送信
 
+★ docs/tasks/index.mdの更新はリーダーに委任（マージ競合回避） ★
 ★ TodoWriteの更新はリーダーに委任 ★
 ```
 
@@ -234,7 +238,11 @@ content: "[BLOCKED] [Phase-1/TASK-003] 外部API連携の実装"
    ↓
 6. 受入基準の確認
    ↓
-7. ★ TodoWrite同期 ★  ← このステップを忘れない
+7. docs/tasks/のステータスを更新（SDD = Source of Truth）
    ↓
 8. コミット作成
+   ↓
+9. ★ TodoWrite同期 ★  ← SDD更新・コミット後にTodoWriteへ反映
 ```
+
+**順序の原則**: docs/tasks/（SDD）の更新とコミットを先に行い、その後TodoWriteに反映する。SDDが正であるため、先にSource of Truthを確定させる。

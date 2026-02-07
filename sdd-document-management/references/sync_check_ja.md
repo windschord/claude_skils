@@ -66,4 +66,4 @@ D) 今回は修正せずレポートのみ保存
 
 ## レポートテンプレート
 
-`assets/templates/sync_report_template_ja.md` を参照。
+`../assets/templates/sync_report_template_ja.md` を参照。

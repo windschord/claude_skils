@@ -185,6 +185,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 | `IN_PROGRESS` | `in_progress` |
 | `DONE` | `completed` |
 | `BLOCKED` | `pending`（[BLOCKED]付記） |
+| `REVIEW` | `in_progress`（[REVIEW]付記） |
 
 - **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載
 - **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載

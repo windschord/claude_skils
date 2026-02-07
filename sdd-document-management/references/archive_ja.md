@@ -57,4 +57,4 @@ C) 今回はアーカイブしない
 
 ## レポートテンプレート
 
-`assets/templates/archive_report_template_ja.md` を参照。
+`../assets/templates/archive_report_template_ja.md` を参照。
