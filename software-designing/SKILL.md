@@ -11,16 +11,16 @@ version: "1.0.0"
 ## 概要
 
 このスキルは、以下の成果物を作成・管理します：
-- **docs/design/index.md**: 設計概要（目次）
-- **docs/design/components/*.md**: コンポーネント詳細
-- **docs/design/api/*.md**: API設計詳細
-- **docs/design/database/schema.md**: データベーススキーマ
-- **docs/design/decisions/DEC-XXX.md**: 技術的決定事項
+- **docs/sdd/design/index.md**: 設計概要（目次）
+- **docs/sdd/design/components/*.md**: コンポーネント詳細
+- **docs/sdd/design/api/*.md**: API設計詳細
+- **docs/sdd/design/database/schema.md**: データベーススキーマ
+- **docs/sdd/design/decisions/DEC-XXX.md**: 技術的決定事項
 
 ## ドキュメント構成
 
 ```text
-docs/design/
+docs/sdd/design/
 ├── index.md                 # 目次・アーキテクチャ概要
 ├── components/
 │   ├── component-a.md       # コンポーネント詳細
@@ -44,13 +44,13 @@ docs/design/
 - データベーススキーマを設計したい場合
 
 ### 既存ドキュメントの修正時
-- docs/design/の設計内容を更新・変更する場合
+- docs/sdd/design/の設計内容を更新・変更する場合
 - 新しいコンポーネントを追加する場合
 
 ## 前提条件
 
 ### requirements/との連携
-docs/requirements/が存在する場合：
+docs/sdd/requirements/が存在する場合：
 1. 要件を読み込み、設計との整合性を確認
 2. すべての要件（REQ-XXX）に対応する設計要素があるか確認
 3. 要件にない機能が設計に含まれていないか確認
@@ -94,10 +94,10 @@ docs/requirements/が存在する場合：
 
 ## ワークフロー
 
-1. **要件確認**: docs/requirements/が存在すれば内容を確認
+1. **要件確認**: docs/sdd/requirements/が存在すれば内容を確認
 2. **情報分類**: 明示された情報と不明な情報を分類
 3. **不明点確認**: 必要な情報をユーザーに確認
-4. **ディレクトリ作成**: `docs/design/` 以下のサブディレクトリを作成
+4. **ディレクトリ作成**: `docs/sdd/design/` 以下のサブディレクトリを作成
 5. **各ドキュメント作成**: テンプレートを使用
 6. **整合性確認**: requirements/との整合性をチェック
 7. **ユーザー確認**: 承認を得て完了
@@ -114,7 +114,7 @@ docs/requirements/が存在する場合：
 
 ## 要件との整合性チェック
 
-docs/requirements/が存在する場合、以下を確認：
+docs/sdd/requirements/が存在する場合、以下を確認：
 
 | チェック項目 | 確認内容 |
 |-------------|---------|
@@ -146,7 +146,7 @@ B) React + JavaScript
 
 ## 後続スキルとの連携
 
-docs/design/の作成完了後：
+docs/sdd/design/の作成完了後：
 - **task-planning**: design/を基にタスクを分解
 
 task-planningスキルで逆順レビュー（タスク → 設計 → 要件）が行われます。

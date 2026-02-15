@@ -2,7 +2,7 @@
 
 ## 使用方法
 
-このテンプレートを`docs/troubleshooting/[YYYY-MM-DD]-[issue-name]/analysis.md`にコピーして使用してください。
+このテンプレートを`docs/sdd/troubleshooting/[YYYY-MM-DD]-[issue-name]/analysis.md`にコピーして使用してください。
 
 ---
 

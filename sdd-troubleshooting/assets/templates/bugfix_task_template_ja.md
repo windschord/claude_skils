@@ -2,7 +2,7 @@
 
 ## 使用方法
 
-このテンプレートを`docs/tasks/phase-N/TASK-XXX.md`にコピーして使用してください。
+このテンプレートを`docs/sdd/tasks/phase-N/TASK-XXX.md`にコピーして使用してください。
 
 ---
 

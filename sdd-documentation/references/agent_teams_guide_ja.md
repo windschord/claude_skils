@@ -104,7 +104,7 @@ SDDフェーズ          チーム利用         条件・トリガー
 
 **手順**:
 
-1. docs/tasks/index.mdから並列実行可能なタスクグループを特定
+1. docs/sdd/tasks/index.mdから並列実行可能なタスクグループを特定
 2. チームを作成し、各タスクにチームメンバーを割り当て
 3. デリゲートモード（Shift+Tab）でリーダーは成果確認・進捗管理に専念（実装禁止）
 4. 各メンバーの完了を待機し、成果をレビュー
@@ -119,11 +119,11 @@ SDDフェーズ          チーム利用         条件・トリガー
 プラン承認は不要です。
 
 タスク割り当て:
-- メンバー1: docs/tasks/phase-{N}/TASK-{XXX}.md
+- メンバー1: docs/sdd/tasks/phase-{N}/TASK-{XXX}.md
   対象ファイル: {ファイルリスト}
-- メンバー2: docs/tasks/phase-{N}/TASK-{YYY}.md
+- メンバー2: docs/sdd/tasks/phase-{N}/TASK-{YYY}.md
   対象ファイル: {ファイルリスト}
-- メンバー3: docs/tasks/phase-{N}/TASK-{ZZZ}.md
+- メンバー3: docs/sdd/tasks/phase-{N}/TASK-{ZZZ}.md
   対象ファイル: {ファイルリスト}
 
 共通ルール:
@@ -179,10 +179,10 @@ Sonnetモデルを使用してください。
 
 ```text
 リーダー（統合・ユーザー承認）
-├── メンバーA: 整合性チェック → docs/reports/consistency/
-├── メンバーB: 実装同期チェック → docs/reports/sync/
-├── メンバーC: アーカイブ対象検出 → docs/reports/archive/
-└── メンバーD: ファイル最適化分析 → docs/reports/optimize/
+├── メンバーA: 整合性チェック → docs/sdd/reports/consistency/
+├── メンバーB: 実装同期チェック → docs/sdd/reports/sync/
+├── メンバーC: アーカイブ対象検出 → docs/sdd/reports/archive/
+└── メンバーD: ファイル最適化分析 → docs/sdd/reports/optimize/
 ```
 
 **注意**: レポート作成は並列、修正実行は順次。
@@ -215,7 +215,7 @@ Sonnetモデルを使用してください。
 
 リーダーが自ら実装を始めないよう、Shift+Tabでデリゲートモードに切り替え:
 
-- **リーダーの役割（実装コード変更禁止）**: タスク分配、進捗監視、メンバーの成果レビュー、index.md/TodoWriteの一括更新のみ行う。実装コードや実装ファイルの編集は禁止。ただし、docs/tasks/index.mdやTodoWrite等の管理系更新はリーダーが行う
+- **リーダーの役割（実装コード変更禁止）**: タスク分配、進捗監視、メンバーの成果レビュー、index.md/TodoWriteの一括更新のみ行う。実装コードや実装ファイルの編集は禁止。ただし、docs/sdd/tasks/index.mdやTodoWrite等の管理系更新はリーダーが行う
 - **メンバーの役割**: 割り当てられたタスクの実装、テスト、コミット作成を担当
 
 ### 4. プラン承認を活用

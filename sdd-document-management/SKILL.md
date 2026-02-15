@@ -69,9 +69,9 @@ requirements、design、tasks間の矛盾や不整合を検出します。
 
 完了済みタスクや古い決定事項をアーカイブディレクトリに移動します。
 
-- **完了タスク**: ステータスDONE → docs/archive/tasks/phase-N/
-- **古い決定事項**: 明示的指定 or 一定期間経過 → docs/archive/decisions/
-- **古いトラブルシューティング**: 修正完了 → docs/archive/troubleshooting/
+- **完了タスク**: ステータスDONE → docs/sdd/archive/tasks/phase-N/
+- **古い決定事項**: 明示的指定 or 一定期間経過 → docs/sdd/archive/decisions/
+- **古いトラブルシューティング**: 修正完了 → docs/sdd/archive/troubleshooting/
 - ファイル移動時にインデックス更新と参照のリンク更新を行う
 
 **詳細**: [references/archive_ja.md](references/archive_ja.md)
@@ -107,10 +107,10 @@ SDDドキュメント管理を開始します。
 
 フルスキャンが選択された場合、**必ずエージェントチームを作成**して4機能を並列実行する:
 
-- メンバーA: 整合性チェック → `docs/reports/consistency/`
-- メンバーB: 実装同期チェック → `docs/reports/sync/`
-- メンバーC: アーカイブ対象検出 → `docs/reports/archive/`
-- メンバーD: ファイル最適化分析 → `docs/reports/optimize/`
+- メンバーA: 整合性チェック → `docs/sdd/reports/consistency/`
+- メンバーB: 実装同期チェック → `docs/sdd/reports/sync/`
+- メンバーC: アーカイブ対象検出 → `docs/sdd/reports/archive/`
+- メンバーD: ファイル最適化分析 → `docs/sdd/reports/optimize/`
 
 各メンバーはレポート作成のみ行い、修正は実行しない。リーダーが統合後にユーザー承認を得る。
 
@@ -123,7 +123,7 @@ SDDドキュメント管理を開始します。
 ## 成果物の保存
 
 ```text
-docs/reports/
+docs/sdd/reports/
 ├── consistency/[YYYY-MM-DD].md
 ├── sync/[YYYY-MM-DD].md
 ├── archive/[YYYY-MM-DD].md
@@ -145,10 +145,10 @@ docs/reports/
 
 ```text
 チームリーダー（自らチェックせず、進捗確認・成果統合に専念）
-├── メンバーA: 整合性チェック → docs/reports/consistency/
-├── メンバーB: 実装同期チェック → docs/reports/sync/
-├── メンバーC: アーカイブ対象検出 → docs/reports/archive/
-└── メンバーD: ファイル最適化分析 → docs/reports/optimize/
+├── メンバーA: 整合性チェック → docs/sdd/reports/consistency/
+├── メンバーB: 実装同期チェック → docs/sdd/reports/sync/
+├── メンバーC: アーカイブ対象検出 → docs/sdd/reports/archive/
+└── メンバーD: ファイル最適化分析 → docs/sdd/reports/optimize/
 ```
 
 - レポート作成は並列、修正実行は順次（ファイル競合回避）

@@ -5,7 +5,7 @@
 | 項目 | 内容 |
 |-----|------|
 | 実行日時 | [YYYY-MM-DD HH:MM] |
-| 対象ドキュメント | docs/design/api/, docs/design/database/, docs/design/components/ |
+| 対象ドキュメント | docs/sdd/design/api/, docs/sdd/design/database/, docs/sdd/design/components/ |
 | 対象実装 | [実装ディレクトリ] |
 | 実行者 | [実行者名/AI] |
 
@@ -38,7 +38,7 @@
 
 | 項目 | 内容 |
 |-----|------|
-| ドキュメント | docs/design/api/users.md |
+| ドキュメント | docs/sdd/design/api/users.md |
 | 実装ファイル | src/routes/users.ts |
 | 優先度 | High |
 
@@ -66,7 +66,7 @@
 ```
 
 **推奨アクション**
-- [ ] docs/design/api/users.mdを更新して`createdAt`フィールドを追加
+- [ ] docs/sdd/design/api/users.mdを更新して`createdAt`フィールドを追加
 
 ---
 
@@ -78,7 +78,7 @@
 
 | 項目 | 内容 |
 |-----|------|
-| ドキュメント | docs/design/api/users.md |
+| ドキュメント | docs/sdd/design/api/users.md |
 | 実装ファイル | 該当なし |
 | 優先度 | High |
 
@@ -108,7 +108,7 @@ router.delete('/api/users/:id', async (req, res) => {
 ```
 
 **推奨アクション**
-- [ ] docs/design/api/users.mdにDELETEエンドポイントを追加
+- [ ] docs/sdd/design/api/users.mdにDELETEエンドポイントを追加
 - [ ] または、実装を削除（不要な場合）
 
 ---
@@ -121,7 +121,7 @@ router.delete('/api/users/:id', async (req, res) => {
 
 | 項目 | 内容 |
 |-----|------|
-| ドキュメント | docs/design/database/schema.md |
+| ドキュメント | docs/sdd/design/database/schema.md |
 | 実装ファイル | prisma/schema.prisma |
 | 優先度 | Medium |
 
@@ -133,7 +133,7 @@ router.delete('/api/users/:id', async (req, res) => {
 | updated_at | 未記載 | DateTime @updatedAt |
 
 **推奨アクション**
-- [ ] docs/design/database/schema.mdを更新
+- [ ] docs/sdd/design/database/schema.mdを更新
 
 ---
 
@@ -148,7 +148,7 @@ router.delete('/api/users/:id', async (req, res) => {
 | 優先度 | Medium |
 
 **推奨アクション**
-- [ ] docs/design/database/schema.mdにsessionsテーブルを追加
+- [ ] docs/sdd/design/database/schema.mdにsessionsテーブルを追加
 
 ---
 
@@ -160,7 +160,7 @@ router.delete('/api/users/:id', async (req, res) => {
 
 | 項目 | 内容 |
 |-----|------|
-| ドキュメント | docs/design/components/auth.md |
+| ドキュメント | docs/sdd/design/components/auth.md |
 | 実装ファイル | src/services/AuthService.ts |
 | 優先度 | Medium |
 

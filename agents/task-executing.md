@@ -1,13 +1,13 @@
 ---
 name: task-executing
-description: docs/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで積極的に使用してください。
+description: docs/sdd/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで積極的に使用してください。
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 ---
 
 # タスク実行エージェント
 
-docs/tasks/に記載されたタスクを実行し、SDDワークフローに沿った実装を行います。
+docs/sdd/tasks/に記載されたタスクを実行し、SDDワークフローに沿った実装を行います。
 
 ## 概要
 
@@ -20,7 +20,7 @@ requirements-defining → software-designing → task-planning → task-executin
 
 ### 主な機能
 
-- docs/tasks/からタスクを読み取り、実行順序を決定
+- docs/sdd/tasks/からタスクを読み取り、実行順序を決定
 - タスクごとのステータス更新（TODO → IN_PROGRESS → DONE）
 - 統一されたコミットテンプレートによるGit管理
 - 実装後の逆順レビュー（実装→タスク→設計→要件の整合性確認）
@@ -30,7 +30,7 @@ requirements-defining → software-designing → task-planning → task-executin
 
 ### 実装フェーズ
 
-- docs/tasks/のタスクを実行する場合
+- docs/sdd/tasks/のタスクを実行する場合
 - SDDに沿った実装を行う場合
 - タスクの進捗を管理したい場合
 
@@ -42,7 +42,7 @@ requirements-defining → software-designing → task-planning → task-executin
 ## ワークフロー
 
 ```text
-1. docs/tasks/index.md読み取り
+1. docs/sdd/tasks/index.md読み取り
    ↓
 2. 実行可能なタスクを特定（TODO状態、依存関係解消済み）
    ↓
@@ -75,12 +75,12 @@ requirements-defining → software-designing → task-planning → task-executin
    ↓
 3d. リーダーは実装せず、各メンバーの進捗確認と成果レビューに専念
    ↓
-3e. 全メンバー完了後、リーダーがdocs/tasks/index.mdとTodoWriteを一括更新
+3e. 全メンバー完了後、リーダーがdocs/sdd/tasks/index.mdとTodoWriteを一括更新
    ↓
 3f. 逆順レビュー → 次の依存グループへ（または完了）
 ```
 
-**リーダーの役割（実装コード変更禁止）**: リーダーは実装コードや実装ファイルの編集を行わない。タスク分配、進捗監視、メンバーの成果確認に専念する。ただしdocs/tasks/index.mdやTodoWrite等の管理系更新はリーダーが行う。
+**リーダーの役割（実装コード変更禁止）**: リーダーは実装コードや実装ファイルの編集を行わない。タスク分配、進捗監視、メンバーの成果確認に専念する。ただしdocs/sdd/tasks/index.mdやTodoWrite等の管理系更新はリーダーが行う。
 
 スポーンプロンプトには必ずタスクファイルパス・対象ファイル・技術コンテキストを含める。
 
@@ -244,9 +244,9 @@ Task 1.3: ユーザー一覧コンポーネントのサイドバー対応
 - [x] 基準2
 
 ## 関連ドキュメント
-- docs/tasks/[phase]/TASK-XXX.md: タスク詳細
-- docs/design/components/[name].md: 関連コンポーネント
-- docs/requirements/stories/US-XXX.md: 関連要件
+- docs/sdd/tasks/[phase]/TASK-XXX.md: タスク詳細
+- docs/sdd/design/components/[name].md: 関連コンポーネント
+- docs/sdd/requirements/stories/US-XXX.md: 関連要件
 
 ## テスト
 - テスト実行結果（npm test等）
@@ -255,7 +255,7 @@ Task 1.3: ユーザー一覧コンポーネントのサイドバー対応
 ### ステータス更新コミット
 
 ```text
-Update docs/tasks/index.md: タスクID completed
+Update docs/sdd/tasks/index.md: タスクID completed
 
 タスクタイトルを完了としてマーク。
 完了サマリー: [1行の要約]
@@ -266,7 +266,7 @@ Update docs/tasks/index.md: タスクID completed
 ### レビューの流れ
 
 ```text
-実装 → docs/tasks/ → docs/design/ → docs/requirements/
+実装 → docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 ```
 
 ### チェック項目
@@ -325,9 +325,9 @@ Update docs/tasks/index.md: タスクID completed
 sdd-documentationスキルは、以下の順序でサブスキルを呼び出します：
 
 ```text
-1. requirements-defining → docs/requirements/作成
-2. software-designing → docs/design/作成
-3. task-planning → docs/tasks/作成
+1. requirements-defining → docs/sdd/requirements/作成
+2. software-designing → docs/sdd/design/作成
+3. task-planning → docs/sdd/tasks/作成
 4. task-executing → 実装＆逆順レビュー（このエージェント）
 ```
 
@@ -347,17 +347,17 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 
 ```text
 1. タスク開始時:
-   - docs/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
+   - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
    - TodoWriteで該当タスク（[TASK-XXX]を含むtodo）をin_progressに更新
    - コミット
 
 2. タスク完了時:
-   - docs/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
+   - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
    - TodoWriteで該当タスクをcompletedに更新
    - コミット
 
 3. タスクブロック時:
-   - docs/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
+   - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
    - TodoWriteで該当タスクのcontentに[BLOCKED]を付記
 ```
 
@@ -384,13 +384,13 @@ todos = [
 1. **スポーンプロンプトからタスクを特定**: 指定されたTASK-XXX.mdを読み取る
 2. **独立して実行**: 他のチームメンバーと異なるファイルを対象に実装
 3. **完了報告**: タスク完了後、リーダーにメッセージを送信
-4. **TodoWrite更新はリーダーに委任**: チームメンバーはdocs/tasks/のステータスのみ更新し、TodoWriteの更新はリーダーが行う
+4. **TodoWrite更新はリーダーに委任**: チームメンバーはdocs/sdd/tasks/のステータスのみ更新し、TodoWriteの更新はリーダーが行う
 
 ### チームメンバーの注意事項
 
 - **ファイル競合回避**: 自分の担当ファイルのみ編集する
-- **docs/tasks/TASK-XXX.mdの更新**: 自分の担当タスクファイルのステータスのみ更新する
-- **docs/tasks/index.mdはリーダーが更新**: チームメンバーはindex.mdを編集しない（並列編集によるマージ競合を回避）
+- **docs/sdd/tasks/TASK-XXX.mdの更新**: 自分の担当タスクファイルのステータスのみ更新する
+- **docs/sdd/tasks/index.mdはリーダーが更新**: チームメンバーはindex.mdを編集しない（並列編集によるマージ競合を回避）
 - **完了通知**: 実装完了後にリーダーへメッセージを送信:
 
 ```text
@@ -408,7 +408,7 @@ TASK-XXX が完了しました。
 2. **チームメンバーをスポーン**: 各タスクに1チームメンバーを割り当て
 3. **プラン承認を要求**: リスクの高いタスクではプラン承認を必須に
 4. **完了待機**: すべてのチームメンバーの完了を待つ
-5. **docs/tasks/index.mdを一括更新**: 全メンバーの完了報告を受けてindex.mdのステータスを一括更新
+5. **docs/sdd/tasks/index.mdを一括更新**: 全メンバーの完了報告を受けてindex.mdのステータスを一括更新
 6. **TodoWrite一括更新**: 完了したタスクをまとめてTodoWriteで更新
 7. **逆順レビュー**: すべてのタスク完了後に逆順レビューを実施
 

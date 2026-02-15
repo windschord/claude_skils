@@ -23,7 +23,7 @@
 
 ### 要対応（1000行以上）
 
-#### OPT-001: docs/design/components/auth.md
+#### OPT-001: docs/sdd/design/components/auth.md
 
 | 項目 | 値 |
 |-----|-----|
@@ -64,7 +64,7 @@
 **分割提案**
 
 ```text
-docs/design/components/auth/
+docs/sdd/design/components/auth/
 ├── index.md          # 概要・アーキテクチャ（150行）
 ├── login.md          # ログイン機能（300行）
 ├── logout.md         # ログアウト機能（100行）
@@ -90,14 +90,14 @@ docs/design/components/auth/
 
 | 参照元 | 現在の参照 | 更新後の参照 |
 |--------|-----------|-------------|
-| docs/tasks/phase-1/TASK-005.md | components/auth.md | components/auth/login.md |
-| docs/requirements/stories/US-001.md | components/auth.md | components/auth/index.md |
+| docs/sdd/tasks/phase-1/TASK-005.md | components/auth.md | components/auth/login.md |
+| docs/sdd/requirements/stories/US-001.md | components/auth.md | components/auth/index.md |
 
 ---
 
 ### 注意（500-1000行）
 
-#### OPT-002: docs/tasks/index.md
+#### OPT-002: docs/sdd/tasks/index.md
 
 | 項目 | 値 |
 |-----|-----|
@@ -123,8 +123,8 @@ docs/design/components/auth/
 
 | 項目 | 内容 |
 |-----|------|
-| ファイルA | docs/requirements/stories/US-001.md |
-| ファイルB | docs/design/components/user.md |
+| ファイルA | docs/sdd/requirements/stories/US-001.md |
+| ファイルB | docs/sdd/design/components/user.md |
 | 類似度 | 68% |
 | 重複行数 | 45行 |
 
@@ -162,7 +162,7 @@ docs/design/components/auth/
 
 1. 共通定義ファイルを作成:
    ```text
-   docs/design/common/user-entity.md
+   docs/sdd/design/common/user-entity.md
    ```
 
 2. 各ファイルを参照に変更:
@@ -177,8 +177,8 @@ docs/design/components/auth/
 
 | 項目 | 内容 |
 |-----|------|
-| ファイルA | docs/design/api/users.md |
-| ファイルB | docs/design/components/validation.md |
+| ファイルA | docs/sdd/design/api/users.md |
+| ファイルB | docs/sdd/design/components/validation.md |
 | 類似度 | 42% |
 
 **分析**
@@ -198,13 +198,13 @@ docs/design/components/auth/
 
 | ファイル | 所属インデックス |
 |---------|-----------------|
-| docs/tasks/phase-2/TASK-015.md | docs/tasks/index.md |
-| docs/tasks/phase-2/TASK-016.md | docs/tasks/index.md |
-| docs/design/components/notification.md | docs/design/index.md |
+| docs/sdd/tasks/phase-2/TASK-015.md | docs/sdd/tasks/index.md |
+| docs/sdd/tasks/phase-2/TASK-016.md | docs/sdd/tasks/index.md |
+| docs/sdd/design/components/notification.md | docs/sdd/design/index.md |
 
 **推奨アクション**
-- [ ] docs/tasks/index.mdにTASK-015, TASK-016を追加
-- [ ] docs/design/index.mdにnotification.mdを追加
+- [ ] docs/sdd/tasks/index.mdにTASK-015, TASK-016を追加
+- [ ] docs/sdd/design/index.mdにnotification.mdを追加
 
 ---
 
@@ -214,10 +214,10 @@ docs/design/components/auth/
 
 | 参照 | 所属インデックス |
 |-----|-----------------|
-| docs/design/components/legacy-auth.md | docs/design/index.md |
+| docs/sdd/design/components/legacy-auth.md | docs/sdd/design/index.md |
 
 **推奨アクション**
-- [ ] docs/design/index.mdからlegacy-auth.mdへの参照を削除
+- [ ] docs/sdd/design/index.mdからlegacy-auth.mdへの参照を削除
 
 ---
 
@@ -282,8 +282,8 @@ docs/design/components/auth/
 
 | 対象 | 追加 | 削除 |
 |-----|------|------|
-| docs/tasks/index.md | 2件 | 0件 |
-| docs/design/index.md | 1件 | 1件 |
+| docs/sdd/tasks/index.md | 2件 | 0件 |
+| docs/sdd/design/index.md | 1件 | 1件 |
 
 ### 実行ログ
 

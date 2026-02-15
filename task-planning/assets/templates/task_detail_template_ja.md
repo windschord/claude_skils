@@ -38,11 +38,11 @@
 - `@src/path/to/similar-feature.ts` - [参照理由]
 
 ### 関連する設計書
-- `@docs/design/components/component-a.md` - [関連コンポーネントの設計]
-- `@docs/design/api/endpoint.md` - [関連APIの仕様]
+- `@docs/sdd/design/components/component-a.md` - [関連コンポーネントの設計]
+- `@docs/sdd/design/api/endpoint.md` - [関連APIの仕様]
 
 ### 関連する要件
-- `@docs/requirements/stories/US-XXX.md` - [対応するユーザーストーリー]
+- `@docs/sdd/requirements/stories/US-XXX.md` - [対応するユーザーストーリー]
 
 ---
 

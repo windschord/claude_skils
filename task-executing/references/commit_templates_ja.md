@@ -16,9 +16,9 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 - [x] 基準2
 
 ## 関連ドキュメント
-- docs/tasks/[phase]/TASK-XXX.md: タスク詳細
-- docs/design/components/[name].md: 関連コンポーネント
-- docs/requirements/stories/US-XXX.md: 関連要件
+- docs/sdd/tasks/[phase]/TASK-XXX.md: タスク詳細
+- docs/sdd/design/components/[name].md: 関連コンポーネント
+- docs/sdd/requirements/stories/US-XXX.md: 関連要件
 
 ## テスト
 - テスト実行結果（npm test等）
@@ -43,9 +43,9 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 - [x] ユニットテストが実装され、すべて通過する
 
 ## 関連ドキュメント
-- docs/tasks/phase-1/TASK-001.md: タスク詳細
-- docs/design/components/authentication.md: AuthenticationComponent
-- docs/requirements/stories/US-001.md: REQ-001, REQ-002
+- docs/sdd/tasks/phase-1/TASK-001.md: タスク詳細
+- docs/sdd/design/components/authentication.md: AuthenticationComponent
+- docs/sdd/requirements/stories/US-001.md: REQ-001, REQ-002
 
 ## テスト
 npm test: 15 passed, 0 failed
@@ -54,7 +54,7 @@ npm test: 15 passed, 0 failed
 ## ステータス更新コミット
 
 ```text
-Update tasks.md: タスクID completed
+Update docs/sdd/tasks/index.md: タスクID completed
 
 タスクタイトルを完了としてマーク。
 完了サマリー: [1行の要約]
@@ -63,7 +63,7 @@ Update tasks.md: タスクID completed
 ### ステータス更新コミットの例
 
 ```text
-Update tasks.md: Task 1.1 completed
+Update docs/sdd/tasks/index.md: Task 1.1 completed
 
 ユーザー認証APIエンドポイントの実装を完了としてマーク。
 完了サマリー: POST /api/auth/login, /logoutを実装。JWT認証とbcryptハッシュ化を適用。

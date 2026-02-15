@@ -20,12 +20,12 @@ docsディレクトリを初期化してください
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| requirements-defining | EARS記法による要件定義 | `docs/requirements/` |
-| software-designing | 技術アーキテクチャ設計 | `docs/design/` |
-| task-planning | AIエージェント向けタスク分解 | `docs/tasks/` |
+| requirements-defining | EARS記法による要件定義 | `docs/sdd/requirements/` |
+| software-designing | 技術アーキテクチャ設計 | `docs/sdd/design/` |
+| task-planning | AIエージェント向けタスク分解 | `docs/sdd/tasks/` |
 | task-executing | タスク実行・逆順レビュー | 実装コード |
-| sdd-troubleshooting | 問題分析・修正方針策定 | `docs/troubleshooting/`, `docs/tasks/` |
-| sdd-document-management | ドキュメント管理・メンテナンス | `docs/archive/`, `docs/reports/` |
+| sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, `docs/sdd/tasks/` |
+| sdd-document-management | ドキュメント管理・メンテナンス | `docs/sdd/archive/`, `docs/sdd/reports/` |
 
 **主な機能:**
 
@@ -74,11 +74,11 @@ EARS記法を用いた要件定義書を作成・管理するスキルです。
 
 **作成されるドキュメント:**
 
-- `docs/design/index.md` - 目次・アーキテクチャ概要
-- `docs/design/components/*.md` - コンポーネント詳細
-- `docs/design/api/*.md` - API設計詳細
-- `docs/design/database/schema.md` - データベーススキーマ
-- `docs/design/decisions/DEC-XXX.md` - 技術的決定事項
+- `docs/sdd/design/index.md` - 目次・アーキテクチャ概要
+- `docs/sdd/design/components/*.md` - コンポーネント詳細
+- `docs/sdd/design/api/*.md` - API設計詳細
+- `docs/sdd/design/database/schema.md` - データベーススキーマ
+- `docs/sdd/design/decisions/DEC-XXX.md` - 技術的決定事項
 
 ---
 
@@ -114,12 +114,12 @@ AIエージェント向け実装タスクを作成・管理するスキルです
 または
 
 ```text
-docs/tasks/のタスクを進めてください
+docs/sdd/tasks/のタスクを進めてください
 ```
 
 **主な機能:**
 
-- `docs/tasks/`からのタスク自動読み取り
+- `docs/sdd/tasks/`からのタスク自動読み取り
 - サブエージェントを使用した自動実装
 - 並列実行可能なタスクの並列処理（3つ以上でエージェントチーム使用）
 - タスクごとの自動コミット作成
@@ -145,7 +145,7 @@ docs/tasks/のタスクを進めてください
 3. 仕様との照合（要件定義・設計との乖離を確認）
 4. 修正方針の策定（どう直すか、影響範囲は）
 5. **ユーザー承認（必須ゲート）**
-6. タスク分割して`docs/tasks/`に追加
+6. タスク分割して`docs/sdd/tasks/`に追加
 
 ---
 
@@ -302,7 +302,7 @@ Webサービス/SaaS、EC/マーケットプレイス、金融サービス、メ
 
 ### jules-cli
 
-`docs/tasks/`に記載されたタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです。
+`docs/sdd/tasks/`に記載されたタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです。
 
 **使用開始:**
 
@@ -312,10 +312,10 @@ Webサービス/SaaS、EC/マーケットプレイス、金融サービス、メ
 
 **主な機能:**
 
-- `docs/tasks/`からタスクを読み取り、選択したタスクをJulesに依頼
+- `docs/sdd/tasks/`からタスクを読み取り、選択したタスクをJulesに依頼
 - 日本語でフォーマットされた依頼文の自動生成
 - Julesの進捗状況を追跡・管理
-- 完了したタスクの`docs/tasks/`自動更新
+- 完了したタスクの`docs/sdd/tasks/`自動更新
 - 複数タスクの並行依頼サポート
 
 **前提条件:**

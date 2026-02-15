@@ -4,14 +4,14 @@
 
 | 対象 | 条件 | 移動先 |
 |-----|------|--------|
-| 完了タスク | ステータスがDONE | docs/archive/tasks/phase-N/ |
-| 古い決定事項 | 明示的に指定 or 一定期間経過 | docs/archive/decisions/ |
-| 古いトラブルシューティング | 修正完了から一定期間経過 | docs/archive/troubleshooting/ |
+| 完了タスク | ステータスがDONE | docs/sdd/archive/tasks/phase-N/ |
+| 古い決定事項 | 明示的に指定 or 一定期間経過 | docs/sdd/archive/decisions/ |
+| 古いトラブルシューティング | 修正完了から一定期間経過 | docs/sdd/archive/troubleshooting/ |
 
 ## ディレクトリ構造
 
 ```text
-docs/archive/
+docs/sdd/archive/
 ├── tasks/
 │   ├── phase-1/
 │   └── phase-2/
@@ -22,10 +22,10 @@ docs/archive/
 ## 実行手順
 
 ```text
-1. docs/tasks/からステータスDONEのタスクを検出
+1. docs/sdd/tasks/からステータスDONEのタスクを検出
 2. アーカイブ対象リストを作成
 3. ★ ユーザーに提示し承認を得る ★
-4. 承認されたファイルをdocs/archive/に移動
+4. 承認されたファイルをdocs/sdd/archive/に移動
 5. 移動元のindex.mdを更新
 6. アーカイブのindex.mdを更新
 ```

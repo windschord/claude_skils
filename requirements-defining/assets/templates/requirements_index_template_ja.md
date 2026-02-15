@@ -44,7 +44,7 @@
 ## ドキュメント構成
 
 ```
-docs/requirements/
+docs/sdd/requirements/
 ├── index.md                 # このファイル（目次）
 ├── stories/
 │   ├── US-001.md           # ユーザーストーリー詳細

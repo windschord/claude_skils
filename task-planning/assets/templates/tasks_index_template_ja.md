@@ -95,7 +95,7 @@
 ## ドキュメント構成
 
 ```
-docs/tasks/
+docs/sdd/tasks/
 ├── index.md                 # このファイル（目次）
 ├── phase-1/
 │   ├── TASK-001.md          # タスク詳細

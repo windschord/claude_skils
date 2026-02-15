@@ -29,9 +29,9 @@
 ## 実行手順
 
 ```text
-1. docs/requirements/ のすべてのREQ-XXX、US-XXXをリストアップ
-2. docs/design/ の設計要素と要件の対応を確認
-3. docs/tasks/ のタスクと設計の対応を確認
+1. docs/sdd/requirements/ のすべてのREQ-XXX、US-XXXをリストアップ
+2. docs/sdd/design/ の設計要素と要件の対応を確認
+3. docs/sdd/tasks/ のタスクと設計の対応を確認
 4. 矛盾・不整合をレポートにまとめる
 5. ★ ユーザーに提示し承認を得る ★
 6. 承認された修正を実行

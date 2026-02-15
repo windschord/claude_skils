@@ -103,7 +103,7 @@ graph TD
 ## ドキュメント構成
 
 ```
-docs/design/
+docs/sdd/design/
 ├── index.md                 # このファイル（目次）
 ├── components/
 │   ├── component-a.md       # コンポーネント詳細
