@@ -1,19 +1,19 @@
 ---
 name: jules-cli
-description: docs/sdd/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。
+description: docs/sdd/tasks/に記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にdocs/sdd/tasks/を更新します。
 ---
 
 # Jules CLI統合スキル
 
-docs/sdd/tasks.mdに記載されたタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです。SDDで分割したタスクを効率的にJulesに割り当て、進捗を追跡します。
+docs/sdd/tasks/に記載されたタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです。SDDで分割したタスクを効率的にJulesに割り当て、進捗を追跡します。
 
 ## 概要
 
 このスキルは以下の機能を提供します：
-- docs/sdd/tasks.mdからタスクを読み取り、選択可能なリストを表示
+- docs/sdd/tasks/からタスクを読み取り、選択可能なリストを表示
 - 選択されたタスクを日本語でフォーマットしてJulesに依頼
 - Julesの進捗状況を確認・管理
-- 完了したタスクをtasks.mdで更新
+- 完了したタスクをdocs/sdd/tasks/で更新
 - 複数タスクの並行依頼サポート
 
 ## このスキルを使用する場面
@@ -21,7 +21,7 @@ docs/sdd/tasks.mdに記載されたタスクをGoogleの非同期コーディン
 以下の状況でこのスキルを有効にしてください：
 
 ### タスク実行時
-- docs/sdd/tasks.mdのタスクをJulesに依頼したい場合
+- docs/sdd/tasks/のタスクをJulesに依頼したい場合
 - 長時間かかるタスクを非同期で実行したい場合
 - 複数のタスクを並行して実行したい場合
 - Jules CLIを使った開発ワークフローを構築する場合
@@ -37,8 +37,8 @@ docs/sdd/tasks.mdに記載されたタスクをGoogleの非同期コーディン
 
 「次のタスクをJulesに依頼してください」「タスクをJulesで実行してください」などと依頼されたら：
 
-1. **tasks.mdの読み取り**
-   - docs/sdd/tasks.mdの内容を確認
+1. **docs/sdd/tasks/の読み取り**
+   - docs/sdd/tasks/の内容を確認
    - TODO状態のタスクを特定
    - 依存関係を確認
 
@@ -60,7 +60,7 @@ docs/sdd/tasks.mdに記載されたタスクをGoogleの非同期コーディン
 5. **進捗の追跡**
    - 必要に応じてJulesの進捗を確認
    - 完了したら結果をレビュー
-   - tasks.mdを更新
+   - docs/sdd/tasks/を更新
 
 ## Jules依頼文の原則
 
@@ -230,7 +230,7 @@ jules result <task-id>
 ### 基本的な実行フロー
 
 ```
-1. tasks.mdを読み取る
+1. docs/sdd/tasks/を読み取る
    ↓
 2. TODO状態のタスクをリスト表示
    ↓
@@ -248,7 +248,7 @@ jules result <task-id>
    ↓
 9. 完了したら結果をレビュー
    ↓
-10. tasks.mdを更新（ステータスをIN_PROGRESSまたはREVIEW）
+10. docs/sdd/tasks/を更新（ステータスをIN_PROGRESSまたはREVIEW）
    ↓
 11. レビュー完了後、DONEにマーク
 ```
@@ -258,7 +258,7 @@ jules result <task-id>
 #### ステップ1: タスクの選択
 
 ```
-ファシリテーター: docs/sdd/tasks.mdから実行可能なタスクを確認しました。
+ファシリテーター: docs/sdd/tasks/から実行可能なタスクを確認しました。
                   以下のタスクが利用可能です：
 
                   1. Task 1.1: ユーザー認証APIエンドポイントの実装
@@ -401,13 +401,13 @@ jules result task-abc123
                   テストが通過し、ESLintエラーもゼロです。
                   受入基準をすべて満たしています。
 
-                  tasks.mdを更新してTask 1.1をREVIEWステータスにマークします。
+                  docs/sdd/tasks/を更新してTask 1.1をREVIEWステータスにマークします。
 ```
 
-#### ステップ7: tasks.mdの更新
+#### ステップ7: docs/sdd/tasks/の更新
 
 ```
-# tasks.mdのステータスを更新
+# docs/sdd/tasks/のステータスを更新
 Task 1.1: TODO → IN_PROGRESS（Jules実行中）→ REVIEW（完了、レビュー待ち）→ DONE（承認済み）
 
 更新内容:
@@ -416,7 +416,7 @@ Task 1.1: TODO → IN_PROGRESS（Jules実行中）→ REVIEW（完了、レビ�
 - 完了日時を記録
 ```
 
-## tasks.md更新の原則
+## docs/sdd/tasks/更新の原則
 
 ### 1. ステータス管理
 
@@ -435,7 +435,7 @@ TODO → IN_PROGRESS（Jules実行中）→ REVIEW（完了、レビュー待ち
 
 ### 2. タスク情報の記録
 
-tasks.mdには以下の情報を記録します：
+docs/sdd/tasks/には以下の情報を記録します：
 
 **追加情報**：
 ```markdown
@@ -521,7 +521,7 @@ tasks.mdには以下の情報を記録します：
    - 依存関係を解決
    - jules retry <task-id>
 
-5. tasks.mdを更新
+5. docs/sdd/tasks/を更新
    - ステータスをBLOCKEDに変更
    - エラー内容を記録
 ```
@@ -616,7 +616,7 @@ tasks.mdには以下の情報を記録します：
 
 ### 4. ドキュメントの同期
 
-**tasks.mdを最新に保つ**：
+**docs/sdd/tasks/を最新に保つ**：
 - ステータス変更を即座に反映
 - Jules Task IDを記録
 - 作業時間を記録
@@ -629,7 +629,7 @@ tasks.mdには以下の情報を記録します：
 **禁止事項**：
 - Jules依頼文に絵文字を含めない
 - ユーザーへのメッセージに絵文字を使わない
-- tasks.mdの更新に絵文字を含めない
+- docs/sdd/tasks/の更新に絵文字を含めない
 - コミットメッセージに絵文字を使わない
 
 ## トラブルシューティング

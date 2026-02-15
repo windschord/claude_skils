@@ -54,7 +54,7 @@ npm test: 15 passed, 0 failed
 ## ステータス更新コミット
 
 ```text
-Update tasks.md: タスクID completed
+Update docs/sdd/tasks/index.md: タスクID completed
 
 タスクタイトルを完了としてマーク。
 完了サマリー: [1行の要約]
@@ -63,7 +63,7 @@ Update tasks.md: タスクID completed
 ### ステータス更新コミットの例
 
 ```text
-Update tasks.md: Task 1.1 completed
+Update docs/sdd/tasks/index.md: Task 1.1 completed
 
 ユーザー認証APIエンドポイントの実装を完了としてマーク。
 完了サマリー: POST /api/auth/login, /logoutを実装。JWT認証とbcryptハッシュ化を適用。

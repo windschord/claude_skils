@@ -166,8 +166,8 @@ docs/sdd/requirements/
 
 ## 後続スキルとの連携
 
-requirements.mdの作成完了後：
-- **software-designing**: requirements.mdを基に技術設計を行う
+docs/sdd/requirements/の作成完了後：
+- **software-designing**: docs/sdd/requirements/を基に技術設計を行う
 - **task-planning**: 要件に基づきタスクを分解
 
 後続スキルで整合性の確認が行われます。

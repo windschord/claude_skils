@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "sdd-documentation",
-      "description": "ソフトウェア設計ドキュメント（SDD）を作成・管理・実装します。4つのサブスキル（requirements-defining、software-designing、task-planning、task-executing）を統括し、requirements.md（EARS記法）、design.md（技術設計）、tasks.md（タスク計画）の作成から実装・逆順レビューまでの全工程を管理します。",
+      "description": "ソフトウェア設計ドキュメント（SDD）を作成・管理・実装します。4つのサブスキル（requirements-defining、software-designing、task-planning、task-executing）を統括し、requirements/（EARS記法）、design/（技術設計）、tasks/（タスク計画）の作成から実装・逆順レビューまでの全工程を管理します。",
       "source": "./",
       "strict": false,
       "skills": [
