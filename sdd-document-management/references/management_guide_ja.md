@@ -50,8 +50,8 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 #### 要件カバレッジチェック
 
 ```text
-1. docs/requirements/からすべてのREQ-XXX、US-XXXを抽出
-2. docs/design/からすべての設計要素を抽出
+1. docs/sdd/requirements/からすべてのREQ-XXX、US-XXXを抽出
+2. docs/sdd/design/からすべての設計要素を抽出
 3. 各要件に対応する設計要素をマッピング
 4. マッピングがない要件を「カバレッジ不足」として報告
 ```
@@ -59,7 +59,7 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 #### 過剰設計チェック
 
 ```text
-1. docs/design/からすべての設計要素を抽出
+1. docs/sdd/design/からすべての設計要素を抽出
 2. 各設計要素が参照する要件IDを抽出
 3. 参照がない設計要素を「過剰設計」として報告
 4. ただし、技術的決定（DEC-XXX）は例外とする
@@ -92,8 +92,8 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
   - US-010: 対応する設計要素なし
 
 推奨アクション:
-  - docs/design/components/に対応するコンポーネント設計を追加
-  - docs/design/api/に対応するAPI設計を追加
+  - docs/sdd/design/components/に対応するコンポーネント設計を追加
+  - docs/sdd/design/api/に対応するAPI設計を追加
 ```
 
 #### パターン2: 設計の先行追加
@@ -102,10 +102,10 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 状況: 将来の機能のために設計を先に追加したが、要件を定義していない
 
 検出:
-  - docs/design/components/future-feature.md: 対応する要件なし
+  - docs/sdd/design/components/future-feature.md: 対応する要件なし
 
 推奨アクション:
-  - docs/requirements/に対応する要件を追加
+  - docs/sdd/requirements/に対応する要件を追加
   - または、設計を削除（時期尚早な場合）
 ```
 
@@ -119,7 +119,7 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 
 ```text
 ドキュメント側:
-  - docs/design/api/*.md
+  - docs/sdd/design/api/*.md
   - OpenAPI/Swagger定義ファイル（存在する場合）
 
 実装側（言語別）:
@@ -143,8 +143,8 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 
 ```text
 ドキュメント側:
-  - docs/design/database/*.md
-  - docs/design/database/schema.md
+  - docs/sdd/design/database/*.md
+  - docs/sdd/design/database/schema.md
 
 実装側（ツール別）:
   - Prisma: prisma/schema.prisma
@@ -198,7 +198,7 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 
 ```text
 1. 対象ファイルの検出
-   - docs/tasks/phase-*/TASK-*.md でステータス=DONEを検索
+   - docs/sdd/tasks/phase-*/TASK-*.md でステータス=DONEを検索
    - メタデータから完了日を取得
 
 2. 依存関係の確認
@@ -210,12 +210,12 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
    - 依存関係がある場合は警告
 
 4. ファイル移動
-   - docs/archive/tasks/phase-N/ に移動
+   - docs/sdd/archive/tasks/phase-N/ に移動
    - ディレクトリがなければ作成
 
 5. インデックス更新
-   - docs/tasks/index.md から削除
-   - docs/archive/tasks/index.md に追加（なければ作成）
+   - docs/sdd/tasks/index.md から削除
+   - docs/sdd/archive/tasks/index.md に追加（なければ作成）
 
 6. 参照の更新（オプション）
    - 他ドキュメントの参照を archive/... に変更
@@ -321,11 +321,11 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 
 ```text
 状況:
-  - docs/requirements/stories/US-001.md にユーザー属性定義
-  - docs/design/components/user.md にも同じ定義
+  - docs/sdd/requirements/stories/US-001.md にユーザー属性定義
+  - docs/sdd/design/components/user.md にも同じ定義
 
 対応:
-  1. docs/design/common/user-attributes.md を作成
+  1. docs/sdd/design/common/user-attributes.md を作成
   2. 両ファイルから共通定義を抽出
   3. 各ファイルで参照に変更
 
@@ -420,9 +420,9 @@ SDDワークフローで作成されたドキュメントは、開発が進む�
 
 #### 整合性チェック前
 
-- [ ] docs/requirements/ が最新か確認
-- [ ] docs/design/ が最新か確認
-- [ ] docs/tasks/ が最新か確認
+- [ ] docs/sdd/requirements/ が最新か確認
+- [ ] docs/sdd/design/ が最新か確認
+- [ ] docs/sdd/tasks/ が最新か確認
 - [ ] 未コミットの変更がないか確認
 
 #### アーカイブ前

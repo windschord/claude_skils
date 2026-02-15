@@ -25,7 +25,7 @@
     },
     {
       "name": "task-executing",
-      "description": "docs/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで使用してください。",
+      "description": "docs/sdd/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで使用してください。",
       "source": "./",
       "strict": false,
       "agents": [
@@ -43,7 +43,7 @@
     },
     {
       "name": "jules-cli",
-      "description": "docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。",
+      "description": "docs/sdd/tasks/に記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks/を更新します。",
       "source": "./",
       "strict": false,
       "skills": [

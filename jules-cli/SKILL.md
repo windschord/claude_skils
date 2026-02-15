@@ -1,16 +1,16 @@
 ---
 name: jules-cli
-description: docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。
+description: docs/sdd/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。
 ---
 
 # Jules CLI統合スキル
 
-docs/tasks.mdに記載されたタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです。SDDで分割したタスクを効率的にJulesに割り当て、進捗を追跡します。
+docs/sdd/tasks.mdに記載されたタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです。SDDで分割したタスクを効率的にJulesに割り当て、進捗を追跡します。
 
 ## 概要
 
 このスキルは以下の機能を提供します：
-- docs/tasks.mdからタスクを読み取り、選択可能なリストを表示
+- docs/sdd/tasks.mdからタスクを読み取り、選択可能なリストを表示
 - 選択されたタスクを日本語でフォーマットしてJulesに依頼
 - Julesの進捗状況を確認・管理
 - 完了したタスクをtasks.mdで更新
@@ -21,7 +21,7 @@ docs/tasks.mdに記載されたタスクをGoogleの非同期コーディング�
 以下の状況でこのスキルを有効にしてください：
 
 ### タスク実行時
-- docs/tasks.mdのタスクをJulesに依頼したい場合
+- docs/sdd/tasks.mdのタスクをJulesに依頼したい場合
 - 長時間かかるタスクを非同期で実行したい場合
 - 複数のタスクを並行して実行したい場合
 - Jules CLIを使った開発ワークフローを構築する場合
@@ -38,7 +38,7 @@ docs/tasks.mdに記載されたタスクをGoogleの非同期コーディング�
 「次のタスクをJulesに依頼してください」「タスクをJulesで実行してください」などと依頼されたら：
 
 1. **tasks.mdの読み取り**
-   - docs/tasks.mdの内容を確認
+   - docs/sdd/tasks.mdの内容を確認
    - TODO状態のタスクを特定
    - 依存関係を確認
 
@@ -258,7 +258,7 @@ jules result <task-id>
 #### ステップ1: タスクの選択
 
 ```
-ファシリテーター: docs/tasks.mdから実行可能なタスクを確認しました。
+ファシリテーター: docs/sdd/tasks.mdから実行可能なタスクを確認しました。
                   以下のタスクが利用可能です：
 
                   1. Task 1.1: ユーザー認証APIエンドポイントの実装

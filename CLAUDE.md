@@ -32,9 +32,9 @@ docs/                              # ユーザー向けドキュメント（人�
 
 ```text
 sdd-documentation（オーケストレーター）
-    ├── requirements-defining    → docs/requirements/
-    ├── software-designing       → docs/design/
-    ├── task-planning            → docs/tasks/
+    ├── requirements-defining    → docs/sdd/requirements/
+    ├── software-designing       → docs/sdd/design/
+    ├── task-planning            → docs/sdd/tasks/
     ├── task-executing           → 実装コード（逆順レビュー付き）
     ├── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
     └── sdd-document-management  → ドキュメント管理・メンテナンス（承認フロー付き）
@@ -135,7 +135,7 @@ sdd-documentation（オーケストレーター）
 
 ### タスク同期（TodoWrite連携）
 
-docs/tasks/のタスクとTodoWriteを同期する:
+docs/sdd/tasks/のタスクとTodoWriteを同期する:
 
 | SDD | TodoWrite |
 |-----|-----------|
@@ -145,7 +145,7 @@ docs/tasks/のタスクとTodoWriteを同期する:
 | BLOCKED | pending（[BLOCKED]付記） |
 | REVIEW | in_progress（[REVIEW]付記） |
 
-- **SDDが正**: 詳細仕様はdocs/tasks/に記載
+- **SDDが正**: 詳細仕様はdocs/sdd/tasks/に記載
 - **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載
 
 ## スキル実行のタイムアウト防止

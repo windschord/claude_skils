@@ -5,11 +5,11 @@ SDD（ソフトウェア設計ドキュメント）スキルを使った開発�
 ## ドキュメントの関係性
 
 ```text
-docs/requirements/ (何を作るか)
+docs/sdd/requirements/ (何を作るか)
     ↓ 参照
-docs/design/ (どのように作るか)
+docs/sdd/design/ (どのように作るか)
     ↓ 参照
-docs/tasks/ (どのように実装するか)
+docs/sdd/tasks/ (どのように実装するか)
     ↓ 参照
 実装コード
 ```
@@ -19,7 +19,7 @@ docs/tasks/ (どのように実装するか)
 SDDスキルが生成するドキュメントは以下の構成です:
 
 ```text
-docs/
+docs/sdd/
 ├── requirements/           # 要件定義
 │   ├── index.md           # 目次・概要
 │   ├── stories/           # ユーザーストーリー詳細
@@ -112,7 +112,7 @@ TodoWriteにタスク一覧を同期し、進捗を可視化します。
 タスク→設計→要件の順に整合性をチェックします。
 
 ```text
-docs/tasks/ → docs/design/ → docs/requirements/
+docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 ```
 
 **確認項目:**
@@ -181,7 +181,7 @@ sdd-troubleshootingスキルを使用
 2. **ファイル競合回避**: 各メンバーが異なるファイルセットを所有
 3. **プラン承認**: リスクの高いタスクではプラン承認を要求
 4. **完了待機**: メンバーの完了を待ってから次のフェーズに進む
-5. **タスク同期**: 完了時に`docs/tasks/`とTodoWriteの両方を更新
+5. **タスク同期**: 完了時に`docs/sdd/tasks/`とTodoWriteの両方を更新
 
 ## 情報の明確性（重要原則）
 

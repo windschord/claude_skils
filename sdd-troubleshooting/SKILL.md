@@ -35,13 +35,13 @@ version: "1.0.0"
       ↓
 3. 根本原因の分析（コードを追跡して原因を特定）
       ↓
-4. 仕様との照合（docs/requirements/, docs/design/）
+4. 仕様との照合（docs/sdd/requirements/, docs/sdd/design/）
       ↓
 5. 修正方針の策定（どう直すか、影響範囲は）
       ↓
 6. ★ ユーザー承認 ★（必須ゲート - 承認なしで実装禁止）
       ↓
-7. タスク分割 → docs/tasks/に追加
+7. タスク分割 → docs/sdd/tasks/に追加
 ```
 
 **詳細な分析手法**: [references/analysis_guide_ja.md](references/analysis_guide_ja.md)
@@ -106,8 +106,8 @@ version: "1.0.0"
 
 ### ステップ3: 仕様との照合
 
-- **要件定義との照合**: docs/requirements/を参照
-- **設計との照合**: docs/design/を参照
+- **要件定義との照合**: docs/sdd/requirements/を参照
+- **設計との照合**: docs/sdd/design/を参照
 - **乖離の分類**:
   - 実装バグ（仕様は正しいが実装が間違っている）
   - 仕様バグ（仕様自体に問題がある）
@@ -143,14 +143,14 @@ version: "1.0.0"
 - 適切な粒度（20-40分程度）
 - 1タスク1責務
 - 依存関係を明確化
-- docs/tasks/に追加
+- docs/sdd/tasks/に追加
 
 **タスクテンプレート**: [assets/templates/bugfix_task_template_ja.md](assets/templates/bugfix_task_template_ja.md)
 
 ## 成果物の保存
 
 ```text
-docs/troubleshooting/
+docs/sdd/troubleshooting/
 └── [YYYY-MM-DD]-[issue-name]/
     └── analysis.md
 ```
@@ -161,18 +161,18 @@ docs/troubleshooting/
 
 ```text
 sdd-documentation
-    ├── requirements-defining → docs/requirements/
-    ├── software-designing   → docs/design/
-    ├── task-planning        → docs/tasks/
+    ├── requirements-defining → docs/sdd/requirements/
+    ├── software-designing   → docs/sdd/design/
+    ├── task-planning        → docs/sdd/tasks/
     ├── task-executing       → 実装コード
     └── sdd-troubleshooting  → 問題分析・修正タスク（このスキル）
 ```
 
 連携するドキュメント:
-- **参照**: docs/requirements/（仕様照合用）
-- **参照**: docs/design/（仕様照合用）
-- **更新**: docs/tasks/（修正タスク追加）
-- **作成**: docs/troubleshooting/（分析レポート）
+- **参照**: docs/sdd/requirements/（仕様照合用）
+- **参照**: docs/sdd/design/（仕様照合用）
+- **更新**: docs/sdd/tasks/（修正タスク追加）
+- **作成**: docs/sdd/troubleshooting/（分析レポート）
 
 ## エージェントチームによる並列調査（条件を満たす場合は積極的に使用）
 
@@ -230,10 +230,10 @@ sdd-documentation
 
 ### 修正タスクの同期
 
-sdd-troubleshootingで修正タスクをdocs/tasks/に追加した場合、TodoWriteにも同期します:
+sdd-troubleshootingで修正タスクをdocs/sdd/tasks/に追加した場合、TodoWriteにも同期します:
 
 ```text
-1. 修正タスクをdocs/tasks/に作成
+1. 修正タスクをdocs/sdd/tasks/に作成
 2. TodoWriteに修正タスクをpendingで追加:
    todos = [
      ...既存のtodo...,

@@ -5,7 +5,7 @@
 | 項目 | 内容 |
 |-----|------|
 | 実行日時 | [YYYY-MM-DD HH:MM] |
-| 対象範囲 | docs/requirements/, docs/design/, docs/tasks/ |
+| 対象範囲 | docs/sdd/requirements/, docs/sdd/design/, docs/sdd/tasks/ |
 | 実行者 | [実行者名/AI] |
 
 ## サマリー
@@ -27,13 +27,13 @@
 
 | 要件ID | 要件内容 | ファイル | 優先度 |
 |--------|---------|---------|--------|
-| REQ-XXX | [要件の内容] | docs/requirements/stories/US-XXX.md | High |
-| REQ-YYY | [要件の内容] | docs/requirements/stories/US-YYY.md | Medium |
+| REQ-XXX | [要件の内容] | docs/sdd/requirements/stories/US-XXX.md | High |
+| REQ-YYY | [要件の内容] | docs/sdd/requirements/stories/US-YYY.md | Medium |
 
 #### 推奨アクション
 
-- [ ] REQ-XXX: docs/design/components/に対応するコンポーネント設計を追加
-- [ ] REQ-YYY: docs/design/api/に対応するAPI設計を追加
+- [ ] REQ-XXX: docs/sdd/design/components/に対応するコンポーネント設計を追加
+- [ ] REQ-YYY: docs/sdd/design/api/に対応するAPI設計を追加
 - [ ] または、不要な要件であれば削除を検討
 
 ---
@@ -44,12 +44,12 @@
 
 | 設計要素 | ファイル | 参照要件 | 優先度 |
 |---------|---------|---------|--------|
-| [コンポーネント名] | docs/design/components/xxx.md | なし | Medium |
-| [API名] | docs/design/api/yyy.md | なし | Medium |
+| [コンポーネント名] | docs/sdd/design/components/xxx.md | なし | Medium |
+| [API名] | docs/sdd/design/api/yyy.md | なし | Medium |
 
 #### 推奨アクション
 
-- [ ] [コンポーネント名]: docs/requirements/に対応する要件を追加
+- [ ] [コンポーネント名]: docs/sdd/requirements/に対応する要件を追加
 - [ ] [API名]: 不要な設計であれば削除
 - [ ] 技術的に必要な場合はDEC-XXXとして文書化
 
@@ -61,11 +61,11 @@
 
 | 設計要素 | ファイル | 対応タスク | 優先度 |
 |---------|---------|-----------|--------|
-| [コンポーネント名] | docs/design/components/xxx.md | なし | High |
+| [コンポーネント名] | docs/sdd/design/components/xxx.md | なし | High |
 
 #### 推奨アクション
 
-- [ ] docs/tasks/に対応するタスクを追加
+- [ ] docs/sdd/tasks/に対応するタスクを追加
 - [ ] 実装済みの場合はタスクを作成してDONEにする
 
 ---
@@ -76,8 +76,8 @@
 
 | 参照元 | 参照ID | 状態 | 優先度 |
 |--------|-------|------|--------|
-| docs/tasks/phase-1/TASK-001.md | REQ-999 | 存在しない | Critical |
-| docs/design/components/auth.md | DEC-050 | 存在しない | Critical |
+| docs/sdd/tasks/phase-1/TASK-001.md | REQ-999 | 存在しない | Critical |
+| docs/sdd/design/components/auth.md | DEC-050 | 存在しない | Critical |
 
 #### 推奨アクション
 
@@ -92,8 +92,8 @@
 
 | 用語A | 使用箇所 | 用語B | 使用箇所 | 優先度 |
 |-------|----------|-------|----------|--------|
-| ユーザー | docs/requirements/stories/US-001.md | 利用者 | docs/design/components/user.md | Low |
-| 認証 | docs/requirements/nfr/security.md | ログイン | docs/design/api/auth.md | Low |
+| ユーザー | docs/sdd/requirements/stories/US-001.md | 利用者 | docs/sdd/design/components/user.md | Low |
+| 認証 | docs/sdd/requirements/nfr/security.md | ログイン | docs/sdd/design/api/auth.md | Low |
 
 #### 推奨アクション
 

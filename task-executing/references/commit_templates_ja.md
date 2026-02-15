@@ -16,9 +16,9 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 - [x] 基準2
 
 ## 関連ドキュメント
-- docs/tasks/[phase]/TASK-XXX.md: タスク詳細
-- docs/design/components/[name].md: 関連コンポーネント
-- docs/requirements/stories/US-XXX.md: 関連要件
+- docs/sdd/tasks/[phase]/TASK-XXX.md: タスク詳細
+- docs/sdd/design/components/[name].md: 関連コンポーネント
+- docs/sdd/requirements/stories/US-XXX.md: 関連要件
 
 ## テスト
 - テスト実行結果（npm test等）
@@ -43,9 +43,9 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 - [x] ユニットテストが実装され、すべて通過する
 
 ## 関連ドキュメント
-- docs/tasks/phase-1/TASK-001.md: タスク詳細
-- docs/design/components/authentication.md: AuthenticationComponent
-- docs/requirements/stories/US-001.md: REQ-001, REQ-002
+- docs/sdd/tasks/phase-1/TASK-001.md: タスク詳細
+- docs/sdd/design/components/authentication.md: AuthenticationComponent
+- docs/sdd/requirements/stories/US-001.md: REQ-001, REQ-002
 
 ## テスト
 npm test: 15 passed, 0 failed

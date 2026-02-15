@@ -92,17 +92,17 @@ version: "1.0.0"
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| **requirements-defining** | EARS記法による要件定義 | docs/requirements/ |
-| **software-designing** | 技術アーキテクチャ設計 | docs/design/ |
-| **task-planning** | AIエージェント向けタスク分解 | docs/tasks/ |
+| **requirements-defining** | EARS記法による要件定義 | docs/sdd/requirements/ |
+| **software-designing** | 技術アーキテクチャ設計 | docs/sdd/design/ |
+| **task-planning** | AIエージェント向けタスク分解 | docs/sdd/tasks/ |
 | **task-executing** | タスク実行・逆順レビュー | 実装コード |
-| **sdd-troubleshooting** | 問題分析・修正方針策定 | docs/troubleshooting/, docs/tasks/ |
-| **sdd-document-management** | ドキュメント管理・メンテナンス | docs/archive/, docs/reports/ |
+| **sdd-troubleshooting** | 問題分析・修正方針策定 | docs/sdd/troubleshooting/, docs/sdd/tasks/ |
+| **sdd-document-management** | ドキュメント管理・メンテナンス | docs/sdd/archive/, docs/sdd/reports/ |
 
 ## ドキュメント構成
 
 ```text
-docs/
+docs/sdd/
 ├── requirements/           # 要件定義
 │   ├── index.md           # 目次・概要
 │   ├── stories/US-XXX.md  # ユーザーストーリー詳細
@@ -139,7 +139,7 @@ docs/
 - 逆順レビュー（タスク → 設計 → 要件）を実施したい場合
 
 ### 実装フェーズ
-- docs/tasks/に沿って実装を行う場合
+- docs/sdd/tasks/に沿って実装を行う場合
 - 実装後の逆順レビューが必要な場合
 
 ### トラブルシューティング・デバッグ（必須）
@@ -175,13 +175,13 @@ docs/
 **重要: 各ステップ完了後に必ずユーザーに結果を報告し、承認を得てから次のステップに進むこと。**
 
 ```text
-1. 初期化 → docs/ディレクトリ構造を作成
+1. 初期化 → docs/sdd/ディレクトリ構造を作成
       ↓ ★ ユーザーに報告 ★
-2. requirements-defining → docs/requirements/
+2. requirements-defining → docs/sdd/requirements/
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
-3. software-designing → docs/design/
+3. software-designing → docs/sdd/design/
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
-4. task-planning → docs/tasks/
+4. task-planning → docs/sdd/tasks/
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
 5. エージェントチーム判定（タスク実行フェーズのみ）
       ↓
@@ -223,13 +223,13 @@ docs/
       ↓
 2. 根本原因の分析（コードを追跡して原因を特定）
       ↓
-3. 仕様との照合（docs/requirements/, docs/design/）
+3. 仕様との照合（docs/sdd/requirements/, docs/sdd/design/）
       ↓
 4. 修正方針の策定（どう直すか、影響範囲は）
       ↓
 5. ★ ユーザー承認 ★（必須ゲート - 承認なしで実装禁止）
       ↓
-6. タスク分割 → docs/tasks/に追加
+6. タスク分割 → docs/sdd/tasks/に追加
       ↓
 7. task-executing → 修正実装
 ```
@@ -246,7 +246,7 @@ docs/
 ## 逆順レビュープロセス
 
 ```text
-docs/tasks/ → docs/design/ → docs/requirements/
+docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 ```
 
 詳細なチェック項目は `references/checklist_ja.md` を参照。
@@ -302,7 +302,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 
 ### チーム運用ルール
 
-1. **リーダーは実装禁止**: リーダーは実装コードや実装ファイルの編集を行わない。タスク分配、進捗監視、メンバーの成果レビューに専念する。ただしdocs/tasks/index.mdやTodoWrite等の管理系更新はリーダーが行う
+1. **リーダーは実装禁止**: リーダーは実装コードや実装ファイルの編集を行わない。タスク分配、進捗監視、メンバーの成果レビューに専念する。ただしdocs/sdd/tasks/index.mdやTodoWrite等の管理系更新はリーダーが行う
 2. **ファイル競合回避**: 各チームメンバーが異なるファイルセットを所有
 3. **完了待機**: チームメンバーの完了を待ってから次のフェーズへ
 4. **クリーンアップ**: 作業完了後は必ずリーダーがチームをクリーンアップ
@@ -311,11 +311,11 @@ docs/tasks/ → docs/design/ → docs/requirements/
 
 ## タスク同期プロトコル
 
-docs/tasks/のタスクとTodoWriteを同期し、ユーザーにリアルタイムで進捗を表示します。
+docs/sdd/tasks/のタスクとTodoWriteを同期し、ユーザーにリアルタイムで進捗を表示します。
 
 ### ステータスマッピング
 
-| SDD (docs/tasks/) | TodoWrite |
+| SDD (docs/sdd/tasks/) | TodoWrite |
 |-------------------|-----------|
 | `TODO` | `pending` |
 | `IN_PROGRESS` | `in_progress` |
@@ -323,7 +323,7 @@ docs/tasks/のタスクとTodoWriteを同期し、ユーザーにリアルタイ
 | `BLOCKED` | `pending`（[BLOCKED]付記） |
 | `REVIEW` | `in_progress`（[REVIEW]付記） |
 
-- **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載
+- **SDDが正（Source of Truth）**: 詳細仕様はdocs/sdd/tasks/に記載
 - **TodoWriteは可視化用**: `[TASK-XXX]`形式でcontentに記載
 
 **詳細**: [references/task_sync_guide_ja.md](references/task_sync_guide_ja.md)

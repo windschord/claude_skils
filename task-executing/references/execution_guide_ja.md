@@ -7,9 +7,9 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 ### ステップ1: タスクの読み取りと分析
 
 ```text
-1. docs/tasks/index.mdを読み取る
+1. docs/sdd/tasks/index.mdを読み取る
 2. TODO状態のタスクをフィルタリング
-3. 各タスクの詳細ファイル（docs/tasks/[phase]/TASK-XXX.md）を読み込む
+3. 各タスクの詳細ファイル（docs/sdd/tasks/[phase]/TASK-XXX.md）を読み込む
 4. 各タスクの情報を抽出
    - タスクID
    - タスクタイトル
@@ -50,7 +50,7 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 - 受入基準
 - 技術的文脈
 - 参照すべき既存コード
-- docs/design/、docs/requirements/の関連ファイル
+- docs/sdd/design/、docs/sdd/requirements/の関連ファイル
 
 ### ステップ4: 受入基準の確認
 
@@ -125,11 +125,11 @@ Task 2.1: Dockerコンテナ起動スクリプトの実装
 タスクファイルとindex.mdのステータスを更新：
 
 ```text
-1. タスクファイル（docs/tasks/phase-N/TASK-XXX.md）を編集
+1. タスクファイル（docs/sdd/tasks/phase-N/TASK-XXX.md）を編集
    - ステータスを `DONE` に変更
    - 完了サマリーを追加（実装内容の要約）
 
-2. index.md（docs/tasks/index.md）を編集
+2. index.md（docs/sdd/tasks/index.md）を編集
    - 該当タスクのステータスを `DONE` に変更
    - 進捗サマリーを更新
 
@@ -169,7 +169,7 @@ DONE
 
 ```text
 【並列実行の手順】
-1. docs/tasks/index.mdを分析し、並列実行可能なタスクを特定
+1. docs/sdd/tasks/index.mdを分析し、並列実行可能なタスクを特定
 2. 各タスクの詳細ファイルを読み込む
 3. 各タスクに対してAgentを起動（1つのメッセージで複数のTaskツールを呼び出す）
 4. 各Agentは独立してタスクを実装
@@ -193,7 +193,7 @@ DONE
 
 各Agentには以下の情報を渡します：
 - タスクの詳細（説明、受入基準）
-- 関連するdocs/design/、docs/requirements/の該当ファイル
+- 関連するdocs/sdd/design/、docs/sdd/requirements/の該当ファイル
 - コーディング規約とコミットテンプレート
 - テスト要件（カバレッジ80%以上）
 ```
@@ -243,7 +243,7 @@ Task 1.1: BLOCKED
 ### レビューの流れ
 
 ```text
-実装 → docs/tasks/ → docs/design/ → docs/requirements/
+実装 → docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 ```
 
 ### チェック項目
@@ -281,7 +281,7 @@ Task 1.1: BLOCKED
 【実装 → タスクの不整合】
 1. Task 1.1の受入基準「エラーハンドリングが適切に実装されている」
    が満たされていません。
-   → 400エラー時のレスポンス形式がdocs/design/の仕様と異なります。
+   → 400エラー時のレスポンス形式がdocs/sdd/design/の仕様と異なります。
 
 【タスク → 設計の不整合】
 2. 実装したUserServiceにvalidateEmail()メソッドがありますが、

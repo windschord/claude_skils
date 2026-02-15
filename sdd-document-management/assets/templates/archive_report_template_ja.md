@@ -5,7 +5,7 @@
 | 項目 | 内容 |
 |-----|------|
 | 実行日時 | [YYYY-MM-DD HH:MM] |
-| 対象範囲 | docs/tasks/, docs/design/decisions/, docs/troubleshooting/ |
+| 対象範囲 | docs/sdd/tasks/, docs/sdd/design/decisions/, docs/sdd/troubleshooting/ |
 | 実行者 | [実行者名/AI] |
 
 ## サマリー
@@ -35,9 +35,9 @@
 
 | 移動元 | 移動先 |
 |--------|--------|
-| docs/tasks/phase-1/TASK-001.md | docs/archive/tasks/phase-1/TASK-001.md |
-| docs/tasks/phase-1/TASK-002.md | docs/archive/tasks/phase-1/TASK-002.md |
-| docs/tasks/phase-1/TASK-003.md | docs/archive/tasks/phase-1/TASK-003.md |
+| docs/sdd/tasks/phase-1/TASK-001.md | docs/sdd/archive/tasks/phase-1/TASK-001.md |
+| docs/sdd/tasks/phase-1/TASK-002.md | docs/sdd/archive/tasks/phase-1/TASK-002.md |
+| docs/sdd/tasks/phase-1/TASK-003.md | docs/sdd/archive/tasks/phase-1/TASK-003.md |
 
 ### 参照への影響
 
@@ -45,7 +45,7 @@
 
 | 参照元ファイル | 参照先 | 対応 |
 |---------------|-------|------|
-| docs/design/components/auth.md | TASK-002 | リンク更新が必要 |
+| docs/sdd/design/components/auth.md | TASK-002 | リンク更新が必要 |
 
 **対応オプション**
 - [ ] 参照をarchive/...に自動更新
@@ -72,15 +72,15 @@
 
 | 移動元 | 移動先 |
 |--------|--------|
-| docs/design/decisions/DEC-001.md | docs/archive/decisions/DEC-001.md |
-| docs/design/decisions/DEC-002.md | docs/archive/decisions/DEC-002.md |
+| docs/sdd/design/decisions/DEC-001.md | docs/sdd/archive/decisions/DEC-001.md |
+| docs/sdd/design/decisions/DEC-002.md | docs/sdd/archive/decisions/DEC-002.md |
 
 ### 参照への影響
 
 | 参照元ファイル | 参照先 | 対応 |
 |---------------|-------|------|
-| docs/design/components/auth.md | DEC-001 | リンク更新が必要 |
-| docs/design/database/schema.md | DEC-002 | リンク更新が必要 |
+| docs/sdd/design/components/auth.md | DEC-001 | リンク更新が必要 |
+| docs/sdd/design/database/schema.md | DEC-002 | リンク更新が必要 |
 
 ---
 
@@ -98,7 +98,7 @@
 
 | 移動元 | 移動先 |
 |--------|--------|
-| docs/troubleshooting/2024-01-15-login-bug/ | docs/archive/troubleshooting/2024-01-15-login-bug/ |
+| docs/sdd/troubleshooting/2024-01-15-login-bug/ | docs/sdd/archive/troubleshooting/2024-01-15-login-bug/ |
 
 ---
 
@@ -106,7 +106,7 @@
 
 ### 削除するエントリ
 
-**docs/tasks/index.md**から以下を削除：
+**docs/sdd/tasks/index.md**から以下を削除：
 
 ```markdown
 | TASK-001 | ユーザー認証の実装 | DONE | phase-1 |
@@ -114,7 +114,7 @@
 | TASK-003 | データベース設計の実装 | DONE | phase-1 |
 ```
 
-**docs/design/decisions/index.md**から以下を削除：
+**docs/sdd/design/decisions/index.md**から以下を削除：
 
 ```markdown
 | DEC-001 | 認証方式の選定 | 2024-01-05 |
@@ -123,7 +123,7 @@
 
 ### 追加するエントリ
 
-**docs/archive/tasks/index.md**に以下を追加：
+**docs/sdd/archive/tasks/index.md**に以下を追加：
 
 ```markdown
 ## phase-1
@@ -135,7 +135,7 @@
 | TASK-003 | データベース設計の実装 | 2024-01-15 | [今日の日付] |
 ```
 
-**docs/archive/decisions/index.md**に以下を追加：
+**docs/sdd/archive/decisions/index.md**に以下を追加：
 
 ```markdown
 | ID | 決定内容 | 決定日 | アーカイブ日 |
@@ -191,7 +191,7 @@
 ### 作成されたディレクトリ
 
 ```text
-docs/archive/
+docs/sdd/archive/
 ├── tasks/
 │   └── phase-1/
 ├── decisions/

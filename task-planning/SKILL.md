@@ -11,13 +11,13 @@ version: "1.0.0"
 ## 概要
 
 このスキルは、以下の成果物を作成・管理します：
-- **docs/tasks/index.md**: タスク一覧（目次・進捗サマリ）
-- **docs/tasks/[phase]/TASK-XXX.md**: 個別タスク詳細
+- **docs/sdd/tasks/index.md**: タスク一覧（目次・進捗サマリ）
+- **docs/sdd/tasks/[phase]/TASK-XXX.md**: 個別タスク詳細
 
 ## ドキュメント構成
 
 ```text
-docs/tasks/
+docs/sdd/tasks/
 ├── index.md                 # 目次・進捗サマリ
 ├── phase-1/
 │   ├── TASK-001.md          # タスク詳細
@@ -38,7 +38,7 @@ docs/tasks/
 - 実装の優先順位・依存関係を整理したい場合
 
 ### 既存ドキュメントの修正時
-- docs/tasks/にタスクを追加・修正する場合
+- docs/sdd/tasks/にタスクを追加・修正する場合
 - タスクのステータスを更新する場合
 - 依存関係や見積もりを修正する場合
 
@@ -46,7 +46,7 @@ docs/tasks/
 
 ### 前段スキルとの連携
 
-**docs/requirements/、docs/design/が存在する場合**:
+**docs/sdd/requirements/、docs/sdd/design/が存在する場合**:
 1. 両方のドキュメントを読み込む
 2. タスクが設計・要件と整合しているか確認
 3. 逆順レビュー（タスク → 設計 → 要件）を実施
@@ -160,10 +160,10 @@ docs/tasks/
 
 ### 新規作成フロー
 
-1. **ドキュメント確認**: docs/requirements/、docs/design/を読み込む
+1. **ドキュメント確認**: docs/sdd/requirements/、docs/sdd/design/を読み込む
 2. **情報分類**: 明示された情報と不明な情報を分類
 3. **不明点確認**: 必要な情報をユーザーに確認
-4. **ディレクトリ作成**: `docs/tasks/` 以下にフェーズ別ディレクトリを作成
+4. **ディレクトリ作成**: `docs/sdd/tasks/` 以下にフェーズ別ディレクトリを作成
 5. **index.md作成**: 目次と進捗サマリを記述
 6. **フェーズ分け**: 作業を論理的なフェーズに分割
 7. **タスク分解**: 各フェーズのタスクを `[phase]/TASK-XXX.md` として作成
@@ -182,7 +182,7 @@ docs/tasks/
 ## 逆順レビュープロセス
 
 ```text
-docs/tasks/ → docs/design/ → docs/requirements/
+docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 ```
 
 | チェック | 確認内容 |
@@ -197,7 +197,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 
 タスク計画完了時にTodoWriteへ同期し、ユーザーにリアルタイムで進捗を表示する。
 
-| SDD (docs/tasks/) | TodoWrite |
+| SDD (docs/sdd/tasks/) | TodoWrite |
 |-------------------|-----------|
 | `TODO` | `pending` |
 | `IN_PROGRESS` | `in_progress` |
@@ -205,7 +205,7 @@ docs/tasks/ → docs/design/ → docs/requirements/
 | `BLOCKED` | `pending`（[BLOCKED]付記） |
 | `REVIEW` | `in_progress`（[REVIEW]付記） |
 
-- **SDDが正（Source of Truth）**: 詳細仕様はdocs/tasks/に記載
+- **SDDが正（Source of Truth）**: 詳細仕様はdocs/sdd/tasks/に記載
 - **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載
 
 **詳細**: `sdd-documentation/references/task_sync_guide_ja.md`

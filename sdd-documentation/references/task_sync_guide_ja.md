@@ -2,28 +2,28 @@
 
 ## 概要
 
-SDDスキルで管理する`docs/tasks/`のタスクと、Claude Codeが内部で管理するTodoWriteのタスクを同期するためのガイドです。
+SDDスキルで管理する`docs/sdd/tasks/`のタスクと、Claude Codeが内部で管理するTodoWriteのタスクを同期するためのガイドです。
 
 ### 目的
 
 - **ユーザーへのリアルタイム進捗表示**: TodoWriteによりClaude CodeのUI上でタスクの進捗が見える
-- **詳細仕様の保持**: docs/tasks/には受入基準・TDD手順・技術仕様を記載
+- **詳細仕様の保持**: docs/sdd/tasks/には受入基準・TDD手順・技術仕様を記載
 - **エージェントチームとの連携**: チームメンバーのタスク完了もTodoWriteに反映
 
 ### 原則
 
 ```text
-docs/tasks/ = Source of Truth（正）
+docs/sdd/tasks/ = Source of Truth（正）
 TodoWrite   = 可視化レイヤー（副）
 ```
 
-- 詳細な仕様・受入基準・TDD手順はdocs/tasks/に記載
+- 詳細な仕様・受入基準・TDD手順はdocs/sdd/tasks/に記載
 - TodoWriteはタスクID・タイトル・ステータスのみ管理
 - 同期の方向は常に SDD → TodoWrite（一方向）
 
 ## ステータスマッピング
 
-| SDD (docs/tasks/) | TodoWrite status | TodoWrite表示 |
+| SDD (docs/sdd/tasks/) | TodoWrite status | TodoWrite表示 |
 |-------------------|-----------------|---------------|
 | `TODO` | `pending` | 未着手として表示 |
 | `IN_PROGRESS` | `in_progress` | 実行中として表示 |
@@ -35,14 +35,14 @@ TodoWrite   = 可視化レイヤー（副）
 
 ### 1. タスク計画完了時（task-planning）
 
-docs/tasks/のすべてのタスクをTodoWriteに一括登録します。
+docs/sdd/tasks/のすべてのタスクをTodoWriteに一括登録します。
 
 **トリガー**: task-planningスキルがタスク一覧を作成完了した時点
 
 **手順**:
 
 ```text
-1. docs/tasks/index.mdからタスク一覧を読み取る
+1. docs/sdd/tasks/index.mdからタスク一覧を読み取る
 2. 各タスクのID、タイトル、ステータスを取得
 3. TodoWriteを呼び出して一括登録:
 
@@ -83,8 +83,8 @@ TodoWrite({
 **手順**:
 
 ```text
-1. docs/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
-2. docs/tasks/index.mdを更新
+1. docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
+2. docs/sdd/tasks/index.mdを更新
 3. コミット
 4. TodoWriteで該当タスクをin_progressに更新:
 
@@ -108,8 +108,8 @@ TodoWrite({
 **手順**:
 
 ```text
-1. docs/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
-2. docs/tasks/index.mdを更新
+1. docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
+2. docs/sdd/tasks/index.mdを更新
 3. コミット
 4. TodoWriteで該当タスクをcompletedに更新
 5. 次のタスクがあればin_progressに設定
@@ -122,7 +122,7 @@ TodoWrite({
 **手順**:
 
 ```text
-1. docs/tasks/のステータスをBLOCKEDに更新
+1. docs/sdd/tasks/のステータスをBLOCKEDに更新
 2. TodoWriteで該当タスクのcontentを更新:
 
 content: "[BLOCKED] [Phase-1/TASK-001] ユーザー認証APIの実装"
@@ -131,12 +131,12 @@ status: "pending"
 
 ### 5. トラブルシュートでタスク追加時（sdd-troubleshooting）
 
-**トリガー**: sdd-troubleshootingが修正タスクをdocs/tasks/に追加した時点
+**トリガー**: sdd-troubleshootingが修正タスクをdocs/sdd/tasks/に追加した時点
 
 **手順**:
 
 ```text
-1. docs/tasks/に新規TASK-XXX.mdを作成
+1. docs/sdd/tasks/に新規TASK-XXX.mdを作成
 2. TodoWriteに追加:
    既存のtodoリスト + 新しいtodo:
    { content: "[Phase-N/TASK-XXX] [BugFix] 問題の修正", status: "pending", activeForm: "..." }
@@ -149,7 +149,7 @@ status: "pending"
 **手順**:
 
 ```text
-1. docs/tasks/に新規TASK-XXX.mdを作成
+1. docs/sdd/tasks/に新規TASK-XXX.mdを作成
 2. TodoWriteに追加:
    { content: "[Phase-N/TASK-XXX] [DocFix] ドキュメント修正", status: "pending", activeForm: "..." }
 ```
@@ -179,7 +179,7 @@ status: "pending"
 3. TASK-XXX.mdのステータスをDONEに更新
 4. リーダーに完了メッセージを送信
 
-★ docs/tasks/index.mdの更新はリーダーに委任（マージ競合回避） ★
+★ docs/sdd/tasks/index.mdの更新はリーダーに委任（マージ競合回避） ★
 ★ TodoWriteの更新はリーダーに委任 ★
 ```
 
@@ -238,11 +238,11 @@ content: "[BLOCKED] [Phase-1/TASK-003] 外部API連携の実装"
    ↓
 6. 受入基準の確認
    ↓
-7. docs/tasks/のステータスを更新（SDD = Source of Truth）
+7. docs/sdd/tasks/のステータスを更新（SDD = Source of Truth）
    ↓
 8. コミット作成
    ↓
 9. ★ TodoWrite同期 ★  ← SDD更新・コミット後にTodoWriteへ反映
 ```
 
-**順序の原則**: docs/tasks/（SDD）の更新とコミットを先に行い、その後TodoWriteに反映する。SDDが正であるため、先にSource of Truthを確定させる。
+**順序の原則**: docs/sdd/tasks/（SDD）の更新とコミットを先に行い、その後TodoWriteに反映する。SDDが正であるため、先にSource of Truthを確定させる。
