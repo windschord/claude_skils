@@ -622,7 +622,7 @@ D) すべての視点から並行して分析 ⭐⭐
 
 #### 1. result.md（分析結果）
 
-`templates/result_template.md`を基に、以下の内容を含む分析結果ドキュメントを作成します:
+`assets/templates/result_template.md`を基に、以下の内容を含む分析結果ドキュメントを作成します:
 
 **含まれる内容**:
 - インシデント事象の詳細（発生事象、日時、場所、影響範囲、検知方法）
@@ -644,7 +644,7 @@ D) すべての視点から並行して分析 ⭐⭐
 
 #### 2. log.md（分析ログ）
 
-`templates/log_template.md`を基に、以下の内容を含む会話ログを作成します:
+`assets/templates/log_template.md`を基に、以下の内容を含む会話ログを作成します:
 
 **含まれる内容**:
 - 分析セッション情報（開始/終了日時、分析者名）
@@ -718,7 +718,7 @@ D) すべての視点から並行して分析 ⭐⭐
    ```
 
 3. **log.mdの初期化**
-   - templates/log_template.mdをコピー
+   - assets/templates/log_template.mdをコピー
    - 分析セッション情報を記入
    - 会話の記録を開始
 
@@ -737,7 +737,7 @@ D) すべての視点から並行して分析 ⭐⭐
 #### 分析完了時
 
 6. **result.mdの作成**
-   - templates/result_template.mdを基に作成
+   - assets/templates/result_template.mdを基に作成
    - インシデント事象の詳細を記入
    - 最終的なマインドツリーを挿入
    - 特定された根本原因をすべて記載
