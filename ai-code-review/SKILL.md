@@ -272,7 +272,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
 {
   "id": "F-001",
   "file": "ファイルパス",
-  "line": 行番号,
+  "line": "[行番号]",
   "severity": "critical | warning | suggestion | nitpick",
   "category": "security | docs-drift | readability | library",
   "title": "問題の端的な説明",
