@@ -38,25 +38,22 @@
 - [ ] Request Changes - critical/warningの指摘あり
 - [ ] Comment - suggestionのみ
 
-### 指摘サマリー（人間向け）
+### 主要な指摘
+
+> 詳細はインラインコメントおよびAI向けサマリーを参照してください。
 
 #### Critical
 
-1. **[指摘タイトル]** ([ファイル名]:[行番号])
-   [指摘内容の要約]
+- **[指摘タイトル]** (`[ファイル名]`)
 
 #### Warning
 
-1. **[指摘タイトル]** ([ファイル名]:[行番号])
-   [指摘内容の要約]
+- **[指摘タイトル]** (`[ファイル名]`)
 
-#### Suggestion
-
-1. **[指摘タイトル]** ([ファイル名]:[行番号])
-   [指摘内容の要約]
+※ suggestion / nitpick はインラインコメントのみに記載し、サマリーでは省略する。
 
 <details>
-<summary>AI向けレビューサマリー</summary>
+<summary>AI向けレビューサマリー（構造化データ）</summary>
 
 ```json
 {
@@ -78,13 +75,29 @@
         "category": "security | docs-drift | readability | library",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
-        "fix": "[修正方法]",
+        "fix": {
+          "old_text": "[置換対象のコードテキスト（該当行の正確な文字列）]",
+          "new_text": "[置換後のコードテキスト]",
+          "description": "[old_text/new_textで表現しきれない場合の補足説明（任意）]"
+        },
+        "context": "[該当行の前後3行程度のコード断片（ファイルを読み直さなくても位置特定できるようにする）]",
+        "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
         "rule": "[関連ルール: OWASP-A03, SRP等]"
       }
     ]
   }
 }
 ```
+
+#### findings各フィールドの説明
+
+| フィールド | 説明 |
+|-----------|------|
+| `fix.old_text` | Edit ツールの `old_string` にそのまま渡せる、ファイル内でユニークな置換対象テキスト |
+| `fix.new_text` | Edit ツールの `new_string` にそのまま渡せる置換後テキスト |
+| `fix.description` | テキスト置換だけでは表現できない修正（ファイル追加・削除、設定変更等）の補足説明。`old_text`/`new_text` で十分な場合は省略可 |
+| `context` | 該当行の前後約3行を含むコード断片。行番号のズレがあってもこのコンテキストで正確な位置を特定できる |
+| `scope` | `fix-in-this-pr`: 本PRで修正すべき / `fix-in-follow-up`: 後続PRで対応 / `wont-fix`: 修正不要（理由を `description` に記載） |
 
 </details>
 
@@ -140,7 +153,7 @@
 - [ ] Comment - 新規suggestionのみ
 
 <details>
-<summary>AI向け再レビューサマリー</summary>
+<summary>AI向け再レビューサマリー（構造化データ）</summary>
 
 ```json
 {
@@ -153,7 +166,8 @@
       {
         "id": "F-001",
         "status": "resolved | partially-resolved | unresolved | wont-fix | regressed",
-        "comment": "[確認コメント]"
+        "comment": "[確認コメント]",
+        "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix"
       }
     ],
     "new_findings": [
@@ -165,13 +179,21 @@
         "category": "security | docs-drift | readability | library",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
-        "fix": "[修正方法]",
+        "fix": {
+          "old_text": "[置換対象のコードテキスト]",
+          "new_text": "[置換後のコードテキスト]",
+          "description": "[補足説明（任意）]"
+        },
+        "context": "[該当行の前後3行程度のコード断片]",
+        "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
         "rule": "[関連ルール]"
       }
     ]
   }
 }
 ```
+
+フィールド定義は初回レビューテンプレートと共通。`previous_findings_status` に `scope` を追加し、未修正の指摘に対しても本PRで対応すべきか後続で対応すべきかを明示する。
 
 </details>
 
@@ -188,30 +210,37 @@
 ```markdown
 **[critical]** セキュリティ
 
-SQLインジェクションの脆弱性があります。ユーザー入力が直接SQL文に結合されているため、
-悪意ある入力でデータベースが操作される可能性があります。
-
-修正前:
-`db.query("SELECT * FROM users WHERE id = " + userId)`
-
-修正後（推奨）:
-`db.query("SELECT * FROM users WHERE id = ?", [userId])`
-
-パラメータ化クエリを使用することで、入力値がSQL文の構造を変更できなくなります。
+SQLインジェクションの脆弱性があります。ユーザー入力が直接SQL文に結合されています。
+パラメータ化クエリを使用してください。
 
 <details>
 <summary>AI向け指示</summary>
 
-- file: src/repositories/userRepository.ts
-- line: 42
-- severity: critical
-- category: security
-- issue: SQL injection via string concatenation in user query
-- fix: Replace string concatenation with parameterized query. Change `db.query("SELECT * FROM users WHERE id = " + userId)` to `db.query("SELECT * FROM users WHERE id = ?", [userId])`
-- rule: OWASP-A03 (Injection)
+```json
+{
+  "id": "F-001",
+  "file": "src/repositories/userRepository.ts",
+  "line": 42,
+  "severity": "critical",
+  "category": "security",
+  "title": "SQL injection via string concatenation",
+  "fix": {
+    "old_text": "db.query(\"SELECT * FROM users WHERE id = \" + userId)",
+    "new_text": "db.query(\"SELECT * FROM users WHERE id = ?\", [userId])"
+  },
+  "context": "async findById(userId: string) {\n  // ユーザーをIDで取得\n  const result = await db.query(\"SELECT * FROM users WHERE id = \" + userId)\n  return result.rows[0]\n}",
+  "scope": "fix-in-this-pr",
+  "rule": "OWASP-A03 (Injection)"
+}
+```
 
 </details>
 ```
+
+**テンプレートの設計方針:**
+
+- **人間向け（メインボディ）**: 問題の概要と推奨修正方針を簡潔に記載。詳細なコード差分はAI向けJSONに集約し重複を避ける
+- **AI向け（detailsブロック）**: `fix.old_text`/`fix.new_text`で機械的に修正を適用可能。`context`で正確な位置を特定可能
 
 ---
 

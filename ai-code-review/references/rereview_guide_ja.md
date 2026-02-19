@@ -131,14 +131,18 @@ PRコメントを投稿する前に、以下の手順でユーザーの承認を
 ```markdown
 **[resolved]** 前回指摘 F-001 の修正確認
 
-[修正内容の確認コメント]
+修正を確認しました。[修正内容の簡潔な確認コメント]
 
 <details>
 <summary>AI向け指示</summary>
 
-- finding_id: F-001
-- status: resolved
-- verification: [確認した内容]
+```json
+{
+  "finding_id": "F-001",
+  "status": "resolved",
+  "verification": "[確認した内容]"
+}
+```
 
 </details>
 ```
@@ -148,16 +152,24 @@ PRコメントを投稿する前に、以下の手順でユーザーの承認を
 ```markdown
 **[unresolved]** 前回指摘 F-002 が未修正です
 
-前回指摘した [問題の概要] が修正されていません。
-[再度の修正依頼、必要に応じて補足説明]
+前回指摘した問題が修正されていません。対応をお願いします。
 
 <details>
 <summary>AI向け指示</summary>
 
-- finding_id: F-002
-- status: unresolved
-- original_issue: [元の問題]
-- required_action: [必要な対応]
+```json
+{
+  "finding_id": "F-002",
+  "status": "unresolved",
+  "original_issue": "[元の問題]",
+  "fix": {
+    "old_text": "[現在のコードテキスト]",
+    "new_text": "[修正後のコードテキスト]"
+  },
+  "context": "[該当行の前後3行程度のコード断片]",
+  "scope": "fix-in-this-pr | fix-in-follow-up"
+}
+```
 
 </details>
 ```
@@ -167,25 +179,25 @@ PRコメントを投稿する前に、以下の手順でユーザーの承認を
 ```markdown
 **[regressed]** 前回指摘 F-003 の修正によりリグレッションが発生
 
-前回指摘した [元の問題] は修正されましたが、その修正により [新たな問題] が発生しています。
-
-修正前（前回レビュー時）:
-`元のコード`
-
-現在のコード:
-`修正後のコード`
-
-推奨される修正:
-`正しいコード`
+前回の問題は修正されましたが、その修正により新たな問題が発生しています。
 
 <details>
 <summary>AI向け指示</summary>
 
-- finding_id: F-003
-- status: regressed
-- original_issue: [元の問題]
-- regression: [リグレッションの説明]
-- fix: [正しい修正方法]
+```json
+{
+  "finding_id": "F-003",
+  "status": "regressed",
+  "original_issue": "[元の問題]",
+  "regression": "[リグレッションの説明]",
+  "fix": {
+    "old_text": "[現在のコード（リグレッションを含む）]",
+    "new_text": "[正しい修正後のコード]"
+  },
+  "context": "[該当行の前後3行程度のコード断片]",
+  "scope": "fix-in-this-pr"
+}
+```
 
 </details>
 ```
