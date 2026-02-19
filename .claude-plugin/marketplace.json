@@ -85,6 +85,15 @@
       "skills": [
         "./depth-interviewing-product"
       ]
+    },
+    {
+      "name": "ai-code-review",
+      "description": "指定されたPRをセキュリティ、ドキュメントとの乖離、可読性・複雑度、ライブラリ選定の4観点でレビューし、人間向け・AI向けの2形式でPRにコメントを投稿します。初回レビューおよび修正後の再レビューに対応。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./ai-code-review"
+      ]
     }
   ]
 }
