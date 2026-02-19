@@ -238,21 +238,22 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
 
 ## 指摘の2形式（人間向け・AI向け）
 
-すべてのレビュー指摘は、以下の2形式を併記する。
+すべてのレビュー指摘は、以下の2形式を併記する。**情報の重複を避け、それぞれの形式が固有の価値を持つように分離する。**
 
-### 人間向け形式
+### 人間向け形式（概要・判定に集中）
 
-- 自然言語で問題点と理由を説明
-- 具体的なコード例（修正前 / 修正後）を提示
-- 関連するベストプラクティスやドキュメントへのリンク
+- 問題の概要と推奨修正方針を簡潔に記載
 - なぜ修正すべきかの文脈を提供
+- 詳細なコード差分はAI向けJSONに集約し、人間向けには記載しない
+- サマリーではcritical/warningの指摘タイトルとファイル名のみ列挙（suggestion/nitpickはインラインコメントのみ）
 
-### AI向け形式
+### AI向け形式（機械的修正を可能にする構造化データ）
 
-- 構造化されたメタデータ（JSON風ブロック）
-- ファイルパス、行番号、重大度を機械可読な形式で記載
-- 具体的な修正指示（何をどう変えるか）を明示
-- 関連ルール・パターン名を記載
+- JSON形式で全指摘を構造化
+- `fix.old_text` / `fix.new_text`: Editツールにそのまま渡せる置換テキストペア
+- `context`: 該当行の前後約3行のコード断片（行番号のズレがあっても位置特定可能）
+- `scope`: 本PRで修正すべきか後続対応かの判定（`fix-in-this-pr` / `fix-in-follow-up` / `wont-fix`）
+- `rule`: 関連ルール・パターン名
 
 ### 指摘コメントの書き方
 
@@ -261,25 +262,30 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
 ```markdown
 **[重大度]** 観点名
 
-人間向けの説明をここに書く。
-問題点、理由、推奨修正をわかりやすく説明する。
-
-修正前:
-`問題のあるコード`
-
-修正後（推奨）:
-`改善されたコード`
+問題の概要と修正方針を簡潔に説明する。
+（詳細なコード差分はAI向けJSONに記載するため、ここでは重複させない）
 
 <details>
 <summary>AI向け指示</summary>
 
-- file: ファイルパス
-- line: 行番号（または範囲）
-- severity: critical | warning | suggestion | nitpick
-- category: security | docs-drift | readability | library
-- issue: 問題の端的な説明
-- fix: 具体的な修正内容（コード片を含む）
-- rule: 関連するルールやパターン名（例: OWASP-A03, SRP, etc.）
+```json
+{
+  "id": "F-001",
+  "file": "ファイルパス",
+  "line": "[行番号]",
+  "severity": "critical | warning | suggestion | nitpick",
+  "category": "security | docs-drift | readability | library",
+  "title": "問題の端的な説明",
+  "fix": {
+    "old_text": "置換対象のコードテキスト",
+    "new_text": "置換後のコードテキスト",
+    "description": "補足説明（任意）"
+  },
+  "context": "該当行の前後3行程度のコード断片",
+  "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
+  "rule": "関連するルールやパターン名（例: OWASP-A03, SRP, etc.）"
+}
+```
 
 </details>
 ```
