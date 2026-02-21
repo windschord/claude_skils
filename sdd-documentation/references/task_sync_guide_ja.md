@@ -20,6 +20,51 @@ TodoWrite   = 可視化レイヤー（副）
 - 詳細な仕様・受入基準・TDD手順はdocs/sdd/tasks/に記載
 - TodoWriteはタスクID・タイトル・ステータスのみ管理
 - 同期の方向は常に SDD → TodoWrite（一方向）
+- **非SDDタスクを保持**: TodoWrite更新時、SDDスキル以外で作成されたtodoを上書きしない
+
+## マージプロトコル（非SDDタスクとの共存）
+
+### 背景
+
+Claude Codeはユーザーの指示に応じて自律的にTodoWriteにタスクを作成することがある（SDDスキルを経由しないタスク）。SDDスキルがTodoWriteを同期する際、これらの非SDDタスクを上書きしてはならない。
+
+### 識別ルール
+
+| 種別 | 識別方法 | 例 |
+|------|---------|-----|
+| SDDタスク | contentに`[TASK-`を含む | `[Phase-1/TASK-001] API実装` |
+| 非SDDタスク | contentに`[TASK-`を含まない | `テストを実行する` |
+
+### マージ手順
+
+SDDタスクをTodoWriteに同期する際は、以下の手順に従う:
+
+```text
+1. 現在のTodoWriteリストを確認する（直前のTodoWrite呼び出し内容を参照）
+2. 非SDDタスクを抽出: contentに`[TASK-`を含まないtodoを保持リストに入れる
+3. SDDタスクを構築: docs/sdd/tasks/から最新のタスク一覧を構築
+4. マージして書き込み: 非SDDタスク（保持） + SDDタスク（同期）をTodoWriteに渡す
+```
+
+### マージ例
+
+```text
+TodoWrite更新前:
+  - "調査: 既存APIの仕様を確認する" (pending)    ← 非SDD（保持する）
+  - "[Phase-1/TASK-001] API実装" (pending)       ← SDD
+
+TASK-001のステータスがIN_PROGRESSに変わった場合:
+
+TodoWrite更新後:
+  - "調査: 既存APIの仕様を確認する" (pending)    ← 保持された
+  - "[Phase-1/TASK-001] API実装" (in_progress)   ← 更新された
+```
+
+### 注意事項
+
+- SDDスキルが管理するのはSDDタスク（`[TASK-`を含むtodo）のみ
+- 非SDDタスクのステータスや内容をSDDスキルが変更してはならない
+- 非SDDタスクの順序は保持する（先頭に配置）
 
 ## ステータスマッピング
 
@@ -44,10 +89,14 @@ docs/sdd/tasks/のすべてのタスクをTodoWriteに一括登録します。
 ```text
 1. docs/sdd/tasks/index.mdからタスク一覧を読み取る
 2. 各タスクのID、タイトル、ステータスを取得
-3. TodoWriteを呼び出して一括登録:
+3. 現在のTodoWriteから非SDDタスク（[TASK-を含まないtodo）を抽出して保持
+4. 非SDDタスク + SDDタスクをマージしてTodoWriteに登録:
 
 TodoWrite({
   todos: [
+    // --- 非SDDタスク（既存を保持） ---
+    { content: "調査: 既存仕様の確認", status: "completed", activeForm: "..." },
+    // --- SDDタスク（新規登録） ---
     {
       content: "[Phase-1/TASK-001] ユーザー認証APIの実装",
       status: "pending",
@@ -68,6 +117,7 @@ TodoWrite({
 
 注意: activeFormはin_progress時にUIに表示される。pending登録時はcontentと同等の
 静的な表現を使用し、「〜を実装中」のような進行形はin_progressへの遷移時に設定する。
+非SDDタスクが存在しない場合はSDDタスクのみで構成する。
 ```
 
 **命名規則**:
@@ -97,7 +147,7 @@ TodoWrite({
 })
 ```
 
-**注意**: TodoWriteは全体を置き換えるため、変更対象以外のtodoもすべて含めること。
+**注意**: TodoWriteは全体を置き換えるため、変更対象以外のtodoもすべて含めること。非SDDタスク（`[TASK-`を含まないtodo）が存在する場合もそのまま保持して含めること。
 
 ### 3. タスク完了時（task-executing）
 
@@ -222,6 +272,12 @@ content: "[BLOCKED] [Phase-1/TASK-003] 外部API連携の実装"
 - TodoWriteは全体を置き換える（差分更新ではない）
 - 更新時は既存のtodoリスト全体を渡す必要がある
 - in_progressは同時に1つのみが推奨（ただしチーム実行時は複数可）
+
+### 非SDDタスクの保護
+
+- TodoWrite更新時は、`[TASK-`を含まないtodoを必ず保持すること
+- SDDスキルが管理するのはSDDタスク（`[TASK-`を含むtodo）のみ
+- 非SDDタスクのステータスや内容をSDDスキルが変更してはならない
 
 ### 同期が不要な場面
 

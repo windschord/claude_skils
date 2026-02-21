@@ -325,6 +325,7 @@ docs/sdd/tasks/のタスクとTodoWriteを同期し、ユーザーにリアル�
 
 - **SDDが正（Source of Truth）**: 詳細仕様はdocs/sdd/tasks/に記載
 - **TodoWriteは可視化用**: `[TASK-XXX]`形式でcontentに記載
+- **非SDDタスクを保持**: TodoWrite更新時、`[TASK-`を含まないtodoはそのまま保持する（SDDスキル外で作成されたタスクを上書きしない）
 
 **詳細**: [references/task_sync_guide_ja.md](references/task_sync_guide_ja.md)
 
