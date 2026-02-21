@@ -207,6 +207,7 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 - **SDDが正（Source of Truth）**: 詳細仕様はdocs/sdd/tasks/に記載
 - **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載
+- **非SDDタスクを保持**: TodoWrite同期時、既存の非SDDタスク（contentが`[Phase-`または`[BLOCKED] [Phase-`で始まらないtodo）はそのまま保持する
 
 **詳細**: `sdd-documentation/references/task_sync_guide_ja.md`
 

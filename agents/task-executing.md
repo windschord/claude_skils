@@ -365,12 +365,17 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 
 ```text
 TodoWriteの更新では、既存のtodoリスト全体を渡す。
-対象タスクのstatusのみ変更し、他のタスクはそのまま維持:
+対象タスクのstatusのみ変更し、他のタスクはそのまま維持する。
+非SDDタスク（contentが[Phase-で始まらないtodo）が存在する場合もそのまま保持して含めること。
+SDDスキルが管理するのはSDDタスク（contentが[Phase-または[BLOCKED] [Phase-で始まるtodo）のみ。
 
 todos = [
-  { content: "[TASK-001] 完了タスク", status: "completed", activeForm: "..." },
-  { content: "[TASK-002] 実行中タスク", status: "in_progress", activeForm: "..." },
-  { content: "[TASK-003] 未着手タスク", status: "pending", activeForm: "..." },
+  // --- 非SDDタスク（既存を保持） ---
+  { content: "調査: 既存仕様の確認", status: "completed", activeForm: "..." },
+  // --- SDDタスク ---
+  { content: "[Phase-1/TASK-001] 完了タスク", status: "completed", activeForm: "..." },
+  { content: "[Phase-1/TASK-002] 実行中タスク", status: "in_progress", activeForm: "..." },
+  { content: "[Phase-2/TASK-003] 未着手タスク", status: "pending", activeForm: "..." },
   ...
 ]
 ```
