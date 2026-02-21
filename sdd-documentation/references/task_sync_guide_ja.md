@@ -30,10 +30,14 @@ Claude Codeはユーザーの指示に応じて自律的にTodoWriteにタスク
 
 ### 識別ルール
 
+contentの**先頭パターン**でSDDタスクか非SDDタスクかを判定する:
+
 | 種別 | 識別方法 | 例 |
 |------|---------|-----|
-| SDDタスク | contentに`[TASK-`を含む | `[Phase-1/TASK-001] API実装` |
-| 非SDDタスク | contentに`[TASK-`を含まない | `テストを実行する` |
+| SDDタスク | contentが`[Phase-`または`[BLOCKED] [Phase-`で始まる | `[Phase-1/TASK-001] API実装` |
+| 非SDDタスク | 上記パターンで始まらない | `テストを実行する` |
+
+**注意**: `[TASK-`を含むかどうかではなく、先頭パターンで判定すること。contentの途中に`[TASK-`が含まれる非SDDタスク（例: `Review [TASK-001] implementation`）を誤検知しないため。
 
 ### マージ手順
 
@@ -41,7 +45,7 @@ SDDタスクをTodoWriteに同期する際は、以下の手順に従う:
 
 ```text
 1. 現在のTodoWriteリストを確認する（直前のTodoWrite呼び出し内容を参照）
-2. 非SDDタスクを抽出: contentに`[TASK-`を含まないtodoを保持リストに入れる
+2. 非SDDタスクを抽出: contentが`[Phase-`または`[BLOCKED] [Phase-`で始まらないtodoを保持リストに入れる
 3. SDDタスクを構築: docs/sdd/tasks/から最新のタスク一覧を構築
 4. マージして書き込み: 非SDDタスク（保持） + SDDタスク（同期）をTodoWriteに渡す
 ```
@@ -62,7 +66,7 @@ TodoWrite更新後:
 
 ### 注意事項
 
-- SDDスキルが管理するのはSDDタスク（`[TASK-`を含むtodo）のみ
+- SDDスキルが管理するのはSDDタスク（contentが`[Phase-`または`[BLOCKED] [Phase-`で始まるtodo）のみ
 - 非SDDタスクのステータスや内容をSDDスキルが変更してはならない
 - 非SDDタスクの順序は保持する（先頭に配置）
 
@@ -89,7 +93,7 @@ docs/sdd/tasks/のすべてのタスクをTodoWriteに一括登録します。
 ```text
 1. docs/sdd/tasks/index.mdからタスク一覧を読み取る
 2. 各タスクのID、タイトル、ステータスを取得
-3. 現在のTodoWriteから非SDDタスク（[TASK-を含まないtodo）を抽出して保持
+3. 現在のTodoWriteから非SDDタスク（contentが[Phase-または[BLOCKED] [Phase-で始まらないtodo）を抽出して保持
 4. 非SDDタスク + SDDタスクをマージしてTodoWriteに登録:
 
 TodoWrite({
@@ -147,7 +151,7 @@ TodoWrite({
 })
 ```
 
-**注意**: TodoWriteは全体を置き換えるため、変更対象以外のtodoもすべて含めること。非SDDタスク（`[TASK-`を含まないtodo）が存在する場合もそのまま保持して含めること。
+**注意**: TodoWriteは全体を置き換えるため、変更対象以外のtodoもすべて含めること。非SDDタスク（contentが`[Phase-`で始まらないtodo）が存在する場合もそのまま保持して含めること。
 
 ### 3. タスク完了時（task-executing）
 
@@ -275,8 +279,8 @@ content: "[BLOCKED] [Phase-1/TASK-003] 外部API連携の実装"
 
 ### 非SDDタスクの保護
 
-- TodoWrite更新時は、`[TASK-`を含まないtodoを必ず保持すること
-- SDDスキルが管理するのはSDDタスク（`[TASK-`を含むtodo）のみ
+- TodoWrite更新時は、SDDタスク以外のtodoを必ず保持すること
+- SDDスキルが管理するのはSDDタスク（contentが`[Phase-`または`[BLOCKED] [Phase-`で始まるtodo）のみ
 - 非SDDタスクのステータスや内容をSDDスキルが変更してはならない
 
 ### 同期が不要な場面

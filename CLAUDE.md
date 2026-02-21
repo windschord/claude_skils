@@ -147,7 +147,7 @@ docs/sdd/tasks/のタスクとTodoWriteを同期する:
 
 - **SDDが正**: 詳細仕様はdocs/sdd/tasks/に記載
 - **タスクIDを含める**: `[TASK-XXX]`形式でcontentに記載
-- **非SDDタスクの保持**: TodoWrite更新時、`[TASK-`を含まないtodoはそのまま保持する（SDDスキル外で作成されたタスクを上書きしない）
+- **非SDDタスクの保持**: TodoWrite更新時、contentが`[Phase-`で始まらないtodoはそのまま保持する（SDDスキル外で作成されたタスクを上書きしない）
 
 ## スキル実行のタイムアウト防止
 
