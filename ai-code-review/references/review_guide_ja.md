@@ -96,7 +96,7 @@
 | warning | 同一ファイル内のステータスと受入基準等の論理矛盾 | internal-consistency |
 | warning | 記載された数値・事実が実態と不一致 | internal-consistency |
 | suggestion | ドキュメントの追加・更新が望ましい | docs-drift |
-| nitpick | コメントの誤字・表現の改善 | docs-drift / internal-consistency |
+| nitpick | コメントの誤字・表現の改善 | `docs-drift` または `internal-consistency` |
 
 ## 観点3: 可読性・複雑度
 
