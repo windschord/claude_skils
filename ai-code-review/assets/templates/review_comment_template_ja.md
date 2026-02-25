@@ -28,9 +28,12 @@
 |------|----------|---------|------------|---------|
 | セキュリティ | [N] | [N] | [N] | [N] |
 | ドキュメント乖離 | [N] | [N] | [N] | [N] |
+| 　└ 内部整合性 | [N] | [N] | [N] | [N] |
 | 可読性・複雑度 | [N] | [N] | [N] | [N] |
 | ライブラリ選定 | [N] | [N] | [N] | [N] |
 | **合計** | **[N]** | **[N]** | **[N]** | **[N]** |
+
+※「内部整合性」はドキュメント乖離のサブカテゴリ。「ドキュメント乖離」行には内部整合性を除いた件数を記載し、合計行はすべての行の合算とする（二重カウントしない）。
 
 ### 総合判定
 
@@ -72,7 +75,7 @@
         "file": "[ファイルパス]",
         "line": "[行番号]",
         "severity": "critical | warning | suggestion | nitpick",
-        "category": "security | docs-drift | readability | library",
+        "category": "security | docs-drift | internal-consistency | readability | library",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
         "fix": {
@@ -82,7 +85,8 @@
         },
         "context": "[該当行の前後3行程度のコード断片（ファイルを読み直さなくても位置特定できるようにする）]",
         "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
-        "rule": "[関連ルール: OWASP-A03, SRP等]"
+        "rule": "[関連ルール: OWASP-A03, SRP等]",
+        "verification_hint": "[修正後に確認すべきチェックポイント]"
       }
     ]
   }
@@ -98,6 +102,8 @@
 | `fix.description` | テキスト置換だけでは表現できない修正（ファイル追加・削除、設定変更等）の補足説明。`old_text`/`new_text` で十分な場合は省略可 |
 | `context` | 該当行の前後約3行を含むコード断片。行番号のズレがあってもこのコンテキストで正確な位置を特定できる |
 | `scope` | `fix-in-this-pr`: 本PRで修正すべき / `fix-in-follow-up`: 後続PRで対応 / `wont-fix`: 修正不要（理由を `description` に記載） |
+| `rule` | 指摘の根拠となるルール・パターン名。例: `OWASP-A03`（セキュリティ）、`SRP`（設計原則）、`cyclomatic-complexity`（複雑度）等 |
+| `verification_hint` | 修正Claudeが修正適用後に確認すべきチェックポイント。関連ファイルとの整合性、同一PR内の類似箇所等を記載 |
 
 </details>
 
@@ -142,9 +148,12 @@
 |------|----------|---------|------------|---------|
 | セキュリティ | [N] | [N] | [N] | [N] |
 | ドキュメント乖離 | [N] | [N] | [N] | [N] |
+| 　└ 内部整合性 | [N] | [N] | [N] | [N] |
 | 可読性・複雑度 | [N] | [N] | [N] | [N] |
 | ライブラリ選定 | [N] | [N] | [N] | [N] |
 | **合計** | **[N]** | **[N]** | **[N]** | **[N]** |
+
+※「内部整合性」はドキュメント乖離のサブカテゴリ。「ドキュメント乖離」行には内部整合性を除いた件数を記載し、合計行はすべての行の合算とする（二重カウントしない）。
 
 ### 総合判定
 
@@ -176,7 +185,7 @@
         "file": "[ファイルパス]",
         "line": "[行番号]",
         "severity": "critical | warning | suggestion | nitpick",
-        "category": "security | docs-drift | readability | library",
+        "category": "security | docs-drift | internal-consistency | readability | library",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
         "fix": {
@@ -186,7 +195,8 @@
         },
         "context": "[該当行の前後3行程度のコード断片]",
         "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
-        "rule": "[関連ルール]"
+        "rule": "[関連ルール]",
+        "verification_hint": "[修正後に確認すべきチェックポイント]"
       }
     ]
   }
@@ -230,7 +240,8 @@ SQLインジェクションの脆弱性があります。ユーザー入力が�
   },
   "context": "async findById(userId: string) {\n  // ユーザーをIDで取得\n  const result = await db.query(\"SELECT * FROM users WHERE id = \" + userId)\n  return result.rows[0]\n}",
   "scope": "fix-in-this-pr",
-  "rule": "OWASP-A03 (Injection)"
+  "rule": "OWASP-A03 (Injection)",
+  "verification_hint": "修正後、同リポジトリ内の他のクエリ関数（findByEmail, findAll等）にも同様の文字列結合がないか確認"
 }
 ```
 
@@ -240,7 +251,7 @@ SQLインジェクションの脆弱性があります。ユーザー入力が�
 **テンプレートの設計方針:**
 
 - **人間向け（メインボディ）**: 問題の概要と推奨修正方針を簡潔に記載。詳細なコード差分はAI向けJSONに集約し重複を避ける
-- **AI向け（detailsブロック）**: `fix.old_text`/`fix.new_text`で機械的に修正を適用可能。`context`で正確な位置を特定可能
+- **AI向け（detailsブロック）**: `fix.old_text`/`fix.new_text`で機械的に修正を適用可能。`context`で正確な位置を特定可能。`verification_hint`で修正後のチェックポイントを提示
 
 ---
 
