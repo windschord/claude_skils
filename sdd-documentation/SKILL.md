@@ -252,7 +252,7 @@ Jules CLIが利用可能な場合、以下の戦略でタスクを割り当て�
 │    ローカル向き: 複雑・対話的・環境依存                    │
 │                                                         │
 │  Step 3: 実行方式を決定                                   │
-│    Jules 3+タスク → 複数Julesを同時依頼                   │
+│    Jules 3+タスク → 複数Julesを連続投入し非同期依頼        │
 │    ローカル 3+タスク → Agent Teamsで並列実行               │
 │    ローカル 1-2タスク → Task tool（サブエージェント）      │
 │    混合 → ハイブリッド（Jules + Agent Teams）             │
@@ -260,7 +260,7 @@ Jules CLIが利用可能な場合、以下の戦略でタスクを割り当て�
 │  Step 4: ユーザーにアサイン計画を提示・承認               │
 │                                                         │
 │  Step 5: 実行開始                                        │
-│    Jules: 複数julesコマンドで同時依頼（PRベース）         │
+│    Jules: 複数julesコマンドで連続投入し非同期依頼（PR）   │
 │    ローカル: Agent Teams/Task toolで並列実行              │
 │    リーダー: 進捗監視・PRレビュー・タスク管理             │
 │                                                         │
@@ -376,7 +376,7 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 | サブスキル | チーム利用条件 | Jules CLI利用条件 |
 |-----------|--------------|------------------|
-| **task-executing** | 並列実行可能タスク3つ以上 → チーム作成 | Jules利用可能 → Jules + Agent Teamsのハイブリッド実行 |
+| **task-executing** | 並列実行可能タスク3つ以上 → チーム作成 | Jules利用可能かつ3タスク以上 → Jules + Agent Teamsのハイブリッド実行。Jules利用可能かつ1-2タスク → Jules単体で非同期依頼 |
 | **sdd-troubleshooting** | 原因候補3つ以上 → チームで並列調査 | - |
 | **sdd-document-management** | フルスキャン時 → チームで4機能並列 | - |
 | **逆順レビュー** | 3層すべて存在 → チームで並列レビュー | Jules PR含む場合 → PRの内容もレビュー対象に含める |
