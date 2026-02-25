@@ -84,6 +84,8 @@ PR URLまたは番号を受け取る
    c. 可読性・複雑度
    d. ライブラリ選定の妥当性
       |
+3.5. PR内横断チェック（同一パターンの問題を他ファイルでも確認）
+      |
 4. 指摘の重大度分類と整理
       |
 5. ★ レビュー結果の承認確認 ★（必須ゲート）
@@ -111,6 +113,8 @@ PR URLまたは番号 + 再レビュー指示を受け取る
    b. ドキュメントとの乖離
    c. 可読性・複雑度
    d. ライブラリ選定の妥当性
+      |
+3.5. PR内横断チェック（同一パターンの問題を他ファイルでも確認）
       |
 4. 指摘の重大度分類と整理（前回指摘の修正状況を含む）
       |
@@ -167,7 +171,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/comments
 | ファイル | 対象ファイルパス |
 | 行番号 | 該当行（範囲も可） |
 | 重大度 | critical / warning / suggestion / nitpick |
-| 観点 | security / docs-drift / internal-consistency / readability / library |
+| 観点 | security / docs-drift / internal-consistency / readability / library （※`internal-consistency`は`docs-drift`のサブカテゴリ。詳細は[カテゴリの細分類](#カテゴリの細分類)参照） |
 | 指摘内容 | 何が問題で、なぜ問題なのか |
 | 推奨修正 | どう直すべきか |
 
