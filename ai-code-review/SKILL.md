@@ -167,7 +167,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/comments
 | ファイル | 対象ファイルパス |
 | 行番号 | 該当行（範囲も可） |
 | 重大度 | critical / warning / suggestion / nitpick |
-| 観点 | security / docs-drift / readability / library |
+| 観点 | security / docs-drift / internal-consistency / readability / library |
 | 指摘内容 | 何が問題で、なぜ問題なのか |
 | 推奨修正 | どう直すべきか |
 
