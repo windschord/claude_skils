@@ -51,7 +51,8 @@
 |---------|---------|------|
 | task-executing（3タスク以上、Jules利用可能） | Jules + Agent Teamsハイブリッド | 定型タスクをJulesに非同期委任し、ローカルAgentと並列実行で最大効率 |
 | task-executing（3タスク以上、Jules利用不可） | エージェントチーム | 問題発見時にメンバー間で共有できる |
-| task-executing（1-2タスク） | サブエージェント（Task tool）またはJules単体 | オーバーヘッドが利益を超える |
+| task-executing（1-2タスク、Jules利用可能） | Jules単体で非同期依頼 | チーム不要、PRベースで進捗管理 |
+| task-executing（1-2タスク、Jules利用不可） | サブエージェント（Task tool） | チームのオーバーヘッドが利益を超える |
 | sdd-troubleshooting（3仮説以上） | エージェントチーム | 相互反証が精度を向上させる |
 | sdd-document-management（フルスキャン） | エージェントチーム | 4機能の独立した並列実行に最適 |
 | 逆順レビュー（3層チェック） | エージェントチーム | レイヤー間の発見を共有できる |
@@ -310,13 +311,16 @@ Sonnetモデルを使用してください。
 **依存関係グループの順次進行**:
 
 ```text
-グループA（並列: Jules-1, Jules-2, Agent-1）
+グループA（並列: Jules-1, Jules-2, Jules-3, Agent-1）
   ↓ 全PRマージ + Agent完了
 開発ブランチを最新に更新（git pull）
   ↓
-グループB（並列: Jules-3, Jules-4, Agent-2）
+グループB（並列: Jules-4, Jules-5, Agent-2）
   ↓ 全PRマージ + Agent完了
 逆順レビュー
+
+※ Jules番号はセッション通しの連番。グループBで新たにJulesに依頼する際は
+  グループAの続番（Jules-4〜）を使用する。
 ```
 
 **進捗管理**:
