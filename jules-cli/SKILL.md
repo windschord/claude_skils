@@ -248,7 +248,7 @@ jules result <task-id>
    ↓
 9. 完了したら結果をレビュー
    ↓
-10. docs/sdd/tasks/を更新（ステータスをIN_PROGRESSまたはREVIEW）
+10. docs/sdd/tasks/を更新（ステータスをREVIEWに変更）
    ↓
 11. レビュー完了後、DONEにマーク
 ```
@@ -770,7 +770,7 @@ PR作成先: [開発ブランチ名]
 
 Agent TeamsとJulesを組み合わせたハイブリッド実行の詳細は、以下のリファレンスを参照してください:
 
-- **連携パターン・タスク割り当て判定・実行手順・進捗管理**: [agent_teams_guide_ja.md](../sdd-documentation/references/agent_teams_guide_ja.md) の「Pattern 5: Jules CLI + Agent Teams ハイブリッド」セクション
+- **連携パターン・タスク割り当て判定・実行手順・進捗管理**: [agent_teams_guide_ja.md](../sdd-documentation/references/agent_teams_guide_ja.md) の「パターン5: Jules CLI + Agent Teamsハイブリッド実行」セクション
 
 ## 今後の拡張
 
