@@ -255,6 +255,19 @@ AskUserQuestion:
 +---------------------------------------------------------------+
 ```
 
+```text
++---------------------------------------------------------------+
+| 投稿時の注意事項                                                 |
++---------------------------------------------------------------+
+| - 自身のPRには APPROVE / REQUEST_CHANGES を付与できない           |
+|   → 自身のPRの場合は event を "COMMENT" にフォールバックする      |
+| - commit_id は gh pr view --json headRefOid で取得する          |
+| - body やコメントに JSON コードブロック・特殊文字を含む場合、      |
+|   -f フラグではエスケープ問題が発生しやすいため                   |
+|   --input による JSON ファイル入力を使用する                      |
++---------------------------------------------------------------+
+```
+
 ### ステップ6: PRコメントの投稿
 
 #### サマリーコメント（PR全体に投稿）
@@ -270,14 +283,28 @@ PRのレビュー結果の全体像をサマリーコメントとして投稿す
 投稿方法:
 
 ```bash
-# PRレビューをインラインコメント付きで投稿
+# 1. commit SHA を取得
+COMMIT_SHA=$(gh pr view <PR番号> --json headRefOid --jq '.headRefOid')
+
+# 2. JSONファイルにレビュー内容を書き出す（Write ツール推奨）
+# /tmp/review_body.json に以下の構造で書き出す:
+# {
+#   "commit_id": "<COMMIT_SHA>",
+#   "event": "APPROVE | REQUEST_CHANGES | COMMENT",
+#   "body": "レビュー本文（任意）",
+#   "comments": [
+#     {
+#       "path": "src/example.ts",
+#       "line": 42,
+#       "body": "インラインコメント本文"
+#     }
+#   ]
+# }
+# ※ 自身のPRの場合は event を "COMMENT" にフォールバックすること
+
+# 3. 投稿
 gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
-  --method POST \
-  -f body="レビューサマリー" \
-  -f event="COMMENT" \
-  -f 'comments[0][path]=ファイルパス' \
-  -f 'comments[0][line]=行番号' \
-  -f 'comments[0][body]=コメント本文'
+  --method POST --input /tmp/review_body.json
 ```
 
 ## 指摘の2形式（人間向け・AI向け）
