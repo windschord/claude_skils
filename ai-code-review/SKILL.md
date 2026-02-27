@@ -284,22 +284,23 @@ PRのレビュー結果の全体像をサマリーコメントとして投稿す
 
 ```bash
 # 1. commit SHA を取得
-COMMIT_SHA=$(gh pr view {PR番号} --json headRefOid --jq '.headRefOid')
+COMMIT_SHA=$(gh pr view <PR番号> --json headRefOid --jq '.headRefOid')
 
 # 2. JSONファイルにレビュー内容を書き出す（Write ツール推奨）
 # /tmp/review_body.json に以下の構造で書き出す:
 # {
 #   "commit_id": "<COMMIT_SHA>",
-#   "event": "COMMENT",
-#   "body": "サマリーコメント本文",
+#   "event": "APPROVE | REQUEST_CHANGES | COMMENT",
+#   "body": "レビュー本文（任意）",
 #   "comments": [
 #     {
-#       "path": "ファイルパス",
-#       "line": 行番号(int),
+#       "path": "src/example.ts",
+#       "line": 42,
 #       "body": "インラインコメント本文"
 #     }
 #   ]
 # }
+# ※ 自身のPRの場合は event を "COMMENT" にフォールバックすること
 
 # 3. 投稿
 gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
