@@ -249,7 +249,7 @@ pip-audit --format=json
 bundle-audit check
 
 # Go プロジェクトの場合
-# 前提: Go 1.22以上が必要（go install golang.org/dl/govulncheck@latest）
+# 前提: Go 1.22以上が必要（go install golang.org/x/vuln/cmd/govulncheck@latest）
 govulncheck ./...
 
 # GitHub Advisory Databaseでの確認
