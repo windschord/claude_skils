@@ -31,6 +31,8 @@
 | 　└ 内部整合性 | [N] | [N] | [N] | [N] |
 | 可読性・複雑度 | [N] | [N] | [N] | [N] |
 | ライブラリ選定 | [N] | [N] | [N] | [N] |
+| PR説明の適切性 | [N] | [N] | [N] | [N] |
+| 既知脆弱性の検出 | [N] | [N] | [N] | [N] |
 | **合計** | **[N]** | **[N]** | **[N]** | **[N]** |
 
 ※「内部整合性」はドキュメント乖離のサブカテゴリ。「ドキュメント乖離」行には内部整合性を除いた件数を記載し、合計行はすべての行の合算とする（二重カウントしない）。
@@ -75,7 +77,7 @@
         "file": "[ファイルパス]",
         "line": "[行番号]",
         "severity": "critical | warning | suggestion | nitpick",
-        "category": "security | docs-drift | internal-consistency | readability | library",
+        "category": "security | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
         "fix": {
@@ -151,6 +153,8 @@
 | 　└ 内部整合性 | [N] | [N] | [N] | [N] |
 | 可読性・複雑度 | [N] | [N] | [N] | [N] |
 | ライブラリ選定 | [N] | [N] | [N] | [N] |
+| PR説明の適切性 | [N] | [N] | [N] | [N] |
+| 既知脆弱性の検出 | [N] | [N] | [N] | [N] |
 | **合計** | **[N]** | **[N]** | **[N]** | **[N]** |
 
 ※「内部整合性」はドキュメント乖離のサブカテゴリ。「ドキュメント乖離」行には内部整合性を除いた件数を記載し、合計行はすべての行の合算とする（二重カウントしない）。
@@ -185,7 +189,7 @@
         "file": "[ファイルパス]",
         "line": "[行番号]",
         "severity": "critical | warning | suggestion | nitpick",
-        "category": "security | docs-drift | internal-consistency | readability | library",
+        "category": "security | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
         "fix": {

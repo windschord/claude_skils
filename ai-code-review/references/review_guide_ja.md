@@ -1,6 +1,6 @@
 # レビューガイドライン
 
-4つのレビュー観点それぞれの詳細なチェック項目と判断基準です。
+6つのレビュー観点それぞれの詳細なチェック項目と判断基準です。
 
 ## 観点1: セキュリティ
 
@@ -178,6 +178,101 @@
 | warning | 標準ライブラリで代替可能な外部依存 |
 | suggestion | より良い代替ライブラリの提案 |
 | nitpick | バージョン固定の推奨 |
+
+## 観点5: PR説明の適切性
+
+### チェック項目
+
+#### PRタイトルの適切性
+
+- PRタイトルが変更内容を正確かつ簡潔に表現しているか
+- タイトルが曖昧すぎないか（例: 「修正」「更新」「対応」だけでは不十分）
+- タイトルがdiffの実際の変更範囲と一致しているか（タイトルではA機能の変更を謳っているが実際にはB機能も変更している等）
+- プロジェクトのPRタイトル命名規則（Conventional Commits等）に従っているか
+
+#### PR説明文の適切性
+
+- 変更の目的・背景（Why）が説明されているか
+- 変更の概要（What）が実際のdiffと一致しているか
+- 説明文に記載された変更内容が過不足なく実際の変更を反映しているか
+- 説明文で言及されているファイルや機能が実際に変更されているか（逆も確認）
+- 関連するIssue番号やチケットへのリンクがあるか（プロジェクトで必要な場合）
+
+#### レビュアー向け情報の充実度
+
+- テスト方法や動作確認手順が記載されているか（必要な場合）
+- Breaking Changesがある場合、明記されているか
+- マイグレーション手順が必要な場合、記載されているか
+- スクリーンショットやGIF等が添付されているか（UI変更の場合）
+
+### 重大度の判定基準
+
+| 重大度 | 条件 |
+|--------|------|
+| warning | PRタイトル・説明文が実際の変更内容と矛盾している（レビュアーが変更を誤解する可能性がある） |
+| warning | 重要な変更（Breaking Changes、セキュリティ修正等）が説明文に記載されていない |
+| suggestion | 説明文が不十分で、レビュアーがdiffだけでは変更の意図を理解しにくい |
+| suggestion | テスト手順や動作確認方法の追記が望ましい |
+| nitpick | タイトルの表現改善、説明文のフォーマット改善 |
+
+## 観点6: 既知脆弱性の検出
+
+### チェック項目
+
+#### 依存パッケージの脆弱性スキャン
+
+- 追加・更新されたパッケージに既知のCVE（Common Vulnerabilities and Exposures）が報告されていないか
+- lockfileに含まれる間接依存（transitive dependencies）にも脆弱性がないか
+- 脆弱性の重大度（Critical, High, Medium, Low）を確認する
+
+#### 脆弱性情報の確認方法
+
+```bash
+# npm プロジェクトの場合
+npm audit --json
+
+# yarn プロジェクトの場合
+yarn audit --json
+
+# pnpm プロジェクトの場合
+pnpm audit --json
+
+# Python プロジェクトの場合（pip-auditがインストール済みの場合）
+pip-audit --format=json
+
+# Ruby プロジェクトの場合（bundler-auditがインストール済みの場合）
+bundle-audit check
+
+# Go プロジェクトの場合
+govulncheck ./...
+
+# GitHub Advisory Databaseでの確認
+gh api graphql -f query='{ securityVulnerabilities(first: 5, ecosystem: NPM, package: "パッケージ名") { nodes { advisory { summary severity publishedAt } vulnerableVersionRange firstPatchedVersion { identifier } } } }'
+```
+
+#### 既存依存関係のバージョン確認
+
+- PRで直接変更されていなくても、lockfileの更新に伴い脆弱なバージョンに固定されていないか
+- 既に脆弱性が報告されているバージョンを使い続けていないか（特にPRで依存関係ファイルが変更されている場合）
+- パッチが公開されている脆弱性に対して、アップデートが可能か
+
+#### セキュリティアドバイザリの確認
+
+- GitHub Security Advisories（GHSA）で報告された脆弱性がないか
+- NVD（National Vulnerability Database）に登録されたCVEがないか
+- 使用パッケージのリポジトリにセキュリティに関するIssue/PRが報告されていないか
+
+### 重大度の判定基準
+
+| 重大度 | 条件 |
+|--------|------|
+| critical | CVSS スコア 9.0以上（Critical）の脆弱性を持つバージョンを使用。パッチ済みバージョンが存在する |
+| critical | リモートコード実行（RCE）、認証バイパス等の深刻な脆弱性が報告されたバージョンを使用 |
+| warning | CVSS スコア 7.0〜8.9（High）の脆弱性。パッチ済みバージョンが存在する |
+| warning | 脆弱性が報告されているがパッチ未公開。回避策（workaround）が存在する |
+| suggestion | CVSS スコア 4.0〜6.9（Medium）の脆弱性。影響範囲が限定的 |
+| suggestion | 脆弱性が報告されているがプロジェクトの利用形態では影響を受けない可能性が高い |
+| nitpick | CVSS スコア 3.9以下（Low）の脆弱性。実質的なリスクが極めて低い |
 
 ## 根拠の裏取り（必須）
 
