@@ -218,6 +218,8 @@
 
 ## 観点6: 既知脆弱性の検出
 
+> **観点1（セキュリティ）との責務分担**: 観点1はコード自体のセキュリティ問題（認証・認可、入力検証、秘密情報管理等）を扱う。本観点は依存パッケージのバージョンに紐づく既知のCVE/セキュリティアドバイザリの検出に特化する。観点4（ライブラリ選定）のセキュリティ対応姿勢の評価とも異なり、本観点では具体的なバージョンと脆弱性の照合を行う。
+
 ### チェック項目
 
 #### 依存パッケージの脆弱性スキャン
@@ -238,18 +240,23 @@ yarn audit --json
 # pnpm プロジェクトの場合
 pnpm audit --json
 
-# Python プロジェクトの場合（pip-auditがインストール済みの場合）
+# Python プロジェクトの場合
+# 前提: pip-audit が事前インストール済みであること（pip install pip-audit）
 pip-audit --format=json
 
-# Ruby プロジェクトの場合（bundler-auditがインストール済みの場合）
+# Ruby プロジェクトの場合
+# 前提: bundler-audit が事前インストール済みであること（gem install bundler-audit）
 bundle-audit check
 
 # Go プロジェクトの場合
+# 前提: Go 1.22以上が必要（go install golang.org/dl/govulncheck@latest）
 govulncheck ./...
 
 # GitHub Advisory Databaseでの確認
 gh api graphql -f query='{ securityVulnerabilities(first: 5, ecosystem: NPM, package: "パッケージ名") { nodes { advisory { summary severity publishedAt } vulnerableVersionRange firstPatchedVersion { identifier } } } }'
 ```
+
+> **注**: 上記コマンドが利用できない環境では、GitHub Advisory Database（`gh api`）やNVDの公開APIで代替確認を行うこと。
 
 #### 既存依存関係のバージョン確認
 
@@ -273,7 +280,7 @@ gh api graphql -f query='{ securityVulnerabilities(first: 5, ecosystem: NPM, pac
 | warning | 脆弱性が報告されているがパッチ未公開。回避策（workaround）が存在する |
 | suggestion | CVSS スコア 4.0〜6.9（Medium）の脆弱性。影響範囲が限定的 |
 | suggestion | 脆弱性が報告されているがプロジェクトの利用形態では影響を受けない可能性が高い |
-| nitpick | CVSS スコア 3.9以下（Low）の脆弱性。実質的なリスクが極めて低い |
+| nitpick | CVSS スコア 0.1〜3.9（Low）の脆弱性。実質的なリスクが極めて低い |
 
 ## 根拠の裏取り（必須）
 
