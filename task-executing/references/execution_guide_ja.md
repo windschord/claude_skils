@@ -162,10 +162,11 @@ DONE
 - 依存関係フィールドが空、または「なし」
 - 前提となるタスクがすべて完了済み
 - 並列実行可能なタスクが2つ以上ある
+- 同一ファイルを変更する可能性が低い（高い場合は統合時コンフリクト多発のため順次実行を推奨）
 
 ### Agent toolによる並列実装
 
-**重要**: 並列実行可能なタスクは、Agent tool（`subagent_type: general-purpose`, `isolation: worktree`）を使用して同時に実装を進めます。`isolation: worktree`により各サブエージェントが独立したgit worktreeで動作するため、**ファイル競合を自動回避**できます。
+**重要**: 並列実行可能なタスクは、Agent tool（`subagent_type: general-purpose`, `isolation: worktree`）を使用して同時に実装を進めます。`isolation: worktree`により各サブエージェントが独立したgit worktreeで動作するため、**並行作業中の上書き衝突を防止**できます。ただし統合時にマージコンフリクトが発生する場合は手動解決が必要です。
 
 ```text
 【並列実行の手順】
