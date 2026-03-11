@@ -155,56 +155,114 @@ DONE
 
 実装→タスク→設計→要件の整合性を確認。
 
-## 並列実行（Agentベース）
+## 並列実行（Agent tool + isolation: worktree）
 
 ### 並列実行の条件
 
 - 依存関係フィールドが空、または「なし」
 - 前提となるタスクがすべて完了済み
-- 異なるファイル・コンポーネントを対象とする
+- 並列実行可能なタスクが2つ以上ある
+- 同一ファイルを変更する可能性が低い（高い場合は統合時コンフリクト多発のため順次実行を推奨）
 
-### Agentによる並列実装
+### Agent toolによる並列実装
 
-**重要**: 並列実行可能なタスクは、Taskツール（subagent_type=general-purpose）を使用して同時に実装を進めます。
+**重要**: 並列実行可能なタスクは、Agent tool（`subagent_type: general-purpose`, `isolation: worktree`）を使用して同時に実装を進めます。`isolation: worktree`により各サブエージェントが独立したgit worktreeで動作するため、**並行作業中の上書き衝突を防止**できます。ただし統合時にマージコンフリクトが発生する場合は手動解決が必要です。
 
 ```text
 【並列実行の手順】
 1. docs/sdd/tasks/index.mdを分析し、並列実行可能なタスクを特定
 2. 各タスクの詳細ファイルを読み込む
-3. 各タスクに対してAgentを起動（1つのメッセージで複数のTaskツールを呼び出す）
-4. 各Agentは独立してタスクを実装
-5. すべてのAgentが完了後、結果を統合
-6. 逆順レビューを実施
+3. 1つのメッセージで複数のAgent toolを呼び出す（isolation: worktree指定）
+4. 各サブエージェントは独立したworktreeで実装
+5. すべてのサブエージェント完了後、worktreeの変更をマージ
+6. 統合テストを実行
+7. docs/sdd/tasks/index.md + TodoWriteを一括更新
+8. 逆順レビューを実施
 ```
 
-### Agent起動の例
+### Agent tool呼び出しの例
 
 ```text
-以下のタスクを並列で実行します：
+1つのメッセージ内で以下の3つのAgent toolを同時に呼び出します:
 
-【Task 1.1】ユーザー認証APIの実装
-→ Agent 1を起動
+【Agent tool 呼び出し1】
+  subagent_type: general-purpose
+  isolation: worktree
+  prompt: |
+    以下のSDDタスクを実装してください。
 
-【Task 1.2】ユーザー登録APIの実装
-→ Agent 2を起動
+    ## タスク情報
+    タスクID: TASK-001
+    タイトル: ユーザー認証APIの実装
+    [TASK-001.mdの完全な内容をここに展開]
 
-【Task 1.3】パスワードリセットAPIの実装
-→ Agent 3を起動
+    ## 参照ドキュメント
+    設計: docs/sdd/design/components/auth-service.md
+    要件: docs/sdd/requirements/stories/US-001.md
 
-各Agentには以下の情報を渡します：
-- タスクの詳細（説明、受入基準）
-- 関連するdocs/sdd/design/、docs/sdd/requirements/の該当ファイル
-- コーディング規約とコミットテンプレート
-- テスト要件（カバレッジ80%以上）
+    ## 実装ルール
+    - タスクファイルのTDD手順に従う
+    - 受入基準をすべて満たす
+    - テストを実装し、すべて通過させる
+    - 完了後にコミット作成（feat(auth): implement login endpoint [TASK-001]）
+
+【Agent tool 呼び出し2】
+  subagent_type: general-purpose
+  isolation: worktree
+  prompt: |
+    ## タスク情報
+    タスクID: TASK-002
+    タイトル: ユーザー登録APIの実装
+    [TASK-002.mdの完全な内容をここに展開]
+    ...（同様の構造）
+
+【Agent tool 呼び出し3】
+  subagent_type: general-purpose
+  isolation: worktree
+  prompt: |
+    ## タスク情報
+    タスクID: TASK-003
+    タイトル: パスワードリセットAPIの実装
+    [TASK-003.mdの完全な内容をここに展開]
+    ...（同様の構造）
 ```
 
-### Agent実行時の注意事項
+### バックグラウンド実行
 
-1. **コンテキストの共有**: 各Agentに十分な情報を渡す
-2. **ファイル競合の回避**: 異なるファイルを対象とするタスクのみ並列化
-3. **コミット順序**: 各Agent完了後、メインプロセスで順次コミット
-4. **エラーハンドリング**: 1つのAgentが失敗しても他のAgentは継続
-5. **結果の検証**: すべてのAgent完了後にテストを実行
+長時間かかるタスクは`run_in_background: true`で起動し、完了時に自動通知を受け取る:
+
+```text
+【Agent tool 呼び出し（バックグラウンド）】
+  subagent_type: general-purpose
+  isolation: worktree
+  run_in_background: true
+  prompt: |
+    ...（通常と同じプロンプト）
+```
+
+### 結果統合のフロー
+
+```text
+1. 各サブエージェントの完了を確認
+2. worktreeに変更がある場合:
+   - worktreeのブランチ名が返される
+   - git merge <worktree-branch> でメインに統合
+   - コンフリクトがあれば手動解決
+3. worktreeに変更がない場合:
+   - worktreeは自動クリーンアップ済み
+4. 統合テストを実行（全タスクの変更が正しく連携するか確認）
+5. docs/sdd/tasks/index.mdを一括更新
+6. TodoWriteを同期
+7. 逆順レビューを実施
+```
+
+### Agent tool実行時の注意事項
+
+1. **十分なコンテキスト**: タスクファイルの完全な内容（パスだけでなく中身）をプロンプトに含める
+2. **worktreeによる作業分離**: `isolation: worktree`により並行作業中の上書き衝突を防止できるが、統合時にマージコンフリクトが発生する場合は手動解決が必要
+3. **結果統合**: 完了後にworktreeの変更をメインブランチにマージ
+4. **エラーハンドリング**: 1つのサブエージェントが失敗しても他は継続。成功分は先にマージ
+5. **統合テスト**: すべてのマージ完了後に統合テストを実行
 
 ## エラーハンドリング
 
@@ -497,9 +555,9 @@ Julesで実行したタスクには、進行に応じて段階的に情報を追
 └─────────────────────────────────────────────────────────┘
 ```
 
-### Jules + Agent Teams連携パターン
+### Jules + Agent tool並列実行の連携パターン
 
-エージェントチームとJulesを組み合わせて最大効率を実現するパターン:
+Agent tool並列実行とJulesを組み合わせて最大効率を実現するパターン:
 
 ```text
 チームリーダー（オーケストレーター）
