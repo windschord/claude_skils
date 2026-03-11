@@ -240,7 +240,7 @@ docs/sdd/
 
 ### 概要
 
-SDDワークフローの特定フェーズでAgent tool（`isolation: worktree`）を活用し、並列作業で効率を向上させます。各サブエージェントが独立したgit worktreeで動作するため、ファイル競合を自動回避できます。
+SDDワークフローの特定フェーズでAgent tool（`isolation: worktree`）を活用し、並列作業で効率を向上させます。各サブエージェントが独立したgit worktreeで動作するため、作業中の上書き衝突を防止できます。ただしブランチ統合時にはマージコンフリクトが発生し得るため、必要に応じて手動解決が必要です。
 
 ### 並列処理活用タイミング
 
@@ -323,4 +323,4 @@ docs/sdd/tasks/のタスクとClaude CodeのTodoWriteを同期し、ユーザー
 5. **TDDを遵守**: タスクには必ずテスト手順を含める
 6. **TodoWriteを同期**: タスク状態変更時は必ずTodoWriteも更新
 7. **並列処理を積極的に活用**: 並列化可能な作業はAgent tool（`isolation: worktree`）で効率化
-8. **worktreeで自動隔離**: `isolation: worktree`によりファイル競合を自動回避
+8. **worktreeで作業分離**: `isolation: worktree`により並行作業中の上書き衝突を防止（統合時のコンフリクトは手動解決）
