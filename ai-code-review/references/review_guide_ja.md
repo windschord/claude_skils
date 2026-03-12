@@ -98,7 +98,7 @@ Azure [サービス名] RBAC roles permissions site:learn.microsoft.com
 - **不足している権限**:
   - リソースが必要とする操作に対応するアクションが不足していないか（例: S3にログを書き込むLambdaに`s3:PutObject`がない）
   - 公式ドキュメントで「必須」とされている権限が漏れていないか
-  - 依存アクション（例: `ec2:RunInstances`には`iam:PassRole`や`ec2:CreateTags`も必要な場合がある）が考慮されているか
+  - 依存アクション（例: `ec2:RunInstances`では`ec2:CreateTags`、`iam:PassRole`、`ssm:GetParameters`等も必要）を考慮しているか
 
 - **リソーススコープの適切性**:
   - リソース指定が`"*"`ではなく、必要最小限のリソースARN/パスに限定されているか
