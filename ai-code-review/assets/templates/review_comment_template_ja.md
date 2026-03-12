@@ -77,7 +77,7 @@
         "file": "[ファイルパス]",
         "line": "[行番号]",
         "severity": "critical | warning | suggestion | nitpick",
-        "category": "security | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
+        "category": "security | iam-permissions | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
         "fix": {
@@ -111,6 +111,8 @@
 
 ---
 各指摘の詳細はインラインコメントを参照してください。
+
+> 🤖 このレビューは Claude によって実施されました。
 ```
 
 ---
@@ -189,7 +191,7 @@
         "file": "[ファイルパス]",
         "line": "[行番号]",
         "severity": "critical | warning | suggestion | nitpick",
-        "category": "security | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
+        "category": "security | iam-permissions | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
         "title": "[指摘タイトル]",
         "description": "[問題の説明]",
         "fix": {
@@ -213,6 +215,8 @@
 
 ---
 各指摘の詳細はインラインコメントを参照してください。
+
+> 🤖 このレビューは Claude によって実施されました。
 ```
 
 ---
