@@ -42,15 +42,86 @@
 - 暗号学的に安全な乱数生成器が使用されているか
 - TLS/SSL設定が適切か
 
+#### Terraform IAM権限の過不足チェック（Terraformファイルが変更に含まれる場合）
+
+PRにTerraformファイル（`.tf`）が含まれ、IAMポリシー・ロール・権限に関するリソースが変更されている場合、以下のチェックを実施する。
+
+##### 適用対象リソースの例
+
+- **AWS**: `aws_iam_policy`, `aws_iam_role_policy`, `aws_iam_policy_attachment`, `aws_iam_role`, `aws_iam_user_policy`, `aws_iam_group_policy`, `aws_s3_bucket_policy`, `aws_lambda_permission` 等
+- **GCP**: `google_project_iam_member`, `google_project_iam_binding`, `google_project_iam_policy`, `google_service_account`, `google_cloud_run_service_iam_member` 等
+- **Azure**: `azurerm_role_assignment`, `azurerm_role_definition`, `azurerm_user_assigned_identity` 等
+
+##### チェック手順
+
+1. **付与されている権限の特定**: Terraformコードから付与されているIAMアクション・ロールをすべてリストアップする
+2. **リソースの用途の把握**: 該当リソース（Lambda関数、EC2インスタンス、サービスアカウント等）が何を行うか、PRの文脈やコードから把握する
+3. **公式ドキュメントとの照合**: 各クラウドプロバイダーの公式ドキュメントを参照し、そのリソースの用途に必要な最小限の権限を確認する
+4. **過不足の判定**: 実際に付与されている権限と、公式ドキュメントで示されている必要権限を比較し、過剰な権限・不足している権限がないかを判定する
+
+##### 公式ドキュメントの参照方法
+
+```bash
+# WebSearchツールで公式ドキュメントを検索する例
+
+# AWS: 特定サービスに必要なIAMアクションを確認
+WebSearch: "AWS IAM actions required for [サービス名] site:docs.aws.amazon.com"
+
+# AWS: IAMポリシーのアクション一覧
+WebSearch: "AWS [サービス名] IAM policy actions reference site:docs.aws.amazon.com"
+
+# GCP: 特定サービスに必要なロール・権限を確認
+WebSearch: "GCP [サービス名] IAM roles permissions site:cloud.google.com"
+
+# Azure: 特定サービスに必要なロール・権限を確認
+WebSearch: "Azure [サービス名] RBAC roles permissions site:learn.microsoft.com"
+```
+
+> **注**: 公式ドキュメントの情報が取得できない場合は、その旨を指摘に明記し「要確認」として扱うこと。推測で過不足を断定しない。
+
+##### チェック項目
+
+- **過剰な権限（最小権限の原則の違反）**:
+  - ワイルドカード（`*`）が使用されていないか（例: `"Action": ["s3:*"]`, `"Action": ["*"]`）
+  - リソースのARN/パスにワイルドカード（`*`）が不必要に広く指定されていないか
+  - 実際の用途に対して不要なアクション（例: 読み取り専用で十分なのに書き込み・削除権限も付与）がないか
+  - 管理者権限（`AdministratorAccess`, `roles/owner` 等）が不必要に使用されていないか
+  - `NotAction` / `NotResource` を使ったブラックリスト方式が、ホワイトリスト方式より適切でないか
+
+- **不足している権限**:
+  - リソースが必要とする操作に対応するアクションが不足していないか（例: S3にログを書き込むLambdaに`s3:PutObject`がない）
+  - 公式ドキュメントで「必須」とされている権限が漏れていないか
+  - 依存アクション（例: `ec2:RunInstances`には`ec2:DescribeInstances`も必要な場合がある）が考慮されているか
+
+- **リソーススコープの適切性**:
+  - リソース指定が`"*"`ではなく、必要最小限のリソースARN/パスに限定されているか
+  - 条件キー（`Condition`）で適切にアクセスを制限しているか（環境、タグ、IPアドレス等）
+
+##### 指摘の書き方
+
+権限の過不足を指摘する際は、以下の情報を含めること:
+
+| 項目 | 内容 |
+|------|------|
+| 現在の権限 | コードで付与されているアクション/ロール一覧 |
+| 必要な権限 | 公式ドキュメントに基づく必要最小限の権限 |
+| 過剰な権限 | 不要と判断されるアクション/ロール（理由を添える） |
+| 不足している権限 | 追加が必要なアクション/ロール（理由を添える） |
+| 参照ドキュメント | 根拠とした公式ドキュメントのURL |
+
 ### 重大度の判定基準
 
 | 重大度 | 条件 |
 |--------|------|
 | critical | 外部からの攻撃で悪用可能な脆弱性 |
 | critical | 機密データの漏洩リスク |
+| critical | ワイルドカード（`*`）によるフルアクセス権限の付与（`"Action": ["*"]`や管理者権限） |
 | warning | 防御層が不足している（多層防御の観点） |
 | warning | ベストプラクティスからの逸脱 |
+| warning | 用途に対して過剰な権限が付与されている（最小権限の原則の違反） |
+| warning | 公式ドキュメントで必須とされている権限が不足している |
 | suggestion | セキュリティをさらに強化できる提案 |
+| suggestion | リソーススコープや条件キーの追加でアクセスをさらに限定できる |
 
 ## 観点2: ドキュメントとの乖離
 

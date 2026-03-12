@@ -28,7 +28,7 @@ version: "1.1.0"
 
 | # | 観点 | 概要 |
 |---|------|------|
-| 1 | セキュリティ | OWASP Top 10、認証・認可、入力検証、秘密情報の漏洩、暗号化 |
+| 1 | セキュリティ | OWASP Top 10、認証・認可、入力検証、秘密情報の漏洩、暗号化、Terraform IAM権限の過不足チェック |
 | 2 | ドキュメントとの乖離 | README、API仕様書、設計書、コメントと実装の不一致 |
 | 3 | 可読性・複雑度 | 命名、関数の長さ、ネスト深度、循環的複雑度、コード重複、SOLID原則 |
 | 4 | ライブラリ選定の妥当性 | ライセンス、メンテナンス状況、セキュリティ履歴、サイズ、代替手段 |
@@ -42,6 +42,7 @@ version: "1.1.0"
 | 観点 | category値 | 使い分け |
 |------|-----------|---------|
 | セキュリティ | `security` | セキュリティ全般 |
+| セキュリティ | `iam-permissions` | Terraform IAM権限の過不足（公式ドキュメントとの照合） |
 | ドキュメント乖離 | `docs-drift` | **異なるドキュメント間**（設計書↔実装、README↔コード等）の不一致 |
 | ドキュメント乖離 | `internal-consistency` | **同一ファイル内**のステータス↔受入基準、数値↔実データ等の論理矛盾 |
 | 可読性・複雑度 | `readability` | 可読性・複雑度全般 |
@@ -162,7 +163,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/comments
 
 | 優先度 | カテゴリ | 例 |
 |--------|---------|-----|
-| 高 | セキュリティ関連 | 認証、認可、暗号化、入力処理 |
+| 高 | セキュリティ関連 | 認証、認可、暗号化、入力処理、Terraform IAMポリシー |
 | 高 | API / データベース | エンドポイント、マイグレーション、スキーマ |
 | 中 | ビジネスロジック | ドメインロジック、サービス層 |
 | 中 | 設定・インフラ | CI/CD、Docker、依存関係 |
@@ -179,7 +180,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/comments
 | ファイル | 対象ファイルパス |
 | 行番号 | 該当行（範囲も可） |
 | 重大度 | critical / warning / suggestion / nitpick |
-| 観点 | security / docs-drift / internal-consistency / readability / library / pr-description / known-vulnerability （※`internal-consistency`は`docs-drift`のサブカテゴリ。詳細は[カテゴリの細分類](#カテゴリの細分類)参照） |
+| 観点 | security / iam-permissions / docs-drift / internal-consistency / readability / library / pr-description / known-vulnerability （※`iam-permissions`は`security`のサブカテゴリ、`internal-consistency`は`docs-drift`のサブカテゴリ。詳細は[カテゴリの細分類](#カテゴリの細分類)参照） |
 | 指摘内容 | 何が問題で、なぜ問題なのか |
 | 推奨修正 | どう直すべきか |
 
@@ -345,7 +346,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
   "file": "ファイルパス",
   "line": "[行番号]",
   "severity": "critical | warning | suggestion | nitpick",
-  "category": "security | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
+  "category": "security | iam-permissions | docs-drift | internal-consistency | readability | library | pr-description | known-vulnerability",
   "title": "問題の端的な説明",
   "fix": {
     "old_text": "置換対象のコードテキスト",
