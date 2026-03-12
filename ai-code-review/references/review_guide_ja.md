@@ -86,7 +86,7 @@ WebSearch: "Azure [サービス名] RBAC roles permissions site:learn.microsoft.
   - リソースのARN/パスにワイルドカード（`*`）が不必要に広く指定されていないか
   - 実際の用途に対して不要なアクション（例: 読み取り専用で十分なのに書き込み・削除権限も付与）がないか
   - 管理者権限（`AdministratorAccess`, `roles/owner` 等）が不必要に使用されていないか
-  - `NotAction` / `NotResource` を使ったブラックリスト方式が、ホワイトリスト方式より適切でないか
+  - `NotAction` / `NotResource` によるブラックリスト方式ではなく、明示的な許可（ホワイトリスト方式）で記述されているか
 
 - **不足している権限**:
   - リソースが必要とする操作に対応するアクションが不足していないか（例: S3にログを書き込むLambdaに`s3:PutObject`がない）
