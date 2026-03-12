@@ -44,11 +44,11 @@
 
 #### Terraform IAM権限の過不足チェック（Terraformファイルが変更に含まれる場合）
 
-PRにTerraformファイル（`.tf`）が含まれ、IAMポリシー・ロール・権限に関するリソースが変更されている場合、以下のチェックを実施する。
+PRにTerraformファイル（`.tf`）が含まれ、IAM権限に影響する定義（resource / data source / module入力 / local等）が変更されている場合、以下のチェックを実施する。
 
 ##### 適用対象リソースの例
 
-- **AWS**: `aws_iam_policy`, `aws_iam_role_policy`, `aws_iam_policy_attachment`, `aws_iam_role`, `aws_s3_bucket_policy`, `aws_lambda_permission` 等
+- **AWS**: `aws_iam_policy`, `aws_iam_role_policy`, `aws_iam_policy_attachment`, `aws_iam_role`, `aws_s3_bucket_policy`, `aws_lambda_permission`, `data "aws_iam_policy_document"` 等
 - **GCP**: `google_project_iam_member`, `google_project_iam_binding`, `google_project_iam_policy`, `google_service_account`, `google_cloud_run_service_iam_member` 等
 - **Azure**: `azurerm_role_assignment`, `azurerm_role_definition`, `azurerm_user_assigned_identity` 等
 
@@ -92,7 +92,8 @@ Azure [サービス名] RBAC roles permissions site:learn.microsoft.com
   - リソースのARN/パスにワイルドカード（`*`）が不必要に広く指定されていないか
   - 実際の用途に対して不要なアクション（例: 読み取り専用で十分なのに書き込み・削除権限も付与）がないか
   - 管理者権限（`AdministratorAccess`, `roles/owner` 等）が不必要に使用されていないか
-  - `NotAction` / `NotResource` によるブラックリスト方式ではなく、明示的な許可（ホワイトリスト方式）で記述されているか
+  - Allow文では明示的な許可（ホワイトリスト方式）で記述されているか
+  - `NotAction` / `NotResource` が使われている場合、Deny文やガードレール用途など意図的な使用か確認し、スコープが過度に広くないか
 
 - **不足している権限**:
   - リソースが必要とする操作に対応するアクションが不足していないか（例: S3にログを書き込むLambdaに`s3:PutObject`がない）
