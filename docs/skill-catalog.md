@@ -360,3 +360,34 @@ PR #123 を再レビューしてください
 - 再レビュー時の前回指摘修正確認（resolved/unresolved/regressed等）
 - 指摘の重大度分類（critical/warning/suggestion/nitpick）
 - 大規模PRでのエージェントチームによる並列レビュー
+
+---
+
+### things-url
+
+Things URLスキームを使ってClaude Codeのタスク（TodoWrite/docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有するスキルです。
+
+**使用開始:**
+
+```text
+タスクをThingsに送ってください
+```
+
+または
+
+```text
+SDDのタスクをThingsと共有してください
+```
+
+**主な機能:**
+
+- docs/sdd/tasks/のタスクをThings 3のプロジェクト・To-Doとして送信
+- TodoWriteの現在のタスクリストをThings 3に同期
+- 個別のTo-Do・プロジェクトを作成するURLを生成
+- `add-json`コマンドによる一括インポートURL生成
+- macOSの`open`コマンドによるURL直接実行
+
+**前提条件:**
+
+- Things 3がmacOS/iOS/iPadOSにインストールされている必要がある
+- Things URLスキームが有効になっている必要がある（初回実行時にThingsが確認）

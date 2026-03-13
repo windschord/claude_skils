@@ -1,0 +1,555 @@
+---
+name: things-url
+description: Things URLスキームを使ってClaude Codeのタスク（TodoWrite/docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有します。タスクの作成・更新・表示用のURLを生成してクリップボードにコピーまたは直接開きます。
+---
+
+# Things URL タスク共有スキル
+
+Claude Codeで管理しているタスクをThings 3のURLスキームを使って人間のタスク管理アプリと共有するスキルです。docs/sdd/tasks/やTodoWriteのタスクをThings 3に送信し、双方向のタスク可視化を実現します。
+
+## 概要
+
+このスキルは以下の機能を提供します：
+
+- docs/sdd/tasks/のタスクをThings 3のプロジェクト・To-Doとして送信
+- TodoWriteの現在のタスクリストをThings 3に同期
+- 個別のTo-Do・プロジェクトを作成するURLを生成
+- `add-json`コマンドによる一括インポートURL生成
+- macOSの`open`コマンドによるURL直接実行
+
+## このスキルを使用する場面
+
+以下の状況でこのスキルを使用してください：
+
+### タスク共有時
+- Claude Codeで作成したタスクを人間のThings 3に反映したい場合
+- SDDのタスク一覧を人間と共有したい場合
+- プロジェクトの進捗を人間側でも確認可能にしたい場合
+
+### プロジェクト管理時
+- SDDのフェーズ全体をThingsプロジェクトとして管理したい場合
+- 人間が確認すべきレビュータスクをThingsに送りたい場合
+- 人間とClaude Codeのタスク分担を明確にしたい場合
+
+## 基本的な使い方
+
+### 1. SDDタスクをThingsに送信
+
+「タスクをThingsに送って」「SDDのタスクをThingsと共有して」などと依頼されたら：
+
+1. **docs/sdd/tasks/の読み取り**
+   - タスク一覧（index）を確認
+   - 各タスクのステータス・詳細を把握
+
+2. **送信対象の確認**
+   - ユーザーにどのタスクを送信するか確認
+   - 全タスク or 特定ステータスのタスクのみ、を選択してもらう
+
+3. **Things URL の生成**
+   - タスク構造に応じて `add`、`add-project`、または `add-json` を使い分ける
+   - URLをユーザーに提示
+
+4. **URLの実行**
+   - macOS環境であれば`open`コマンドで直接実行を提案
+   - それ以外の場合はURLをコピー可能な形式で出力
+
+### 2. TodoWriteタスクをThingsに送信
+
+「今のタスクリストをThingsに送って」と依頼されたら：
+
+1. **現在のTodoWriteの状態を確認**
+   - pending/in_progress/completedの各タスクを把握
+
+2. **Things URLを生成**
+   - 各タスクをTo-Doとして`add-json`で一括作成
+   - ステータスに応じたタグ付け（例: `in_progress` → タグ「進行中」）
+
+3. **URLを実行または提示**
+
+### 3. 個別タスクの作成
+
+「Thingsにタスクを追加して」と依頼されたら：
+
+1. タスクの内容をヒアリング
+2. `things:///add` URLを生成
+3. 実行または提示
+
+## URL生成の原則
+
+### コマンドの使い分け
+
+| ユースケース | コマンド | 説明 |
+|---|---|---|
+| 単一のTo-Do作成 | `things:///add` | 1つのタスクを素早く追加 |
+| プロジェクト作成 | `things:///add-project` | 見出し付きプロジェクトを作成 |
+| 複数アイテム一括作成 | `things:///add-json` | 複雑な構造を一度に送信 |
+| 既存アイテム表示 | `things:///show` | Things内のリストを表示 |
+| 検索 | `things:///search` | Things内をキーワード検索 |
+
+### パラメータのエンコーディング
+
+すべてのパラメータはURLエンコード（パーセントエンコーディング）が必要です：
+
+```text
+タイトル: "APIの実装"
+→ エンコード後: API%E3%81%AE%E5%AE%9F%E8%A3%85
+```
+
+**重要**: URLエンコードにはBashの`python3 -c`や`jq`を使用してください。手動でのエンコードは行いません。
+
+### URL生成のコード例
+
+#### 単一To-Doの追加（add）
+
+```bash
+# python3を使ったURLエンコードと実行
+python3 -c "
+import urllib.parse
+params = {
+    'title': 'APIエンドポイントの実装をレビュー',
+    'notes': 'Claude Codeが実装したPOST /api/auth/loginのレビュー\n\n受入基準:\n- テスト通過\n- ESLintエラーゼロ',
+    'when': 'today',
+    'tags': 'Claude Code,レビュー',
+    'list': 'プロジェクト名'
+}
+query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+url = f'things:///add?{query}'
+print(url)
+"
+```
+
+#### プロジェクトの追加（add-project）
+
+```bash
+python3 -c "
+import urllib.parse
+params = {
+    'title': 'SDD Phase 1: 基盤構築',
+    'notes': 'SDDタスク管理 - Phase 1のタスク一覧',
+    'when': 'today',
+    'tags': 'SDD,Claude Code',
+    'to-dos': '\n'.join([
+        'TASK-001: データモデルの定義',
+        'TASK-002: APIエンドポイントの実装',
+        'TASK-003: 認証ミドルウェアの実装',
+    ])
+}
+query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+url = f'things:///add-project?{query}'
+print(url)
+"
+```
+
+#### JSON一括インポート（add-json）
+
+```bash
+python3 -c "
+import urllib.parse, json
+
+data = [
+    {
+        'type': 'project',
+        'attributes': {
+            'title': 'SDD Phase 1: 基盤構築',
+            'notes': 'Claude Codeで管理中のSDDタスク',
+            'when': 'today',
+            'tags': ['SDD', 'Claude Code'],
+            'items': [
+                {
+                    'type': 'heading',
+                    'attributes': {
+                        'title': 'データ層'
+                    }
+                },
+                {
+                    'type': 'to-do',
+                    'attributes': {
+                        'title': 'TASK-001: データモデルの定義',
+                        'notes': '推定工数: 1時間\nステータス: TODO',
+                        'tags': ['TODO']
+                    }
+                },
+                {
+                    'type': 'to-do',
+                    'attributes': {
+                        'title': 'TASK-002: APIエンドポイントの実装',
+                        'notes': '推定工数: 2時間\nステータス: TODO\n依存: TASK-001',
+                        'tags': ['TODO']
+                    }
+                },
+                {
+                    'type': 'heading',
+                    'attributes': {
+                        'title': 'ミドルウェア層'
+                    }
+                },
+                {
+                    'type': 'to-do',
+                    'attributes': {
+                        'title': 'TASK-003: 認証ミドルウェアの実装',
+                        'notes': '推定工数: 1.5時間\nステータス: IN_PROGRESS\n依存: TASK-001',
+                        'tags': ['IN_PROGRESS']
+                    }
+                }
+            ]
+        }
+    }
+]
+
+json_str = json.dumps(data, ensure_ascii=False)
+encoded = urllib.parse.quote(json_str)
+url = f'things:///add-json?data={encoded}'
+print(url)
+"
+```
+
+### URLの実行方法
+
+```bash
+# macOSで直接実行
+open "things:///add?title=..."
+
+# URLが長い場合は変数に格納して実行
+URL=$(python3 -c "...URL生成スクリプト...")
+open "$URL"
+```
+
+**注意**: `open`コマンドはmacOSでのみ動作します。実行前にOSを確認してください。
+
+## SDDタスクのマッピング
+
+### ステータスの対応
+
+SDDタスクのステータスをThingsの状態にマッピングします：
+
+| SDD ステータス | Things 状態 | タグ | when |
+|---|---|---|---|
+| TODO | 未完了 | `TODO` | （設定なし） |
+| IN_PROGRESS | 未完了 | `進行中` | `today` |
+| REVIEW | 未完了 | `レビュー` | `today` |
+| DONE | 完了 | `完了` | （設定なし） |
+| BLOCKED | 未完了 | `ブロック` | `someday` |
+
+### タスク構造のマッピング
+
+```text
+docs/sdd/tasks/
+├── index.md           → Things プロジェクト（全体）
+├── phase-1/
+│   ├── task-001.md    → Things To-Do（見出し「Phase 1」配下）
+│   ├── task-002.md    → Things To-Do
+│   └── task-003.md    → Things To-Do
+└── phase-2/
+    ├── task-004.md    → Things To-Do（見出し「Phase 2」配下）
+    └── task-005.md    → Things To-Do
+```
+
+**マッピング結果**：
+```text
+Things プロジェクト: [プロジェクト名] SDDタスク
+├── 見出し: Phase 1 - [フェーズ名]
+│   ├── To-Do: TASK-001: [タスク名]
+│   ├── To-Do: TASK-002: [タスク名]
+│   └── To-Do: TASK-003: [タスク名]
+└── 見出し: Phase 2 - [フェーズ名]
+    ├── To-Do: TASK-004: [タスク名]
+    └── To-Do: TASK-005: [タスク名]
+```
+
+### 受入基準のマッピング
+
+タスクの受入基準はThingsのチェックリストにマッピングします：
+
+```python
+# 受入基準 → チェックリスト
+{
+    "type": "to-do",
+    "attributes": {
+        "title": "TASK-001: データモデルの定義",
+        "checklist-items": [
+            {"title": "prisma/schema.prismaにUserモデルが定義されている"},
+            {"title": "prisma migrateが正常に実行できる"},
+            {"title": "TypeScript型定義が自動生成される"}
+        ]
+    }
+}
+```
+
+## ワークフロー
+
+### SDDタスク一括送信フロー
+
+```text
+1. docs/sdd/tasks/のindex.mdを読み取る
+   ↓
+2. 各フェーズのタスク詳細を読み取る
+   ↓
+3. ユーザーに送信対象を確認（全タスク or フィルタ）
+   ↓
+4. タスク構造をThings JSONにマッピング
+   ↓
+5. add-json URLを生成
+   ↓
+6. ユーザーに確認してURL実行
+   ↓
+7. 完了を報告
+```
+
+### 詳細な実行手順
+
+#### ステップ1: タスクの読み取りと確認
+
+```text
+[things-url] ステップ 1/4: docs/sdd/tasks/を読み取り中...
+
+docs/sdd/tasks/から以下のタスクを検出しました：
+
+Phase 1: 基盤構築（3タスク）
+  - TASK-001: データモデルの定義 [TODO]
+  - TASK-002: APIエンドポイントの実装 [IN_PROGRESS]
+  - TASK-003: 認証ミドルウェア [TODO]
+
+Phase 2: UI実装（2タスク）
+  - TASK-004: ログイン画面 [TODO]
+  - TASK-005: ダッシュボード [TODO]
+
+すべてのタスクをThingsに送信しますか？
+それとも特定のフェーズ・ステータスでフィルタしますか？
+```
+
+#### ステップ2: JSONの構築
+
+```text
+[things-url] ステップ 2/4: Things JSON を構築中...
+
+以下の構造でThingsに送信します：
+
+プロジェクト: [プロジェクト名] SDDタスク
+├── Phase 1: 基盤構築
+│   ├── TASK-001: データモデルの定義 [タグ: TODO]
+│   ├── TASK-002: APIエンドポイントの実装 [タグ: 進行中, when: today]
+│   └── TASK-003: 認証ミドルウェア [タグ: TODO]
+└── Phase 2: UI実装
+    ├── TASK-004: ログイン画面 [タグ: TODO]
+    └── TASK-005: ダッシュボード [タグ: TODO]
+
+この内容でURLを生成してよろしいですか？
+```
+
+#### ステップ3: URL生成と実行
+
+```text
+[things-url] ステップ 3/4: Things URL を生成中...
+
+URLを生成しました。macOS環境のため直接実行します。
+```
+
+```bash
+# URL生成と実行
+URL=$(python3 -c "
+import urllib.parse, json
+# ... JSON構築とエンコード ...
+")
+open "$URL"
+```
+
+#### ステップ4: 完了報告
+
+```text
+[things-url] ステップ 4/4: 完了
+
+Things 3に以下を送信しました：
+- プロジェクト: 1件
+- 見出し: 2件
+- To-Do: 5件
+
+Things 3アプリで確認してください。
+```
+
+### TodoWriteタスク送信フロー
+
+```text
+1. 現在のTodoWriteタスクを取得
+   ↓
+2. Things To-DoのJSON配列に変換
+   ↓
+3. ステータスに応じたタグ・when設定
+   ↓
+4. add-json URLを生成・実行
+   ↓
+5. 完了を報告
+```
+
+**変換例**：
+
+TodoWriteの状態:
+```text
+- [x] TASK-001: データモデルの定義（completed）
+- [>] TASK-002: APIエンドポイントの実装（in_progress）
+- [ ] TASK-003: 認証ミドルウェア（pending）
+```
+
+Things JSONへの変換:
+```json
+[
+  {
+    "type": "to-do",
+    "attributes": {
+      "title": "TASK-001: データモデルの定義",
+      "completed": true,
+      "tags": ["完了"]
+    }
+  },
+  {
+    "type": "to-do",
+    "attributes": {
+      "title": "TASK-002: APIエンドポイントの実装",
+      "when": "today",
+      "tags": ["進行中"]
+    }
+  },
+  {
+    "type": "to-do",
+    "attributes": {
+      "title": "TASK-003: 認証ミドルウェア",
+      "tags": ["TODO"]
+    }
+  }
+]
+```
+
+## 既存アイテムの更新
+
+### auth-tokenの取得
+
+既存のThingsアイテムを更新するには`auth-token`が必要です：
+
+```text
+auth-tokenはThings 3の設定画面から確認できます：
+- Mac: Things → Settings → General → Enable Things URLs → Manage
+- iOS: Settings → General → Things URLs
+
+auth-tokenをお知らせください（このスキルでは保存しません）。
+```
+
+### 更新URLの生成
+
+```bash
+python3 -c "
+import urllib.parse
+params = {
+    'id': 'THINGS_ITEM_ID',
+    'auth-token': 'AUTH_TOKEN',
+    'when': 'today',
+    'append-notes': '\n\n[更新: 2026-03-13] ステータスがIN_PROGRESSに変更されました'
+}
+query = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+url = f'things:///update?{query}'
+print(url)
+"
+```
+
+**注意**: auth-tokenはセキュリティ上の理由からファイルに保存しません。毎回ユーザーに確認します。
+
+## Areaの活用
+
+プロジェクトをThingsのAreaに配置する場合：
+
+```python
+# add-projectでareaを指定
+params = {
+    'title': 'SDD Phase 1',
+    'area': '開発プロジェクト',  # 既存のArea名
+    # ...
+}
+```
+
+```python
+# add-jsonでarea指定
+{
+    "type": "project",
+    "attributes": {
+        "title": "SDD Phase 1",
+        "area": "開発プロジェクト",
+        # ...
+    }
+}
+```
+
+## 制約事項
+
+### Things URLスキームの制限
+
+1. **文字数制限**: パラメータの最大エンコード前文字数は4,000文字（notesは10,000文字）
+2. **レート制限**: 10秒間に最大250アイテム
+3. **macOS/iOS限定**: Things 3はAppleプラットフォーム専用
+4. **更新にはauth-tokenが必要**: 既存アイテムの更新にはユーザーからのauth-token提供が必要
+5. **IDの取得**: x-callback-urlを使わない限り、作成したアイテムのIDは自動取得できない
+
+### スキルの制限
+
+1. **Things → Claude Code方向の同期は非対応**: Things側での変更はClaude Codeに自動反映されない
+2. **auth-tokenの永続化なし**: セキュリティのため、auth-tokenは保存しない
+3. **`open`コマンドはmacOSのみ**: Linux/Windows環境ではURLの提示のみ
+
+## ベストプラクティス
+
+### 1. 適切な粒度での送信
+
+**良い例**: フェーズごとにプロジェクトを分けて送信
+```text
+プロジェクト: Phase 1 - 基盤構築（5タスク）
+プロジェクト: Phase 2 - UI実装（3タスク）
+```
+
+**悪い例**: 全タスクを1つのプロジェクトに詰め込む
+```text
+プロジェクト: 全タスク（50タスク）  # 見通しが悪い
+```
+
+### 2. タグの活用
+
+一貫したタグ付けでフィルタリングを容易にします：
+
+**推奨タグ**：
+- `Claude Code`: Claude Codeから送信されたタスクであることを示す
+- `SDD`: SDDプロセスのタスクであることを示す
+- ステータスタグ: `TODO`、`進行中`、`レビュー`、`ブロック`
+
+### 3. notesへの文脈情報の記載
+
+Things側で人間が判断できるよう、十分な文脈をnotesに含めます：
+
+```text
+notes に含めるべき情報：
+- タスクの目的・背景
+- 受入基準（チェックリストにも反映）
+- 依存関係
+- 関連ファイルパス
+- 推定工数
+```
+
+### 4. 定期的な同期
+
+大きな進捗があったタイミングで再送信を提案します：
+- フェーズの開始時
+- 複数タスクのステータスが変わった時
+- 新しいタスクが追加された時
+
+## リソース
+
+### リファレンス
+- [Things URLスキームリファレンス](references/url_scheme_reference_ja.md) - コマンドとパラメータの詳細
+
+### 外部リソース
+- Things URLスキーム公式ドキュメント: https://culturedcode.com/things/support/articles/2803573/
+- ThingsJSONCoder（Swift）: https://github.com/culturedcode/ThingsJSONCoder
+
+## 今後の拡張
+
+このスキルは将来的に以下の機能追加を検討しています：
+
+- Things MCPサーバーとの連携によるThings → Claude Code方向の同期
+- Shortcuts連携によるiOS/iPadOSからの操作
+- プロジェクトテンプレートの事前定義
+- タスク完了時の自動通知URL生成
