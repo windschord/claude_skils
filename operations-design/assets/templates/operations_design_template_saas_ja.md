@@ -2437,7 +2437,7 @@ Level 3（管理層）:
 コスト最適化施策:
 
 1. コンピューティング最適化:
-   - ARMプロセッサ（Graviton等）の利用: 20%コスト削減
+   - ARMプロセッサの利用: 20%コスト削減（AWS Graviton / Ampere Altra等）
    - スポット/プリエンプティブルインスタンスの活用: 最大70%削減
    - オートスケーリングの最適化: 非ピーク時のスケールダウン
    - コンテナのライトサイジング: 実使用量に基づくリソース見直し
@@ -2453,13 +2453,13 @@ Level 3（管理層）:
    - 圧縮の活用
 
 4. ネットワーク最適化:
-   - VPCエンドポイント/プライベートリンクによるNATゲートウェイコスト削減
+   - プライベート接続（VPCエンドポイント / Private Link / Private Service Connect）によるNATゲートウェイコスト削減
    - CDNキャッシュヒット率の改善
    - リージョン間データ転送の最小化
 
 5. 予約/コミット割引:
-   - 1年/3年のリザーブドインスタンス/コミットメント
-   - Savings Plans / CUD（Committed Use Discounts）
+   - 1年/3年のリザーブドインスタンス/コミットメント割引
+   - AWS Savings Plans / GCP CUD（Committed Use Discounts）/ Azure Savings Plan for Compute
    - 対象: 安定稼働のデータベース、ベースラインコンピューティング
 ```
 
