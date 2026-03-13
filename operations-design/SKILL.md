@@ -543,6 +543,14 @@ WebSearchツールを使用して以下を調査:
                 - B選択時: operations_design_template_cloud_instance_ja.md
                 - C選択時: operations_design_template_onpremise_ja.md
                 - D選択時: operations_design_template_saas_ja.md
+                  ※ SaaS選択時は以下の順序でヒアリングを重点的に実施:
+                    1. テナント分離戦略（プール/サイロ/ハイブリッド）
+                    2. 認証・オンボーディング方式（SSO, MFA, JIT）
+                    3. プラン・課金体系（リソース制限, API制限）
+                    4. SLA定義（テナント種別ごとの目標値）
+                    5. コンプライアンス要件（GDPR, 個人情報保護法）
+                    6. 監視・アラート（テナント別メトリクス）
+                    7. インシデント対応・バックアップ（テナント影響範囲の特定）
 
                 それでは、業界トレンド調査に進みます。
 ```
