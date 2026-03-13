@@ -528,7 +528,7 @@ WebSearchツールを使用して以下を調査:
                 D) **SaaS / マルチテナント** ⭐⭐⭐⭐⭐
                    - マルチテナントSaaSアプリケーション
                    - コンテナ基盤（ECS, GKE, AKS等）
-                   - クラウドプロバイダ非依存の設計
+                   - クラウドプロバイダー非依存の設計
                    - テナント分離・課金・SLA管理
 
                    推奨理由: SaaS特有のマルチテナント運用・テナント管理を網羅
@@ -1426,7 +1426,7 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 - `operations_design_template_cloud_native_ja.md`: クラウドネイティブ/サーバレス/Kubernetes対応
 - `operations_design_template_cloud_instance_ja.md`: クラウドインスタンス/IaaS対応（LAMP等）
 - `operations_design_template_onpremise_ja.md`: オンプレミス対応
-- `operations_design_template_saas_ja.md`: SaaS運用設計対応（マルチテナント・コンテナ基盤・クラウドプロバイダ非依存）
+- `operations_design_template_saas_ja.md`: SaaS運用設計対応（マルチテナント・コンテナ基盤・クラウドプロバイダー非依存）
 
 **その他のテンプレート**:
 - `conversation_log_template_ja.md`: 会話ログテンプレート
