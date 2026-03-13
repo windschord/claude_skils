@@ -162,7 +162,7 @@ auto-fixableコメントを順次修正する:
 注意事項:
 - コメントの指摘に直接対応する最小限の修正のみ
 - 周辺コードのリファクタリングは行わない
-- suggestion形式（suggestionコードブロック）は提案コードでそのまま置換
+- suggestion形式（``suggestion``コードブロック）は提案コードでそのまま置換
 
 ### Step 4: commit & push
 
