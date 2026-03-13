@@ -28,17 +28,32 @@ description: |
 pwd
 ```
 
-**初回判定**: カレントディレクトリに `.git/` が存在しない場合は未初期化とみなし、セットアップを提案する。
+**初回判定**: Gitリポジトリとして初期化済みかを確認し、さらにKB必須ファイルの存在を検証する。
 
 ```bash
-test -d .git && echo "initialized" || echo "not initialized"
+git rev-parse --is-inside-work-tree 2>/dev/null && echo "git: initialized" || echo "git: not initialized"
+test -f _index/MASTER.md && test -f _index/tags.md && echo "kb: ready" || echo "kb: not ready"
 ```
+
+- `git: not initialized` → 初回セットアップを提案
+- `git: initialized` かつ `kb: not ready` → KB必須ファイルのみ作成を提案（既存リポジトリへの追加）
+- 両方OK → 通常操作可能
+
+**既存リポジトリの安全確認**: リモートが設定されている場合、KB操作で意図しないpushが発生しないよう警告する。
+
+```bash
+git remote -v
+```
+
+リモートが存在する場合は、ユーザーに以下を確認する：
+- このリポジトリにKBファイルをコミットしてよいか
+- KB専用ディレクトリでの運用を推奨する旨を案内
 
 ---
 
 ## ディレクトリ構造
 
-```
+```text
 {KB_ROOT}/  ← Claude Codeのカレントディレクトリ（pwd）
 ├── .git/                        # ローカルGit（remoteなし）
 ├── _index/
@@ -87,13 +102,13 @@ updated: 2026-03-13
 
 ### 1. ノートの保存・追記
 
-```
+```text
 ユーザーの入力 → ワークスペース確認 → ノート作成/追記 → INDEX更新 → MASTER更新 → git commit
 ```
 
 **手順:**
 
-1. `pwd` でKB_ROOTを確認し、`.git/` の存在を確認する
+1. `pwd` でKB_ROOTを確認し、`git rev-parse --is-inside-work-tree` で初期化済みか確認する
 2. ワークスペースが未指定なら確認する
 3. 既存の関連ノートを検索（`grep -r`）し、追記か新規作成かを判断
 4. ノートを書き込む（新規ならフロントマターを付与）
@@ -101,7 +116,7 @@ updated: 2026-03-13
 6. ワークスペースの `INDEX.md` を更新
 7. `_index/MASTER.md` を更新
 8. `_index/tags.md` を更新
-9. `git add -A && git commit -m "feat: {概要}"`
+9. `git add "{workspace}/" "_index/" && git commit -m "{type}: {概要}"`
 
 ### 2. 検索・参照
 
@@ -239,14 +254,15 @@ updated: {date}
   - `refactor:` 整理・統合
   - `index:` インデックスのみ更新
   - `import:` 既存ファイル取り込み
-- **remoteはなし**: `git remote` は設定しない
+- **remoteはなし**: `git remote` は設定しない。既存リポジトリにリモートがある場合は、KB操作後に意図しない `git push` が行われないよう注意すること
 - **毎操作後にcommit**: ユーザーが明示的に「まとめてcommitして」と言わない限り、操作ごとにcommitする
+- **ステージング範囲の限定**: `git add -A` は使用せず、`git add "{workspace}/" "_index/"` のようにKB関連ディレクトリのみをステージングする
 
 ---
 
 ## 初回セットアップ手順
 
-`.git/` が存在しない場合（未初期化）:
+Gitリポジトリが未初期化の場合（`git rev-parse --is-inside-work-tree` が失敗）:
 
 1. ユーザーに「現在のディレクトリ（`{pwd}`）をナレッジベースとして初期化しますか？」と確認する
 2. 確認が取れたら以下を実行:
@@ -259,6 +275,12 @@ git commit --allow-empty -m "init: knowledge base"
 
 3. `_index/MASTER.md` と `_index/tags.md` の初期ファイルを作成
 4. 完了をユーザーに報告し、最初のワークスペース名を確認する
+
+既存Gitリポジトリ内で使用する場合（`git: initialized` かつ `kb: not ready`）:
+
+1. リモートの有無を確認し、リモートがある場合はKBファイルをコミットしてよいかユーザーに確認する
+2. `_index/MASTER.md` と `_index/tags.md` を作成
+3. KB関連ファイルのみをステージングしてcommit
 
 ---
 
