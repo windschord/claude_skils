@@ -525,6 +525,15 @@ WebSearchツールを使用して以下を調査:
                    考慮事項: スケーリングリードタイム（2〜4ヶ月）、リソース保有コスト、
                             全責任範囲の管理が必要
 
+                D) **SaaS / マルチテナント** ⭐⭐⭐⭐⭐
+                   - マルチテナントSaaSアプリケーション
+                   - コンテナ基盤（ECS, GKE, AKS等）
+                   - クラウドプロバイダ非依存の設計
+                   - テナント分離・課金・SLA管理
+
+                   推奨理由: SaaS特有のマルチテナント運用・テナント管理を網羅
+                   考慮事項: テナント分離戦略、SaaS固有のセキュリティ・コンプライアンス要件
+
 ユーザー: [回答]
 
 コンサルタント: ありがとうございます。[選択されたパターン]に適した運用設計書テンプレートを使用します。
@@ -533,6 +542,7 @@ WebSearchツールを使用して以下を調査:
                 - A選択時: operations_design_template_cloud_native_ja.md
                 - B選択時: operations_design_template_cloud_instance_ja.md
                 - C選択時: operations_design_template_onpremise_ja.md
+                - D選択時: operations_design_template_saas_ja.md
 
                 それでは、業界トレンド調査に進みます。
 ```
@@ -1408,6 +1418,7 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 - `operations_design_template_cloud_native_ja.md`: クラウドネイティブ/サーバレス/Kubernetes対応
 - `operations_design_template_cloud_instance_ja.md`: クラウドインスタンス/IaaS対応（LAMP等）
 - `operations_design_template_onpremise_ja.md`: オンプレミス対応
+- `operations_design_template_saas_ja.md`: SaaS運用設計対応（マルチテナント・コンテナ基盤・クラウドプロバイダ非依存）
 
 **その他のテンプレート**:
 - `conversation_log_template_ja.md`: 会話ログテンプレート
