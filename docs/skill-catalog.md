@@ -382,7 +382,7 @@ SDDのタスクをThingsと共有してください
 **主な機能:**
 
 - docs/sdd/tasks/のタスクをThings 3のプロジェクト・To-Doとして送信
-- TodoWriteの現在のタスクリストをThings 3に同期
+- TodoWriteの現在のタスクリストをThings 3に送信
 - 個別のTo-Do・プロジェクトを作成するURLを生成
 - `add-json`コマンドによる一括インポートURL生成
 - macOSの`open`コマンドによるURL直接実行
