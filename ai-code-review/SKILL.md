@@ -323,6 +323,7 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
 
 - JSON形式で全指摘を構造化
 - `fix.old_text` / `fix.new_text`: Editツールにそのまま渡せる置換テキストペア
+- `fix_strategy`: 修正方針の提案（推奨アプローチ、代替案、影響範囲、規模感を構造化して提示）
 - `context`: 該当行の前後約3行のコード断片（行番号のズレがあっても位置特定可能）
 - `scope`: 本PRで修正すべきか後続対応かの判定（`fix-in-this-pr` / `fix-in-follow-up` / `wont-fix`）
 - `rule`: 関連ルール・パターン名
@@ -353,6 +354,12 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
     "new_text": "置換後のコードテキスト",
     "description": "補足説明（任意）"
   },
+  "fix_strategy": {
+    "approach": "推奨する修正アプローチの説明",
+    "alternatives": ["代替案1の説明", "代替案2の説明"],
+    "impact": "修正による影響範囲（他ファイル、依存コンポーネント等）",
+    "effort": "small | medium | large"
+  },
   "context": "該当行の前後3行程度のコード断片",
   "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
   "rule": "関連するルールやパターン名（例: OWASP-A03, SRP, etc.）",
@@ -361,6 +368,24 @@ gh api repos/{owner}/{repo}/pulls/{PR番号}/reviews \
 ```
 
 </details>
+```
+
+**`fix_strategy` の書き方:**
+- `approach`: 推奨する修正アプローチを具体的に記載する。`fix.old_text`/`fix.new_text`が単純な置換で済む場合でも、修正の意図・方針を明記する
+- `alternatives`: 代替案がある場合に記載する。トレードオフ（パフォーマンス、可読性、互換性等）を簡潔に添える。代替案がない場合は空配列 `[]`
+- `impact`: 修正が他のファイルやコンポーネントに波及する場合、その範囲を記載する。影響がない場合は `"なし"`
+- `effort`: 修正の規模感。`small`（1ファイル内の軽微な変更）、`medium`（複数ファイルにまたがる変更）、`large`（設計変更を伴う大規模な変更）
+- 例:
+
+```json
+{
+  "approach": "文字列結合をパラメータ化クエリに置換する。プロジェクト内の既存パターン（src/repositories/baseRepository.ts）に合わせる",
+  "alternatives": [
+    "ORMのクエリビルダーを使用する方法もあるが、現在のプロジェクトでは生SQLを使用する方針"
+  ],
+  "impact": "同リポジトリ内の他のRepository（orderRepository.ts, productRepository.ts）にも同様の文字列結合パターンがある可能性",
+  "effort": "medium"
+}
 ```
 
 **`verification_hint` の書き方:**
