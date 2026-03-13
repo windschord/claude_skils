@@ -67,29 +67,34 @@ GitHub PRのレビューコメント（CodeRabbit、Copilot等のbotコメント
 ```text
 PR番号を受け取る
     │
-    ├── 1. コメント収集（3 APIソース + GraphQL統合）
-    │     → 全未対応コメント一覧を生成
+    ├── 1. コメント収集 [comment-collector]
+    │     → 3 APIソース + GraphQL統合で全未対応コメント一覧を生成
     │
-    ├── 2. コメント分類
+    ├── 2. コメント分類 [comment-classifier]
     │     → auto-fixable / manual-required / already-addressed
     │
-    ├── 3. 修正適用
+    ├── 3. 修正適用 [fix-applicator]
     │     → auto-fixableコメントを順次修正
     │
-    ├── 4. commit & push
+    ├── 4. commit & push [commit-manager]
     │
-    ├── 5. bot再レビュー待機 & 新規レビュー検出
+    ├── 5. bot再レビュー待機 & 新規レビュー検出 [loop-controller]
     │     │
     │     ├── 新規レビュー検出 → Step 1 に戻る
     │     └── 新規レビューなし → Step 6 へ
     │
-    ├── 6. 完了判定
+    ├── 6. 完了判定 [completion-evaluator]
     │     │
     │     ├── 未解決コメント残存 → Step 1 に戻る（maxLoops未到達なら）
     │     └── 全条件クリア → 完了
     │
-    └── 7. レポート出力
+    └── 7. レポート出力 [report-generator]
           → 修正済み・手動対応要・CI状態を報告
+
+サブスキル連鎖:
+  comment-collector → comment-classifier → fix-applicator
+    → commit-manager → loop-controller → completion-evaluator
+    → report-generator
 ```
 
 ## 各ステップの詳細
