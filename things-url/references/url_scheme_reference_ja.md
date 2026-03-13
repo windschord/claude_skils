@@ -96,10 +96,11 @@ things:///add-json?data=[URLエンコードされたJSON]
 ]
 ```
 
-**プロジェクト**:
+**プロジェクト**（配列の要素として使用）:
 ```json
-{
-  "type": "project",
+[
+  {
+    "type": "project",
   "attributes": {
     "title": "プロジェクト名",
     "notes": "メモ",
@@ -121,10 +122,11 @@ things:///add-json?data=[URLエンコードされたJSON]
       }
     ]
   }
-}
+  }
+]
 ```
 
-**見出し**（プロジェクト内のみ）:
+**見出し**（プロジェクト内のみ、配列要素のitems内で使用）:
 ```json
 {
   "type": "heading",
@@ -149,15 +151,17 @@ things:///add-json?data=[URLエンコードされたJSON]
 既存アイテムの更新には`operation`と`id`を指定します。`add-json`経由の更新でも`auth-token`が必要です（URLパラメータとして`things:///add-json?data=[JSON]&auth-token=[TOKEN]`の形式で渡します）:
 
 ```json
-{
-  "type": "to-do",
-  "operation": "update",
-  "id": "THINGS_ITEM_ID",
-  "attributes": {
-    "when": "today",
-    "append-notes": "\n更新メモ"
+[
+  {
+    "type": "to-do",
+    "operation": "update",
+    "id": "THINGS_ITEM_ID",
+    "attributes": {
+      "when": "today",
+      "append-notes": "\n更新メモ"
+    }
   }
-}
+]
 ```
 
 **更新専用パラメータ**:
