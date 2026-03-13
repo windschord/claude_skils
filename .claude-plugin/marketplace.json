@@ -103,6 +103,15 @@
       "skills": [
         "./health-check"
       ]
+    },
+    {
+      "name": "knowledge-base",
+      "description": "ローカルMarkdownファイルによる個人ナレッジベースを管理するスキルです。ノートの保存・追記、検索・参照、会議メモの構造化、整理・要約、既存ファイルの取り込みに対応し、ワークスペース単位で情報を分類管理します。Git（ローカルのみ）で履歴管理し、VS Codeで閲覧可能な構成を維持します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./knowledge-base"
+      ]
     }
   ]
 }
