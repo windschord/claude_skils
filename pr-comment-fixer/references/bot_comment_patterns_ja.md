@@ -117,7 +117,7 @@ Review ID: 3943619906
 
 - `path`と`line`が明示的
 - コード修正の提案を含むことが多い
-- suggestion形式（```suggestion ブロック）を使用する場合がある
+- suggestion形式（suggestionコードブロック）を使用する場合がある
 
 ### suggestion形式の検出
 
@@ -127,7 +127,7 @@ const result = await fetchData();
 ```
 ````
 
-suggestion形式のコメントは、提案されたコードで該当行を置き換えることで対応できる。
+suggestion形式のコメントは、API応答の`start_line`・`line`（または同等の範囲フィールド）で特定した置換対象レンジを提案コードで置き換えて対応する。単一行前提で処理せず、複数行suggestion（`start_line`〜`line`）を正確に扱い、diffコンテキストの整合性を検証した上で適用すること。不一致が検出された場合はauto-fixを中止しmanual-requiredにフォールバックする。
 
 ## 汎用パーサー
 

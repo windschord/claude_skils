@@ -80,7 +80,7 @@ push完了
   ├── ポーリング（15秒間隔）
   │     │
   │     ├── gh pr checks でCIステータス確認
-  │     │     → 全チェックが complete になったか?
+  │     │     → 全チェックが completed になったか?
   │     │
   │     ├── pulls/reviews で新規レビューID確認
   │     │     → known_review_ids に無いIDが出現したか?

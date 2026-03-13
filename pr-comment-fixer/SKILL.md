@@ -152,7 +152,7 @@ auto-fixableコメントを順次修正する:
 注意事項:
 - コメントの指摘に直接対応する最小限の修正のみ
 - 周辺コードのリファクタリングは行わない
-- suggestion形式（```suggestion ブロック）は提案コードでそのまま置換
+- suggestion形式（suggestionコードブロック）は提案コードでそのまま置換
 
 ### Step 4: commit & push
 
@@ -175,7 +175,7 @@ push後、botが再レビューを生成するまで待機する:
 
 1. `gh pr checks`でCIステータスをポーリング（15秒間隔、最大120秒）
 2. `pulls/reviews`で新規レビューIDの出現を監視
-3. CIが全てcompleteかつ新規レビューが検出されなくなったら待機完了
+3. 全CIがcompletedになり、新規レビューが検出されなくなったら待機完了
 
 新規レビュー検出:
 - push前に記録した`known_review_ids`と現在のレビューID一覧を比較

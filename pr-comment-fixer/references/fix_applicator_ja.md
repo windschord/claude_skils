@@ -61,11 +61,11 @@ auto-fixableコメント1件ごとに:
 - **コンテキスト確認**: line番号だけでなく、diff_hunkとファイル内容で該当箇所を確認
 - **最小限の修正**: コメントの指摘に直接対応する変更のみ。周辺コードのリファクタリングは行わない
 - **インデント保持**: 既存のインデントスタイルを維持
-- **suggestion形式への対応**: Copilotの```suggestion ブロックは提案コードでそのまま置換
+- **suggestion形式への対応**: Copilotのsuggestionコードブロックは提案コードでそのまま置換
 
 ### 行番号のズレへの対処
 
-同一ファイルに複数の修正を適用する場合、先の修正で行番号がズレる可能性がある。
+同一ファイルへ複数の修正を適用すると、先の修正により行番号がズレる可能性がある。
 
 対処方法:
 1. 同一ファイルの修正はファイル末尾側から適用（行番号のズレを回避）
@@ -98,14 +98,13 @@ Skipped (manual review required):
 git add {修正したファイルパス1} {修正したファイルパス2} ...
 
 # コミット
-git commit -m "fix: address PR review comments
-
-Addressed the following review comments:
-- [coderabbitai[bot]] src/app/api/route.ts:341 - Fix filter condition
-- [coderabbitai[bot]] docs/sdd/tasks/index.md - Add missing entry
-
-Skipped (manual review required):
-- [coderabbitai[bot]] architecture decision - Requires design review"
+git commit -m "fix: address PR review comments" \
+  -m "Addressed the following review comments:" \
+  -m "- [coderabbitai[bot]] src/app/api/route.ts:341 - Fix filter condition" \
+  -m "- [coderabbitai[bot]] docs/sdd/tasks/index.md - Add missing entry" \
+  -m "" \
+  -m "Skipped (manual review required):" \
+  -m "- [coderabbitai[bot]] architecture decision - Requires design review"
 ```
 
 ### push
