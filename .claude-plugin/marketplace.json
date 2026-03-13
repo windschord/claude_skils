@@ -105,6 +105,15 @@
       ]
     },
     {
+      "name": "knowledge-base",
+      "description": "ローカルMarkdownファイルによる個人ナレッジベースを管理するスキルです。ノートの保存・追記、検索・参照、会議メモの構造化、整理・要約、既存ファイルの取り込みに対応し、ワークスペース単位で情報を分類管理します。Git（ローカルのみ）で履歴管理し、VS Codeで閲覧可能な構成を維持します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./knowledge-base"
+      ]
+    },
+    {
       "name": "things-url",
       "description": "Things URLスキームを使ってClaude Codeのタスク（TodoWrite/docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有します。タスクの作成・更新・表示用のURLを生成してクリップボードにコピーまたは直接開きます。",
       "source": "./",

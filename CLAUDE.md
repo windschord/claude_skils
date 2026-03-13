@@ -100,6 +100,7 @@ sdd-documentation（オーケストレーター）
 - **jules-cli/SKILL.md** - Jules CLI統合スキル
 - **depth-interviewing-career/SKILL.md** - キャリアインタビュースキル
 - **depth-interviewing-product/SKILL.md** - 製品インタビュースキル
+- **knowledge-base/SKILL.md** - ナレッジベース管理スキル
 - **things-url/SKILL.md** - Things URLタスク共有スキル
 
 ## デバッグ・エラー修正の必須プロセス
