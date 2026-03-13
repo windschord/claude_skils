@@ -93,6 +93,15 @@ sdd-documentation（オーケストレーター）
 - **references/archive_ja.md** - アーカイブガイド
 - **references/optimize_ja.md** - 最適化ガイド
 
+### pr-comment-fixer/
+- **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）
+- **references/github_review_api_ja.md** - GitHub Review API構造の解説
+- **references/bot_comment_patterns_ja.md** - 各botのコメントパターン一覧
+- **references/comment_collector_ja.md** - コメント収集ロジック詳細
+- **references/fix_applicator_ja.md** - 修正適用ロジック詳細
+- **references/loop_controller_ja.md** - ループ制御ロジック詳細
+- **assets/templates/fix_report_template_ja.md** - 修正結果レポートテンプレート
+
 ### その他のスキル
 - **incident-rca/SKILL.md** - なぜなぜ分析スキル
 - **operations-design/SKILL.md** - 運用設計スキル
