@@ -191,6 +191,7 @@ Step 1-3の結果を統合し、同一指摘の重複を除去する。
 1. **GraphQL reviewThreads** — `isResolved`状態を持つため最優先
 2. **REST pulls/comments** — `diff_hunk`を持つため詳細情報が豊富
 3. **REST pulls/reviews body** — 補完情報
+4. **REST issues/comments** — PR全体コメント（通常はsummary/praiseとしてスキップ、必要時のみ補完）
 
 ### 統合結果の構造
 

@@ -175,6 +175,13 @@ gh pr checks {PR番号} --json name,state,conclusion \
 | lint/format エラー | 自動修正を試行（ループ継続） |
 | ビルドエラー | ユーザーに報告（ループ中断） |
 
+### 既存CI失敗と新規失敗の判定基準
+
+- ループ開始時に `gh pr checks` の failure 一覧（check名）を baseline として保存する
+- 各ループで再取得し、`current_failures - baseline_failures` を「新規失敗」とみなす
+- 新規失敗がある場合は「修正が原因の失敗」候補として扱う
+- baseline未保存時（初回ループ）は現在の failure をbaselineとして記録し、既存失敗として扱う
+
 ### CI失敗の判定
 
 ```bash
