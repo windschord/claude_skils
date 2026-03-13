@@ -174,10 +174,11 @@ tell application "Things3"
 
     -- 各ビルトインリストを検索
     repeat with listName in listNames
-        set todoList to to dos of list listName
+        set currentList to contents of listName
+        set todoList to to dos of list currentList
         repeat with t in todoList
             if (name of tags of t) contains targetTag then
-                set output to output & "[" & listName & "] " & name of t & linefeed
+                set output to output & "[" & currentList & "] " & name of t & linefeed
             end if
         end repeat
     end repeat

@@ -578,7 +578,7 @@ tell application "Things3"
             repeat with t in todoList
                 if status of t is open then
                     set openCount to openCount + 1
-                else
+                else if status of t is not canceled then
                     set doneCount to doneCount + 1
                 end if
             end repeat
@@ -588,7 +588,7 @@ tell application "Things3"
                 set taskStatus to status of t
                 if taskStatus is open then
                     set output to output & "  - [ ] " & taskName & linefeed
-                else
+                else if taskStatus is not canceled then
                     set output to output & "  - [x] " & taskName & linefeed
                 end if
             end repeat
@@ -616,15 +616,16 @@ tell application "Things3"
 
     -- 各ビルトインリストを検索
     repeat with listName in listNames
-        repeat with t in to dos of list listName
+        set currentList to contents of listName
+        repeat with t in to dos of list currentList
             set tagNames to name of tags of t
             if tagNames contains targetTag then
                 set taskName to name of t
                 set taskStatus to status of t
                 if taskStatus is open then
-                    set output to output & "- [ ] [" & listName & "] " & taskName & linefeed
-                else
-                    set output to output & "- [x] [" & listName & "] " & taskName & linefeed
+                    set output to output & "- [ ] [" & currentList & "] " & taskName & linefeed
+                else if taskStatus is not canceled then
+                    set output to output & "- [x] [" & currentList & "] " & taskName & linefeed
                 end if
             end if
         end repeat
@@ -640,7 +641,7 @@ tell application "Things3"
                     set taskStatus to status of t
                     if taskStatus is open then
                         set output to output & "- [ ] [" & name of p & "] " & taskName & linefeed
-                    else
+                    else if taskStatus is not canceled then
                         set output to output & "- [x] [" & name of p & "] " & taskName & linefeed
                     end if
                 end if
