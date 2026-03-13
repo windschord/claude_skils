@@ -203,7 +203,31 @@ APPLESCRIPT
 
 ## 構造化されたJSON出力
 
-Claude Codeでの処理に適したJSON形式で出力するパターンです：
+Claude Codeでの処理に適したJSON形式で出力するパターンです。
+
+### JSONエスケープ用ヘルパー関数
+
+以下のJSON出力スクリプトでは、共通のヘルパー関数（`escapeJSON`、`replaceText`）を使用します。各スクリプトの末尾（`end tell`の後）にこのヘルパー関数を追加してください：
+
+```applescript
+on escapeJSON(theText)
+    set theText to my replaceText(theText, "\\", "\\\\")
+    set theText to my replaceText(theText, "\"", "\\\"")
+    set theText to my replaceText(theText, return, "\\n")
+    set theText to my replaceText(theText, linefeed, "\\n")
+    set theText to my replaceText(theText, tab, "\\t")
+    return theText
+end escapeJSON
+
+on replaceText(theText, searchString, replacementString)
+    set AppleScript's text item delimiters to searchString
+    set theItems to text items of theText
+    set AppleScript's text item delimiters to replacementString
+    set theText to theItems as text
+    set AppleScript's text item delimiters to ""
+    return theText
+end replaceText
+```
 
 ### 今日のタスクをJSON形式で取得
 
@@ -236,29 +260,11 @@ tell application "Things3"
     return jsonItems
 end tell
 
-on escapeJSON(theText)
-    set theText to my replaceText(theText, "\\", "\\\\")
-    set theText to my replaceText(theText, "\"", "\\\"")
-    set theText to my replaceText(theText, return, "\\n")
-    set theText to my replaceText(theText, linefeed, "\\n")
-    set theText to my replaceText(theText, tab, "\\t")
-    return theText
-end escapeJSON
-
-on replaceText(theText, searchString, replacementString)
-    set AppleScript's text item delimiters to searchString
-    set theItems to text items of theText
-    set AppleScript's text item delimiters to replacementString
-    set theText to theItems as text
-    set AppleScript's text item delimiters to ""
-    return theText
-end replaceText
+-- 上記「JSONエスケープ用ヘルパー関数」をここに追加
 APPLESCRIPT
 ```
 
 ### プロジェクトとタスクをJSON形式で取得
-
-以下のスクリプトでもヘルパー関数（`escapeJSON`、`replaceText`）を使用します。上記「今日のタスクをJSON形式で取得」のスクリプト末尾に定義されているものと同じ関数を追加してください。
 
 ```bash
 osascript <<'APPLESCRIPT'
@@ -304,24 +310,7 @@ tell application "Things3"
     return jsonProjects
 end tell
 
--- ヘルパー関数（「今日のタスクをJSON形式で取得」と同一）
-on escapeJSON(theText)
-    set theText to my replaceText(theText, "\\", "\\\\")
-    set theText to my replaceText(theText, "\"", "\\\"")
-    set theText to my replaceText(theText, return, "\\n")
-    set theText to my replaceText(theText, linefeed, "\\n")
-    set theText to my replaceText(theText, tab, "\\t")
-    return theText
-end escapeJSON
-
-on replaceText(theText, searchString, replacementString)
-    set AppleScript's text item delimiters to searchString
-    set theItems to text items of theText
-    set AppleScript's text item delimiters to replacementString
-    set theText to theItems as text
-    set AppleScript's text item delimiters to ""
-    return theText
-end replaceText
+-- 上記「JSONエスケープ用ヘルパー関数」をここに追加
 APPLESCRIPT
 ```
 

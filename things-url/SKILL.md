@@ -518,6 +518,8 @@ osascript <<'APPLESCRIPT'
 tell application "Things3"
     set todoList to to dos of list "Today"
     set output to ""
+    set openCount to 0
+    set doneCount to 0
     repeat with t in todoList
         set taskName to name of t
         set taskStatus to status of t
@@ -532,16 +534,21 @@ tell application "Things3"
             set output to output & " (tags: " & tagStr & ")"
         end if
         set output to output & linefeed
+        if taskStatus is open then
+            set openCount to openCount + 1
+        else
+            set doneCount to doneCount + 1
+        end if
     end repeat
     if output is "" then
         return "(今日のタスクはありません)"
     end if
+    set totalCount to openCount + doneCount
+    set output to output & linefeed & "合計: " & totalCount & "件（未完了: " & openCount & "件、完了: " & doneCount & "件）"
     return output
 end tell
 APPLESCRIPT
 ```
-
-上記スクリプトの出力をもとに、タスク一覧と集計を表示します：
 
 ```text
 [things-url] ステップ 3/3: 完了
@@ -553,8 +560,6 @@ Things 3「今日」のタスク一覧：
 - ミーティング準備 [completed]
 
 合計: 4件（未完了: 3件、完了: 1件）
-
-※ 合計行はスクリプト出力を解析してClaude Codeが算出します。
 ```
 
 ### プロジェクト一覧とタスクを読み取る
