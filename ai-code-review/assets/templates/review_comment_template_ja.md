@@ -211,13 +211,13 @@
         },
         "fix_strategy": {
           "approach": "[推奨する修正アプローチの説明]",
-          "alternatives": ["[代替案があれば記載]"],
-          "impact": "[修正による影響範囲]",
+          "alternatives": ["[代替案があれば記載。なければ空配列]"],
+          "impact": "[修正による影響範囲（他ファイル、依存コンポーネント等）。なければ「なし」]",
           "effort": "small | medium | large"
         },
         "context": "[該当行の前後3行程度のコード断片]",
         "scope": "fix-in-this-pr | fix-in-follow-up | wont-fix",
-        "rule": "[関連ルール]",
+        "rule": "[関連ルール: OWASP-A03, SRP等]",
         "verification_hint": "[修正後に確認すべきチェックポイント]"
       }
     ]
