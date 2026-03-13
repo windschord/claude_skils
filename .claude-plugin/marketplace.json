@@ -103,6 +103,15 @@
       "skills": [
         "./health-check"
       ]
+    },
+    {
+      "name": "things-url",
+      "description": "Things URLスキームを使ってClaude Codeのタスク（TodoWrite/docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有します。タスクの作成・更新・表示用のURLを生成してクリップボードにコピーまたは直接開きます。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./things-url"
+      ]
     }
   ]
 }

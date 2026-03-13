@@ -69,13 +69,14 @@ things:///add-json?data=[URLエンコードされたJSON]
 
 #### JSONの構造
 
-トップレベルは配列で、各要素は`type`と`attributes`を持ちます。
+トップレベルは配列で、各要素は`type`と`attributes`を持ちます。`data`パラメータには必ず配列`[...]`として渡してください。
 
-**To-Do**:
+**To-Do**（配列の要素として使用）:
 ```json
-{
-  "type": "to-do",
-  "attributes": {
+[
+  {
+    "type": "to-do",
+    "attributes": {
     "title": "タスク名",
     "notes": "メモ",
     "when": "today",
@@ -91,7 +92,8 @@ things:///add-json?data=[URLエンコードされたJSON]
     "canceled": false,
     "creation-date": "2026-03-13"
   }
-}
+  }
+]
 ```
 
 **プロジェクト**:
@@ -144,7 +146,7 @@ things:///add-json?data=[URLエンコードされたJSON]
 
 #### JSONでの更新操作
 
-既存アイテムの更新には`operation`と`id`を指定します:
+既存アイテムの更新には`operation`と`id`を指定します。`add-json`経由の更新でも`auth-token`が必要です（URLパラメータとして`things:///add-json?data=[JSON]&auth-token=[TOKEN]`の形式で渡します）:
 
 ```json
 {
@@ -223,11 +225,16 @@ things:///search?query=[検索語]
 
 ## x-callback-url
 
-作成したアイテムのIDを取得する場合：
+作成したアイテムのIDを取得する場合、`x-success`と`x-cancel`パラメータにコールバックURLを指定します。パラメータ値はURLエンコードが必要です：
 
 ```text
-things:///add?title=タスク&x-success=myapp://callback&x-cancel=myapp://canceled
+things:///add?title=%E3%82%BF%E3%82%B9%E3%82%AF&x-success=myapp%3A%2F%2Fcallback&x-cancel=myapp%3A%2F%2Fcanceled
 ```
+
+上記は以下のデコード済み値に対応します：
+- `title` = `タスク`
+- `x-success` = `myapp://callback`
+- `x-cancel` = `myapp://canceled`
 
 コールバックURLに`x-things-id`パラメータが付与されます。
 
