@@ -536,7 +536,7 @@ tell application "Things3"
         set output to output & linefeed
         if taskStatus is open then
             set openCount to openCount + 1
-        else
+        else if taskStatus is not canceled then
             set doneCount to doneCount + 1
         end if
     end repeat
@@ -698,6 +698,8 @@ TodoWriteを更新してよろしいですか？
 1. osascriptでThings 3からSDDプロジェクトのタスクを取得
    ↓
 2. TASK-XXX IDでdocs/sdd/tasks/の各タスクと照合
+   ※ `[TASK-XXX]`形式のIDを持つタスクのみ同期対象とする
+   ※ `[TASK-XXX]`パターンに一致しないファイルはスキップして保持する
    ↓
 3. ステータスの差分を検出
    ↓
@@ -706,8 +708,11 @@ TodoWriteを更新してよろしいですか？
 5. ユーザー承認
    ↓
 6. docs/sdd/tasks/のタスクファイルを更新
+   ※ TASK-XXX IDで照合されたファイルのみ更新する
+   ※ 非SDDタスク（外部作成のファイル）は変更・削除しない
    ↓
 7. TodoWriteも連動更新
+   ※ 非SDDタスクのtodo（contentが`[TASK-`で始まらないもの）はそのまま保持する
    ↓
 8. 完了を報告
 ```
