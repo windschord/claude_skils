@@ -170,6 +170,10 @@ query($owner: String!, $repo: String!, $pr: Int!) {
             }
           }
         }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
       }
     }
   }

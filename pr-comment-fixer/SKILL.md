@@ -64,6 +64,8 @@ GitHub PRのレビューコメント（CodeRabbit、Copilot等のbotコメント
 
 ## ワークフロー概要
 
+> **運用ルール**: 各フェーズは1応答で1つだけ実行し、結果をユーザーに報告してから次のフェーズへ進む。複数フェーズを1応答で連続実行しない。
+
 ```text
 PR番号を受け取る
     │
@@ -91,7 +93,10 @@ PR番号を受け取る
     └── 7. レポート出力 [report-generator]
           → 修正済み・手動対応要・CI状態を報告
 
-サブスキル連鎖:
+※ [bracket-name] はpr-comment-fixer内部の論理コンポーネント名であり、
+   個別に呼び出せる独立スキルではない。
+
+論理コンポーネント連鎖:
   comment-collector → comment-classifier → fix-applicator
     → commit-manager → loop-controller → completion-evaluator
     → report-generator
