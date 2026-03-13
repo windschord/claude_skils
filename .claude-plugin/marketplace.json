@@ -121,6 +121,15 @@
       "skills": [
         "./things-url"
       ]
+    },
+    {
+      "name": "pr-comment-fixer",
+      "description": "GitHub PRのレビューコメント（インラインスレッド・レビュー本文・Issueコメント）を自動検出し、コード修正を適用するスキルです。CodeRabbit・Copilot等のbotコメントにも対応し、修正→push→再レビュー検出のループを自動化します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./pr-comment-fixer"
+      ]
     }
   ]
 }
