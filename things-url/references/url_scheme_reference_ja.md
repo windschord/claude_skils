@@ -77,21 +77,21 @@ things:///add-json?data=[URLエンコードされたJSON]
   {
     "type": "to-do",
     "attributes": {
-    "title": "タスク名",
-    "notes": "メモ",
-    "when": "today",
-    "deadline": "2026-03-20",
-    "tags": ["タグ1", "タグ2"],
-    "checklist-items": [
-      {"title": "チェック項目1", "completed": false},
-      {"title": "チェック項目2", "completed": true}
-    ],
-    "list": "プロジェクト名",
-    "heading": "見出し名",
-    "completed": false,
-    "canceled": false,
-    "creation-date": "2026-03-13"
-  }
+      "title": "タスク名",
+      "notes": "メモ",
+      "when": "today",
+      "deadline": "2026-03-20",
+      "tags": ["タグ1", "タグ2"],
+      "checklist-items": [
+        {"title": "チェック項目1", "completed": false},
+        {"title": "チェック項目2", "completed": true}
+      ],
+      "list": "プロジェクト名",
+      "heading": "見出し名",
+      "completed": false,
+      "canceled": false,
+      "creation-date": "2026-03-13"
+    }
   }
 ]
 ```
@@ -101,27 +101,27 @@ things:///add-json?data=[URLエンコードされたJSON]
 [
   {
     "type": "project",
-  "attributes": {
-    "title": "プロジェクト名",
-    "notes": "メモ",
-    "when": "today",
-    "deadline": "2026-03-31",
-    "tags": ["タグ1"],
-    "area": "エリア名",
-    "items": [
-      {
-        "type": "heading",
-        "attributes": {"title": "見出し1"}
-      },
-      {
-        "type": "to-do",
-        "attributes": {
-          "title": "タスク1",
-          "notes": "メモ"
+    "attributes": {
+      "title": "プロジェクト名",
+      "notes": "メモ",
+      "when": "today",
+      "deadline": "2026-03-31",
+      "tags": ["タグ1"],
+      "area": "エリア名",
+      "items": [
+        {
+          "type": "heading",
+          "attributes": {"title": "見出し1"}
+        },
+        {
+          "type": "to-do",
+          "attributes": {
+            "title": "タスク1",
+            "notes": "メモ"
+          }
         }
-      }
-    ]
-  }
+      ]
+    }
   }
 ]
 ```
