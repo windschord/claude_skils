@@ -181,6 +181,7 @@ gh pr checks {PR番号} --json name,state,conclusion \
 - 各ループで再取得し、`current_failures - baseline_failures` を「新規失敗」とみなす
 - 新規失敗がある場合は「修正が原因の失敗」候補として扱う
 - baseline未保存時（初回ループ）は現在の failure をbaselineとして記録し、既存失敗として扱う
+- baseline保存が失敗した場合は最大3回再試行し、それでも失敗した場合はループを中断してユーザーに報告する
 
 ### CI失敗の判定
 

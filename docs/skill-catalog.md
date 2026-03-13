@@ -391,3 +391,28 @@ SDDのタスクをThingsと共有してください
 
 - Things 3がmacOS/iOS/iPadOSにインストールされている必要がある
 - Things URLスキームが有効になっている必要がある（初回実行時にThingsが確認）
+
+---
+
+### pr-comment-fixer
+
+GitHub PRのレビューコメント（インラインスレッド・レビュー本文・Issueコメント）を自動検出し、修正を適用するスキルです。CodeRabbit・Copilot等のbotコメントにも対応します。
+
+**使用開始:**
+
+```text
+PR #123 のレビューコメントを修正してください
+```
+
+**主な機能:**
+
+- 3つのREST API + GraphQLから全コメントを網羅的に収集
+- CodeRabbit・Copilot等のbot固有パーサーによるコメント解析
+- auto-fixable / manual-required / already-addressedの自動分類
+- 修正→コミット→プッシュ→bot再レビュー検出→再スキャンの自動ループ
+- 設計判断が必要なコメントはスキップしてユーザーに報告
+
+**前提条件:**
+
+- `gh` CLIがインストール済みで認証されていること
+- 対象PRのブランチがチェックアウトされていること
