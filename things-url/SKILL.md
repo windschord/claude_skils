@@ -524,21 +524,23 @@ tell application "Things3"
     repeat with t in todoList
         set taskName to name of t
         set taskStatus to status of t
-        set taskTagNames to name of tags of t
-        set tagStr to ""
-        repeat with i from 1 to count of taskTagNames
-            if i > 1 then set tagStr to tagStr & ", "
-            set tagStr to tagStr & item i of taskTagNames
-        end repeat
-        set output to output & "- " & taskName & " [" & taskStatus & "]"
-        if tagStr is not "" then
-            set output to output & " (tags: " & tagStr & ")"
-        end if
-        set output to output & linefeed
-        if taskStatus is open then
-            set openCount to openCount + 1
-        else if taskStatus is not canceled then
-            set doneCount to doneCount + 1
+        if taskStatus is not canceled then
+            set taskTagNames to name of tags of t
+            set tagStr to ""
+            repeat with i from 1 to count of taskTagNames
+                if i > 1 then set tagStr to tagStr & ", "
+                set tagStr to tagStr & item i of taskTagNames
+            end repeat
+            set output to output & "- " & taskName & " [" & taskStatus & "]"
+            if tagStr is not "" then
+                set output to output & " (tags: " & tagStr & ")"
+            end if
+            set output to output & linefeed
+            if taskStatus is open then
+                set openCount to openCount + 1
+            else
+                set doneCount to doneCount + 1
+            end if
         end if
     end repeat
     if output is "" then
@@ -555,8 +557,8 @@ APPLESCRIPT
 [things-url] ステップ 3/3: 完了
 
 Things 3「今日」のタスク一覧：
-- TASK-001: データモデルの定義 [open] (tags: 進行中, SDD)
-- TASK-002: APIエンドポイントの実装 [open] (tags: TODO, SDD)
+- [TASK-001]: データモデルの定義 [open] (tags: 進行中, SDD)
+- [TASK-002]: APIエンドポイントの実装 [open] (tags: TODO, SDD)
 - レビュー依頼への対応 [open] (tags: レビュー)
 - ミーティング準備 [completed]
 
@@ -682,13 +684,13 @@ APPLESCRIPT
 以下の変更を検出しました：
 
 変更あり:
-  TASK-001: データモデルの定義
+  [TASK-001]: データモデルの定義
     Things: completed → TodoWrite: in_progress → 更新: completed
-  TASK-003: 認証ミドルウェア
+  [TASK-003]: 認証ミドルウェア
     Things: open (tag: 進行中) → TodoWrite: pending → 更新: in_progress
 
 変更なし:
-  TASK-002: APIエンドポイントの実装 (in_progress)
+  [TASK-002]: APIエンドポイントの実装 (in_progress)
 
 TodoWriteを更新してよろしいですか？
 ```
