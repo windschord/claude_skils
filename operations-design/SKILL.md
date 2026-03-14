@@ -525,6 +525,15 @@ WebSearchツールを使用して以下を調査:
                    考慮事項: スケーリングリードタイム（2〜4ヶ月）、リソース保有コスト、
                             全責任範囲の管理が必要
 
+                D) **SaaS / マルチテナント** ⭐⭐⭐⭐⭐
+                   - マルチテナントSaaSアプリケーション
+                   - コンテナ基盤（ECS, GKE, AKS等）
+                   - クラウドプロバイダー非依存の設計
+                   - テナント分離・課金・SLA管理
+
+                   推奨理由: SaaS特有のマルチテナント運用・テナント管理を網羅
+                   考慮事項: テナント分離戦略、SaaS固有のセキュリティ・コンプライアンス要件
+
 ユーザー: [回答]
 
 コンサルタント: ありがとうございます。[選択されたパターン]に適した運用設計書テンプレートを使用します。
@@ -533,6 +542,18 @@ WebSearchツールを使用して以下を調査:
                 - A選択時: operations_design_template_cloud_native_ja.md
                 - B選択時: operations_design_template_cloud_instance_ja.md
                 - C選択時: operations_design_template_onpremise_ja.md
+                - D選択時: operations_design_template_saas_ja.md
+                  ※ SaaS選択時は以下の順序でヒアリングを重点的に実施:
+                    （各項目をステップ1の業界調査後、ステップ2のヒアリングで順番に確認する）
+                    1. テナント分離戦略（プール/サイロ/ハイブリッド）
+                    2. 認証・オンボーディング方式（SSO, MFA, JIT）
+                    3. プラン・課金体系（リソース制限, API制限）
+                    4. SLA定義（テナント種別ごとの目標値）
+                    5. コンプライアンス要件（GDPR, 個人情報保護法）
+                    6. 監視・アラート（テナント別メトリクス）
+                    7. インシデント対応・バックアップ（テナント影響範囲の特定）
+                  ※ ヒアリング結果に基づきテンプレートの各セクションを埋める。
+                    不明な項目は[未定]として残し、後続ステップで再確認する。
 
                 それでは、業界トレンド調査に進みます。
 ```
@@ -1408,6 +1429,7 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 - `operations_design_template_cloud_native_ja.md`: クラウドネイティブ/サーバレス/Kubernetes対応
 - `operations_design_template_cloud_instance_ja.md`: クラウドインスタンス/IaaS対応（LAMP等）
 - `operations_design_template_onpremise_ja.md`: オンプレミス対応
+- `operations_design_template_saas_ja.md`: SaaS運用設計対応（マルチテナント・コンテナ基盤・クラウドプロバイダー非依存）
 
 **その他のテンプレート**:
 - `conversation_log_template_ja.md`: 会話ログテンプレート
