@@ -62,23 +62,65 @@ if [ ${#FILES[@]} -eq 0 ]; then
   exit 0
 fi
 
+# Generate GitHub-compatible anchor from heading text
+# GitHub rules: lowercase, spaces->hyphens, remove punctuation except hyphens and CJK chars
+generate_anchor() {
+  local heading="$1"
+  echo "$heading" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed 's/ /-/g' \
+    | sed 's/[][()*{}+`'"'"'"!@#$%^&=|\\<>,;:.?\/]//g'
+}
+
 # Generate TOC from a markdown file
 generate_toc() {
   local file="$1"
   local toc=""
+  local in_code_block=false
+
+  # Track duplicate anchors using a temp file (bash 3 compatible)
+  local anchor_tracker
+  anchor_tracker=$(mktemp)
+  trap "rm -f '$anchor_tracker'" RETURN
 
   while IFS= read -r line; do
-    # Match ## and ### headings (skip # which is the title)
-    if echo "$line" | grep -qE '^#{2,3} '; then
+    # Track fenced code blocks (``` or ~~~)
+    if echo "$line" | grep -qE '^\s*(```|~~~)'; then
+      if $in_code_block; then
+        in_code_block=false
+      else
+        in_code_block=true
+      fi
+      continue
+    fi
+
+    # Skip headings inside code blocks
+    if $in_code_block; then
+      continue
+    fi
+
+    # Match ## and ### headings (skip # title and ## 目次 itself)
+    if echo "$line" | grep -qE '^#{2,3} ' && ! echo "$line" | grep -qE '^## 目次$'; then
       local level
       level=$(echo "$line" | sed 's/^\(#*\).*/\1/' | wc -c | tr -d ' ')
       level=$((level - 1))  # wc -c counts newline
       local heading
       heading=$(echo "$line" | sed 's/^#* //')
 
-      # Create anchor: lowercase ASCII, keep Japanese chars, replace spaces with hyphens
+      local base_anchor
+      base_anchor=$(generate_anchor "$heading")
+
+      # Count previous occurrences of this anchor
+      local count
+      count=$(grep -c "^${base_anchor}$" "$anchor_tracker" 2>/dev/null || true)
+      echo "$base_anchor" >> "$anchor_tracker"
+
       local anchor
-      anchor=$(echo "$heading" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g' | sed 's/[(){}`*\[\]'"'"'\"!@#$%^&+=|\\<>,;:?\/]//g')
+      if [ "$count" -eq 0 ]; then
+        anchor="$base_anchor"
+      else
+        anchor="${base_anchor}-${count}"
+      fi
 
       local indent=""
       if [ "$level" -gt 2 ]; then
@@ -89,7 +131,8 @@ generate_toc() {
     fi
   done < "$file"
 
-  echo "$toc"
+  rm -f "$anchor_tracker"
+  printf '%s' "$toc"
 }
 
 # Process each file
@@ -112,41 +155,39 @@ for file in "${FILES[@]}"; do
     continue
   fi
 
-  # Build full TOC block
-  toc_block="<!-- TOC -->
-## 目次
-
-${toc_content}<!-- /TOC -->"
+  # Build full TOC block with explicit trailing newline
+  toc_tmp="${file}.toc.tmp"
+  {
+    echo "<!-- TOC -->"
+    echo "## 目次"
+    echo ""
+    printf '%s' "$toc_content"
+    echo ""
+    echo "<!-- /TOC -->"
+  } > "$toc_tmp"
 
   if $DRY_RUN; then
     echo "[DRY-RUN] $rel_path:"
-    echo "$toc_block"
+    cat "$toc_tmp"
     echo "---"
+    rm -f "$toc_tmp"
     continue
   fi
 
-  # Write TOC to temp file for insertion
-  toc_tmp="${file}.toc.tmp"
-  echo "$toc_block" > "$toc_tmp"
-
   # Check if TOC markers exist
   if grep -q '<!-- TOC -->' "$file" && grep -q '<!-- /TOC -->' "$file"; then
-    # Update existing TOC: remove old TOC, insert new
-    awk '
-      /<!-- TOC -->/ { skip=1; next }
-      /<!-- \/TOC -->/ { skip=0; next }
-      !skip { print }
-    ' "$file" > "${file}.tmp"
-    # Find the line number of the first ## heading to insert before
-    first_h2=$(grep -n '^## ' "${file}.tmp" | head -1 | cut -d: -f1)
-    if [ -n "$first_h2" ]; then
-      head -n $((first_h2 - 1)) "${file}.tmp" > "${file}.tmp2"
-      cat "$toc_tmp" >> "${file}.tmp2"
-      echo "" >> "${file}.tmp2"
-      tail -n +${first_h2} "${file}.tmp" >> "${file}.tmp2"
-      mv "${file}.tmp2" "$file"
+    # Update existing TOC: replace content between markers (preserve position)
+    toc_start=$(grep -n '<!-- TOC -->' "$file" | head -1 | cut -d: -f1)
+    toc_end=$(grep -n '<!-- /TOC -->' "$file" | head -1 | cut -d: -f1)
+
+    if [ -n "$toc_start" ] && [ -n "$toc_end" ]; then
+      {
+        head -n $((toc_start - 1)) "$file"
+        cat "$toc_tmp"
+        tail -n +$((toc_end + 1)) "$file"
+      } > "${file}.tmp"
+      mv "${file}.tmp" "$file"
     fi
-    rm -f "${file}.tmp"
     echo "[UPDATE] $rel_path: TOC updated"
   else
     # Insert TOC after the first # heading line and its following empty line
@@ -158,11 +199,13 @@ ${toc_content}<!-- /TOC -->"
       if [ -z "$next_line" ]; then
         insert_after=$((title_line + 1))
       fi
-      head -n ${insert_after} "$file" > "${file}.tmp"
-      echo "" >> "${file}.tmp"
-      cat "$toc_tmp" >> "${file}.tmp"
-      echo "" >> "${file}.tmp"
-      tail -n +$((insert_after + 1)) "$file" >> "${file}.tmp"
+      {
+        head -n ${insert_after} "$file"
+        echo ""
+        cat "$toc_tmp"
+        echo ""
+        tail -n +$((insert_after + 1)) "$file"
+      } > "${file}.tmp"
       mv "${file}.tmp" "$file"
     fi
     echo "[INSERT] $rel_path: TOC inserted"

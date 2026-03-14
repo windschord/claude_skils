@@ -15,12 +15,12 @@
   - [注意事項](#注意事項)
 - [ステータスマッピング](#ステータスマッピング)
 - [同期手順](#同期手順)
-  - [1. タスク計画完了時（task-planning）](#1.-タスク計画完了時（task-planning）)
-  - [2. タスク開始時（task-executing）](#2.-タスク開始時（task-executing）)
-  - [3. タスク完了時（task-executing）](#3.-タスク完了時（task-executing）)
-  - [4. タスクブロック時](#4.-タスクブロック時)
-  - [5. トラブルシュートでタスク追加時（sdd-troubleshooting）](#5.-トラブルシュートでタスク追加時（sdd-troubleshooting）)
-  - [6. ドキュメント管理でタスク追加時（sdd-document-management）](#6.-ドキュメント管理でタスク追加時（sdd-document-management）)
+  - [1. タスク計画完了時（task-planning）](#1-タスク計画完了時（task-planning）)
+  - [2. タスク開始時（task-executing）](#2-タスク開始時（task-executing）)
+  - [3. タスク完了時（task-executing）](#3-タスク完了時（task-executing）)
+  - [4. タスクブロック時](#4-タスクブロック時)
+  - [5. トラブルシュートでタスク追加時（sdd-troubleshooting）](#5-トラブルシュートでタスク追加時（sdd-troubleshooting）)
+  - [6. ドキュメント管理でタスク追加時（sdd-document-management）](#6-ドキュメント管理でタスク追加時（sdd-document-management）)
 - [エージェントチームとの連携](#エージェントチームとの連携)
   - [チームリーダーの責務](#チームリーダーの責務)
   - [チームメンバーの責務](#チームメンバーの責務)
@@ -30,11 +30,12 @@
   - [バグ修正タスク](#バグ修正タスク)
   - [ドキュメント修正タスク](#ドキュメント修正タスク)
   - [BLOCKEDタスク](#blockedタスク)
-- [注意事項](#注意事項)
+- [注意事項](#注意事項-1)
   - [TodoWriteの制約](#todowriteの制約)
   - [非SDDタスクの保護](#非sddタスクの保護)
   - [同期が不要な場面](#同期が不要な場面)
-  - [同期漏れの防止](#同期漏れの防止)<!-- /TOC -->
+  - [同期漏れの防止](#同期漏れの防止)
+<!-- /TOC -->
 
 ## 概要
 

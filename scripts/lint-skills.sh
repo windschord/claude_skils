@@ -97,12 +97,10 @@ while IFS= read -r skill_file; do
 
   # Check description field
   desc_value=$(echo "$frontmatter" | grep -E '^description:' | head -1 | sed 's/^description:[[:space:]]*//')
-  if [ -z "$desc_value" ]; then
-    # Check for multi-line description (YAML block scalar)
-    if echo "$frontmatter" | grep -qE '^description:[[:space:]]*\|'; then
-      # Multi-line: extract all lines after "description: |" until next field
-      desc_value=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed -n '/^description:/,/^[a-z]/p' | tail -n +2 | head -n -1 | tr -d '\n')
-    fi
+  # Handle YAML block scalar indicators (|, |-, >, >-)
+  if [ -z "$desc_value" ] || echo "$desc_value" | grep -qE '^\|[-]?$|^>[-]?$'; then
+    # Multi-line: extract all lines after "description:" until next top-level field
+    desc_value=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed -n '/^description:/,/^[a-z]/p' | tail -n +2 | sed '$d' | tr -d '\n' | sed 's/^[[:space:]]*//')
   fi
 
   if [ -z "$desc_value" ]; then
@@ -140,9 +138,10 @@ while IFS= read -r md_file; do
   check
   rel_path="${md_file#"$ROOT_DIR/"}"
   file_size_bytes=$(wc -c < "$md_file" | tr -d ' ')
-  file_size_kb=$((file_size_bytes / 1024))
+  file_size_limit_bytes=$((MAX_FILE_SIZE_KB * 1024))
+  file_size_kb=$(( (file_size_bytes + 1023) / 1024 ))  # Round up
 
-  if [ "$file_size_kb" -gt "$MAX_FILE_SIZE_KB" ]; then
+  if [ "$file_size_bytes" -gt "$file_size_limit_bytes" ]; then
     warn "$rel_path: ${file_size_kb}KB (limit: ${MAX_FILE_SIZE_KB}KB)"
   fi
 done < <(find "$ROOT_DIR" -name "*.md" \
