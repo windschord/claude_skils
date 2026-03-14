@@ -1,15 +1,27 @@
 #!/usr/bin/env bash
 # generate-toc.sh - Auto-generate Table of Contents for Markdown files
 # Scans ## headings and inserts/updates TOC between <!-- TOC --> markers
+# Uses github-slugger via node for exact GitHub anchor compatibility
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SLUG_SCRIPT="$SCRIPT_DIR/github-slug.mjs"
 
 MIN_LINES_FOR_TOC=100
 DRY_RUN=false
 ALL_MODE=false
 FILES=()
+
+# Verify dependencies
+if ! command -v node > /dev/null 2>&1; then
+  echo "Error: node is required but not found" >&2
+  exit 1
+fi
+if [ ! -f "$SLUG_SCRIPT" ]; then
+  echo "Error: $SLUG_SCRIPT not found" >&2
+  exit 1
+fi
 
 usage() {
   echo "Usage: $(basename "$0") [OPTIONS] [FILE...]"
@@ -62,41 +74,14 @@ if [ ${#FILES[@]} -eq 0 ]; then
   exit 0
 fi
 
-# Generate GitHub-compatible anchor from heading text
-# Matches github-slugger: lowercase, remove ASCII punctuation, spaces to hyphens
-# Full-width/CJK characters (（）、。etc) are intentionally KEPT per github-slugger spec
-generate_anchor() {
-  local heading="$1"
-  # Use perl for reliable Unicode-safe processing
-  if command -v perl > /dev/null 2>&1; then
-    perl -CSDA -e '
-      $_ = shift;
-      $_ = lc($_);
-      # Remove ASCII punctuation per github-slugger regex
-      s/[\x{2000}-\x{206F}\x{2E00}-\x{2E7F}\\'"'"'"!\#\$%&()*+,.\/:;<=>?@\[\]^`{|}~]//g;
-      s/ /-/g;
-      print;
-    ' "$heading"
-  else
-    # Fallback: sed-based (ASCII-only removal, safe with multibyte)
-    echo "$heading" \
-      | tr '[:upper:]' '[:lower:]' \
-      | sed 's/ /-/g' \
-      | sed "s/[(){}*+\`'\"!@#\$%^&=|\\\\<>,;:.?\\/]//g" \
-      | sed 's/\]//g; s/\[//g'
-  fi
-}
-
 # Generate TOC from a markdown file
 generate_toc() {
   local file="$1"
-  local toc=""
   local in_code_block=false
 
-  # Track duplicate anchors using a temp file (bash 3 compatible)
-  local anchor_tracker
-  anchor_tracker=$(mktemp)
-  trap "rm -f '$anchor_tracker'" RETURN
+  # Collect headings (skip code blocks)
+  local headings_tmp
+  headings_tmp=$(mktemp)
 
   while IFS= read -r line; do
     # Track fenced code blocks (``` or ~~~)
@@ -116,37 +101,46 @@ generate_toc() {
 
     # Match ## and ### headings (skip # title and ## 目次 itself)
     if echo "$line" | grep -qE '^#{2,3} ' && ! echo "$line" | grep -qE '^## 目次$'; then
-      local level
-      level=$(echo "$line" | sed 's/^\(#*\).*/\1/' | wc -c | tr -d ' ')
-      level=$((level - 1))  # wc -c counts newline
-      local heading
-      heading=$(echo "$line" | sed 's/^#* //')
-
-      local base_anchor
-      base_anchor=$(generate_anchor "$heading")
-
-      # Count previous occurrences of this anchor
-      local count
-      count=$(grep -c "^${base_anchor}$" "$anchor_tracker" 2>/dev/null || true)
-      echo "$base_anchor" >> "$anchor_tracker"
-
-      local anchor
-      if [ "$count" -eq 0 ]; then
-        anchor="$base_anchor"
-      else
-        anchor="${base_anchor}-${count}"
-      fi
-
-      local indent=""
-      if [ "$level" -gt 2 ]; then
-        indent="  "
-      fi
-
-      toc="${toc}${indent}- [${heading}](#${anchor})"$'\n'
+      echo "$line" >> "$headings_tmp"
     fi
   done < "$file"
 
-  rm -f "$anchor_tracker"
+  if [ ! -s "$headings_tmp" ]; then
+    rm -f "$headings_tmp"
+    return
+  fi
+
+  # Extract heading texts and generate slugs in batch (single node invocation)
+  local texts_tmp slugs_tmp
+  texts_tmp=$(mktemp)
+  slugs_tmp=$(mktemp)
+
+  sed 's/^#* //' "$headings_tmp" > "$texts_tmp"
+  node "$SLUG_SCRIPT" < "$texts_tmp" > "$slugs_tmp"
+
+  # Build TOC by combining heading levels with slugs
+  local toc=""
+  local line_num=0
+
+  while IFS= read -r heading_line; do
+    line_num=$((line_num + 1))
+    local level
+    level=$(echo "$heading_line" | sed 's/^\(#*\).*/\1/' | wc -c | tr -d ' ')
+    level=$((level - 1))  # wc -c counts newline
+    local heading
+    heading=$(echo "$heading_line" | sed 's/^#* //')
+    local anchor
+    anchor=$(sed -n "${line_num}p" "$slugs_tmp")
+
+    local indent=""
+    if [ "$level" -gt 2 ]; then
+      indent="  "
+    fi
+
+    toc="${toc}${indent}- [${heading}](#${anchor})"$'\n'
+  done < "$headings_tmp"
+
+  rm -f "$headings_tmp" "$texts_tmp" "$slugs_tmp"
   printf '%s' "$toc"
 }
 
@@ -170,7 +164,7 @@ for file in "${FILES[@]}"; do
     continue
   fi
 
-  # Build full TOC block with explicit trailing newline
+  # Build full TOC block
   toc_tmp="${file}.toc.tmp"
   {
     echo "<!-- TOC -->"
@@ -208,7 +202,6 @@ for file in "${FILES[@]}"; do
     # Insert TOC after the first # heading line and its following empty line
     title_line=$(grep -n '^# ' "$file" | head -1 | cut -d: -f1)
     if [ -n "$title_line" ]; then
-      # Check if next line is empty, if so include it
       insert_after=$title_line
       next_line=$(sed -n "$((title_line + 1))p" "$file")
       if [ -z "$next_line" ]; then

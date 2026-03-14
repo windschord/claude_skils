@@ -12,7 +12,7 @@
   - [ステップ5: タスク完了前チェックリスト確認](#ステップ5-タスク完了前チェックリスト確認)
   - [ステップ6: コミット作成とDONE更新](#ステップ6-コミット作成とdone更新)
   - [ステップ7: 逆順レビュー](#ステップ7-逆順レビュー)
-- [並列実行（Agent tool + isolation: worktree）](#並列実行（agent-tool--isolation-worktree）)
+- [並列実行（Agent tool + isolation: worktree）](#並列実行agent-tool--isolation-worktree)
   - [並列実行の条件](#並列実行の条件)
   - [Agent toolによる並列実装](#agent-toolによる並列実装)
   - [Agent tool呼び出しの例](#agent-tool呼び出しの例)
