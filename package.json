@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "textlint": "textlint \"**/*.md\"",
-    "textlint:fix": "textlint --fix \"**/*.md\""
+    "textlint:fix": "textlint --fix \"**/*.md\"",
+    "skill-lint": "bash scripts/lint-skills.sh",
+    "generate-toc": "bash scripts/generate-toc.sh --all"
   },
   "devDependencies": {
     "textlint": "14.8.4",

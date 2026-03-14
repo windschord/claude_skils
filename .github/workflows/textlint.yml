@@ -1,4 +1,4 @@
-name: Textlint
+name: Lint
 
 on:
   pull_request:
@@ -9,6 +9,35 @@ on:
       - 'package-lock.json'
 
 jobs:
+  skill-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Skip for Dependabot
+        if: github.actor == 'dependabot[bot]'
+        run: echo "Skipping skill-lint for Dependabot PR"
+
+      - name: Checkout code
+        if: github.actor != 'dependabot[bot]'
+        uses: actions/checkout@v4
+
+      - name: Run skill lint
+        if: github.actor != 'dependabot[bot]'
+        run: bash scripts/lint-skills.sh
+
+      - name: Comment PR on failure
+        if: failure() && github.actor != 'dependabot[bot]'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: ':warning: Skill Lint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで確認:\n```bash\nbash scripts/lint-skills.sh\n```'
+            })
+
   textlint:
     runs-on: ubuntu-latest
 
