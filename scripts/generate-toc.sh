@@ -63,13 +63,28 @@ if [ ${#FILES[@]} -eq 0 ]; then
 fi
 
 # Generate GitHub-compatible anchor from heading text
-# GitHub rules: lowercase, spaces->hyphens, remove punctuation except hyphens and CJK chars
+# Matches github-slugger: lowercase, remove ASCII punctuation, spaces to hyphens
+# Full-width/CJK characters (（）、。etc) are intentionally KEPT per github-slugger spec
 generate_anchor() {
   local heading="$1"
-  echo "$heading" \
-    | tr '[:upper:]' '[:lower:]' \
-    | sed 's/ /-/g' \
-    | sed 's/[][()*{}+`'"'"'"!@#$%^&=|\\<>,;:.?\/]//g'
+  # Use perl for reliable Unicode-safe processing
+  if command -v perl > /dev/null 2>&1; then
+    perl -CSDA -e '
+      $_ = shift;
+      $_ = lc($_);
+      # Remove ASCII punctuation per github-slugger regex
+      s/[\x{2000}-\x{206F}\x{2E00}-\x{2E7F}\\'"'"'"!\#\$%&()*+,.\/:;<=>?@\[\]^`{|}~]//g;
+      s/ /-/g;
+      print;
+    ' "$heading"
+  else
+    # Fallback: sed-based (ASCII-only removal, safe with multibyte)
+    echo "$heading" \
+      | tr '[:upper:]' '[:lower:]' \
+      | sed 's/ /-/g' \
+      | sed "s/[(){}*+\`'\"!@#\$%^&=|\\\\<>,;:.?\\/]//g" \
+      | sed 's/\]//g; s/\[//g'
+  fi
 }
 
 # Generate TOC from a markdown file
