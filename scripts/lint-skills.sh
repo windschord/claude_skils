@@ -6,6 +6,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# Options
+STRICT=false
+if [ "${1:-}" = "--strict" ]; then
+  STRICT=true
+fi
+
 # Thresholds
 MAX_SKILL_LINES=500
 MAX_DESCRIPTION_CHARS=1024
@@ -166,8 +172,13 @@ if [ "$errors" -gt 0 ]; then
   exit 1
 elif [ "$warnings" -gt 0 ]; then
   echo ""
-  echo "Lint PASSED with ${warnings} warning(s)"
-  exit 0
+  if $STRICT; then
+    echo "Lint FAILED (strict mode) with ${warnings} warning(s)"
+    exit 1
+  else
+    echo "Lint PASSED with ${warnings} warning(s)"
+    exit 0
+  fi
 else
   echo ""
   echo "Lint PASSED - all checks OK"

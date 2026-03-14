@@ -200,22 +200,25 @@ for file in "${FILES[@]}"; do
     echo "[UPDATE] $rel_path: TOC updated"
   else
     # Insert TOC after the first # heading line and its following empty line
-    title_line=$(grep -n '^# ' "$file" | head -1 | cut -d: -f1)
-    if [ -n "$title_line" ]; then
-      insert_after=$title_line
-      next_line=$(sed -n "$((title_line + 1))p" "$file")
-      if [ -z "$next_line" ]; then
-        insert_after=$((title_line + 1))
-      fi
-      {
-        head -n ${insert_after} "$file"
-        echo ""
-        cat "$toc_tmp"
-        echo ""
-        tail -n +$((insert_after + 1)) "$file"
-      } > "${file}.tmp"
-      mv "${file}.tmp" "$file"
+    title_line=$(grep -n '^# ' "$file" | head -1 | cut -d: -f1 || true)
+    if [ -z "$title_line" ]; then
+      echo "[SKIP] $rel_path: No top-level heading found"
+      rm -f "$toc_tmp"
+      continue
     fi
+    insert_after=$title_line
+    next_line=$(sed -n "$((title_line + 1))p" "$file")
+    if [ -z "$next_line" ]; then
+      insert_after=$((title_line + 1))
+    fi
+    {
+      head -n ${insert_after} "$file"
+      echo ""
+      cat "$toc_tmp"
+      echo ""
+      tail -n +$((insert_after + 1)) "$file"
+    } > "${file}.tmp"
+    mv "${file}.tmp" "$file"
     echo "[INSERT] $rel_path: TOC inserted"
   fi
   rm -f "$toc_tmp"
