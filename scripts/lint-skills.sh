@@ -91,13 +91,13 @@ while IFS= read -r skill_file; do
   # Extract frontmatter (between first and second ---)
   frontmatter=$(awk 'NR==1{next} /^---$/{exit} {print}' "$skill_file")
 
-  # Check name field
-  name_value=$(echo "$frontmatter" | grep -E '^name:' | head -1 | sed 's/^name:[[:space:]]*//')
+  # Check name field (|| true prevents exit under set -euo pipefail when missing)
+  name_value=$(echo "$frontmatter" | grep -E '^name:' | head -1 | sed 's/^name:[[:space:]]*//' || true)
   if [ -z "$name_value" ]; then
     err "$rel_path: Missing 'name' field in frontmatter"
   else
     # Check name format: lowercase, numbers, hyphens only
-    if ! echo "$name_value" | grep -qE '^[a-z0-9-]+$'; then
+    if ! echo "$name_value" | grep -qE '^[a-z0-9-]+$' 2>/dev/null; then
       warn "$rel_path: name '$name_value' should only contain lowercase letters, numbers, and hyphens"
     fi
     # Check max length
@@ -108,10 +108,10 @@ while IFS= read -r skill_file; do
     ok "$rel_path: name='${name_value}'"
   fi
 
-  # Check description field
-  desc_value=$(echo "$frontmatter" | grep -E '^description:' | head -1 | sed 's/^description:[[:space:]]*//')
+  # Check description field (|| true prevents exit under set -euo pipefail when missing)
+  desc_value=$(echo "$frontmatter" | grep -E '^description:' | head -1 | sed 's/^description:[[:space:]]*//' || true)
   # Handle YAML block scalar indicators (|, |-, >, >-)
-  if [ -z "$desc_value" ] || echo "$desc_value" | grep -qE '^\|[-]?$|^>[-]?$'; then
+  if [ -z "$desc_value" ] || echo "$desc_value" | grep -qE '^\|[-]?$|^>[-]?$' 2>/dev/null; then
     # Multi-line: extract indented lines after "description:" until next top-level field
     desc_value=$(echo "$frontmatter" | awk '
       /^description:/ { found=1; next }

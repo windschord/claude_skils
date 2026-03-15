@@ -209,11 +209,17 @@ for file in "${FILES[@]}"; do
     insert_after=$title_line
     next_line=$(sed -n "$((title_line + 1))p" "$file")
     if [ -z "$next_line" ]; then
+      # Title already has a trailing blank line; skip it to avoid double blank lines
       insert_after=$((title_line + 1))
     fi
     {
       head -n ${insert_after} "$file"
-      echo ""
+      # Only add blank line if the line before TOC is not already empty
+      local last_line
+      last_line=$(sed -n "${insert_after}p" "$file")
+      if [ -n "$last_line" ]; then
+        echo ""
+      fi
       cat "$toc_tmp"
       echo ""
       tail -n +$((insert_after + 1)) "$file"
