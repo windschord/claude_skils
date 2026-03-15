@@ -141,7 +141,15 @@ while IFS= read -r ref_file; do
 
   if [ "$line_count" -ge "$MIN_REF_LINES_FOR_TOC" ]; then
     # Check for TOC markers or common TOC patterns
-    if grep -qiE '(## 目次|## Contents|## Table of Contents|<!-- TOC -->)' "$ref_file"; then
+    has_toc_heading=$(grep -ciE '(## 目次|## Contents|## Table of Contents)' "$ref_file" || true)
+    has_toc_open=$(grep -c '<!-- TOC -->' "$ref_file" || true)
+    has_toc_close=$(grep -c '<!-- /TOC -->' "$ref_file" || true)
+
+    if [ "$has_toc_open" -gt 0 ] && [ "$has_toc_close" -eq 0 ]; then
+      warn "$rel_path: Found <!-- TOC --> but missing <!-- /TOC --> closing marker (${line_count} lines)"
+    elif [ "$has_toc_open" -eq 0 ] && [ "$has_toc_close" -gt 0 ]; then
+      warn "$rel_path: Found <!-- /TOC --> but missing <!-- TOC --> opening marker (${line_count} lines)"
+    elif [ "$has_toc_open" -gt 0 ] || [ "$has_toc_heading" -gt 0 ]; then
       ok "$rel_path: TOC found (${line_count} lines)"
     else
       warn "$rel_path: No TOC found (${line_count} lines)"
