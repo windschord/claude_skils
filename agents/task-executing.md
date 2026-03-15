@@ -115,14 +115,14 @@ requirements-defining → software-designing → task-planning → task-executin
 ### ステータス遷移
 
 ```text
-TODO → IN_PROGRESS → DONE
-         ↓    ↓
-      BLOCKED  REVIEW → DONE
+TODO → IN_PROGRESS → REVIEW → DONE
+         ↓
+      BLOCKED
 ```
 
 - BLOCKED: 問題発生時（依存関係の未解決等）
 - REVIEW: レビュー対応時（レビュー完了後DONEに遷移）
-- レビュー指摘がない場合、IN_PROGRESSから直接DONEに遷移可能
+- レビュー指摘がない場合は IN_PROGRESS → DONE に直接遷移
 
 ### 更新タイミング
 
@@ -378,7 +378,7 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 TodoWriteの更新では、既存のtodoリスト全体を渡す。
 対象タスクのstatusのみ変更し、他のタスクはそのまま維持する。
 非SDDタスク（contentが[Phase-で始まらないtodo）が存在する場合もそのまま保持して含めること。
-SDDスキルが管理するのはSDDタスク（contentが[Phase-または[BLOCKED] [Phase-で始まるtodo）のみ。
+SDDスキルが管理するのはSDDタスク（contentが[Phase-、[BLOCKED] [Phase-、または[REVIEW] [Phase-で始まるtodo）のみ。
 
 todos = [
   // --- 非SDDタスク（既存を保持） ---
