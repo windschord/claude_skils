@@ -116,8 +116,9 @@ requirements-defining → software-designing → task-planning → task-executin
 
 ```text
 TODO → IN_PROGRESS → DONE
-         ↓
-      BLOCKED（問題発生時）
+         ↓              ↓
+      BLOCKED      REVIEW（レビュー対応時）
+    （問題発生時）
 ```
 
 ### 更新タイミング
@@ -127,6 +128,7 @@ TODO → IN_PROGRESS → DONE
 | タスク開始時 | `IN_PROGRESS` | タスクファイルとindex.mdを更新、コミット |
 | タスク完了時 | `DONE` | 完了サマリー追加、更新、コミット |
 | 問題発生時 | `BLOCKED` | ブロック理由を記載 |
+| レビュー対応時 | `REVIEW` | レビュー指摘を記載 |
 
 ## タスク完了前チェックリスト
 
@@ -361,6 +363,10 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 3. タスクブロック時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
    - TodoWriteで該当タスクのcontentに[BLOCKED]を付記
+
+4. レビュー対応時:
+   - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをREVIEWに更新
+   - TodoWriteで該当タスクのcontentに[REVIEW]を付記し、statusをin_progressに更新
 ```
 
 ### TodoWrite更新の形式
@@ -431,10 +437,9 @@ TASK-XXX が完了しました。
 2. 指定されたTASK-XXX.mdを読み取り、実装内容を把握
 3. worktree内で独立して作業を開始
 
-### worktree内での動作に関する注意事項
+### worktree内での注意事項
 
-- 自分の担当ファイルのみ編集する（他のWorkerとのファイル競合を回避）
-- docs/sdd/tasks/index.md は編集しない（子またはリーダーが一括更新する）
+ファイル競合回避・index.md編集禁止等の基本ルールは「チームメンバーの注意事項」と同一。加えて:
 - worktree固有のパスを前提としたハードコードを避ける
 - コミットはworktree内のブランチに対して行う
 
