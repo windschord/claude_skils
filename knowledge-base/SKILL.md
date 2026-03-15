@@ -22,6 +22,18 @@ metadata:
 
 ローカルMarkdownファイルによるナレッジベースを管理する。Git（ローカルのみ）で履歴管理し、VS Codeで閲覧可能な構成を維持する。
 
+## Inputs
+
+- ユーザーのメモ本文、会議メモ、生テキスト、既存Markdownファイル
+- 操作種別（保存 / 追記 / 検索 / 要約 / 取り込み）
+- 対象ワークスペース名（未指定時は確認）
+
+## Outputs
+
+- 作成・更新されたMarkdownノート
+- 更新された `INDEX.md` / `_index/MASTER.md` / `_index/tags.md`
+- 実行内容を反映したローカルGitコミット
+
 ---
 
 ## KB_ROOTの決定方法

@@ -612,7 +612,7 @@ Agent toolでサブエージェントを起動する際、`model`パラメータ
 ```yaml
 # 定型的な実装タスク（L3-L4）
 Agent:
-  subagent_type: task-executing:task-executing
+  subagent_type: task-executing
   model: sonnet  # agents/task-executing.md のデフォルト
 
 # 複雑な設計判断が必要な調査（L5-L6）
