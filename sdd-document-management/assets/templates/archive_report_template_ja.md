@@ -123,11 +123,17 @@
 
 CLAUDE.mdに以下のセクションが存在しない場合は新規作成:
 
+**必須セクション:**
+- [ ] API Endpoints（全APIエンドポイントの一覧）
+- [ ] DB Schema（テーブル定義と重要カラム）
+- [ ] Services（サービス一覧と責務）
+- [ ] Environment Variables（環境変数の一覧）
+
+**推奨セクション:**
 - [ ] Pages（画面一覧と主要機能）
 - [ ] WebSocket Message Types（メッセージ種別と方向）
 - [ ] State Machines（状態遷移）
 - [ ] Business Rules（重要なビジネスルール）
-- [ ] Environment Variables（環境変数の一覧）
 
 ---
 
