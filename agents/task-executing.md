@@ -374,11 +374,23 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 
 ### TodoWrite更新の形式
 
+**状態マッピング:**
+
+| SDD | TodoWrite |
+|-----|-----------|
+| TODO | pending |
+| IN_PROGRESS | in_progress |
+| DONE | completed |
+| BLOCKED | pending（contentに[BLOCKED]付記） |
+| REVIEW | in_progress（contentに[REVIEW]付記） |
+
+**SDDタスクの判定基準:** contentが `[Phase-`、`[BLOCKED] [Phase-`、または `[REVIEW] [Phase-` で始まるtodo。contentには `[TASK-XXX]` 形式のタスクIDを含める。
+
+**非SDDタスクの保持:** 上記の判定基準に合致しないtodoはSDDワークフロー外で作成されたタスクであり、TodoWrite更新時にそのまま保持する（上書き・削除しない）。
+
 ```text
 TodoWriteの更新では、既存のtodoリスト全体を渡す。
 対象タスクのstatusのみ変更し、他のタスクはそのまま維持する。
-非SDDタスク（contentが[Phase-で始まらないtodo）が存在する場合もそのまま保持して含めること。
-SDDスキルが管理するのはSDDタスク（contentが[Phase-、[BLOCKED] [Phase-、または[REVIEW] [Phase-で始まるtodo）のみ。
 
 todos = [
   // --- 非SDDタスク（既存を保持） ---
