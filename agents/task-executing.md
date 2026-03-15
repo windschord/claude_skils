@@ -116,10 +116,13 @@ requirements-defining → software-designing → task-planning → task-executin
 
 ```text
 TODO → IN_PROGRESS → DONE
-         ↓              ↓
-      BLOCKED      REVIEW（レビュー対応時）
-    （問題発生時）
+         ↓    ↓
+      BLOCKED  REVIEW → DONE
 ```
+
+- BLOCKED: 問題発生時（依存関係の未解決等）
+- REVIEW: レビュー対応時（レビュー完了後DONEに遷移）
+- レビュー指摘がない場合、IN_PROGRESSから直接DONEに遷移可能
 
 ### 更新タイミング
 
