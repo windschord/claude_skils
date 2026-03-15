@@ -213,86 +213,7 @@ docs/sdd/
 
 ### タスク実行モード判定（Jules CLI統合）
 
-タスク実行フェーズで、並列処理判定に加えてJules CLIの利用可否を判定します:
-
-```text
-┌─────────────────────────────────────────────────────────┐
-│            タスク実行モード判定フロー                      │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Q1. Jules CLIが利用可能か？                              │
-│      YES → Q2へ                                         │
-│      NO  → Agent tool並列処理判定のみ                     │
-│                                                         │
-│  Q2. 開発ブランチが指定されているか？                     │
-│      YES → Q3へ                                         │
-│      未指定 → ユーザーに開発ブランチを確認 → Q3へ         │
-│                                                         │
-│  Q3. ユーザーがJules実行を希望するか？                    │
-│      全タスクJules → タスクアサイン戦略へ（Jules CLIモード）│
-│      一部Jules     → タスクアサイン戦略へ（ハイブリッド）  │
-│      Jules不要     → Agent tool並列処理判定のみ            │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-### タスクアサイン戦略（最大効率化）
-
-Jules CLIが利用可能な場合、以下の戦略でタスクを割り当てます:
-
-```text
-┌─────────────────────────────────────────────────────────┐
-│          タスクアサイン戦略                                │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Step 1: 依存関係グラフを構築                             │
-│    docs/sdd/tasks/index.mdからTODOタスクを取得            │
-│    各タスクの依存関係を解析                                │
-│    並列実行可能なグループに分類                            │
-│                                                         │
-│  Step 2: 各タスクの実行先を判定                           │
-│    Jules向き: 独立・定型的・明確な受入基準                │
-│    ローカル向き: 複雑・対話的・環境依存                    │
-│                                                         │
-│  Step 3: 実行方式を決定                                   │
-│    Jules 3+タスク → 複数Julesを連続投入し非同期依頼        │
-│    Jules 1-2タスク → Jules単体で非同期依頼                │
-│    ローカル 2+タスク → Agent tool + worktreeで並列実行      │
-│    ローカル 1タスク  → Agent tool（単一サブエージェント）  │
-│    混合 → ハイブリッド（Jules + Agent tool）              │
-│                                                         │
-│  Step 4: ユーザーにアサイン計画を提示・承認               │
-│                                                         │
-│  Step 5: 実行開始                                        │
-│    Jules(3+): 複数julesコマンドで連続投入し非同期依頼（PR）│
-│    Jules(1-2): julesコマンドで個別に非同期依頼（PR）      │
-│    ローカル: Agent tool + worktreeで並列実行               │
-│    メイン: 進捗監視・PRレビュー・タスク管理               │
-│                                                         │
-│  Step 6: グループ間の順次進行                             │
-│    グループA完了（全PRマージ）→ グループBを実行           │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
-**アサイン計画の提示例**:
-
-```text
-以下のタスクアサイン計画を提案します：
-
-【グループA - 並列実行】（依存関係なし）
-  Jules-1: TASK-001 ユーザー認証API → PR作成先: develop
-  Jules-2: TASK-002 データモデル定義 → PR作成先: develop
-  Agent-1: TASK-003 Docker設定（ローカル環境依存）
-
-【グループB - グループA完了後】（Jules番号はセッション通しの連番）
-  Jules-3: TASK-004 認証ミドルウェア（依存: TASK-001）
-  Jules-4: TASK-005 APIバリデーション（依存: TASK-001, TASK-002）
-
-この計画で進めてよろしいですか？
-```
-
-**詳細**: [task-executing/references/execution_guide_ja.md](../task-executing/references/execution_guide_ja.md)のJules CLI統合実行モードセクション、[jules-cli/SKILL.md](../jules-cli/SKILL.md)のAgent Teams連携セクション
+Jules CLIが利用可能な場合のモード判定とアサイン戦略の詳細は [task-executing/references/jules_integration_ja.md](../task-executing/references/jules_integration_ja.md) を参照。
 
 ### トラブルシューティングフロー（デバッグ・エラー修正時は必須）
 
@@ -337,90 +258,17 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 詳細なチェック項目は `references/checklist_ja.md` を参照。
 
-## EARS記法クイックリファレンス
+## EARS記法
 
-| パターン | 形式 | 使用場面 |
-|---------|------|----------|
-| 基本 | `システムは〜しなければならない` | 常時適用される要件 |
-| イベント | `〜の時、システムは〜しなければならない` | イベント駆動要件 |
-| 条件 | `もし〜ならば、システムは〜しなければならない` | 状態依存要件 |
-| 継続 | `〜の間、システムは〜しなければならない` | 継続的要件 |
-| 場所 | `〜において、システムは〜しなければならない` | コンテキスト固有要件 |
+詳細は [requirements-defining/references/ears_notation_ja.md](../requirements-defining/references/ears_notation_ja.md) を参照。
 
-## ユーザーとの対話ガイドライン
+## 並列処理（Agent tool活用）
 
-### 情報分類プロセス
-
-1. **明示された情報**: ユーザーが明確に述べた要件、仕様、制約
-2. **不明な情報**: 推測が必要な項目（「おそらく〜」は不明として扱う）
-
-### 確認の形式
-
-```text
-ドキュメント作成の前に、以下の点を確認させてください：
-
-【明示された情報】
-- [ユーザーから明示的に指定された内容]
-
-【不明/要確認の情報】
-1. [項目1]: [選択肢A] / [選択肢B] / その他
-2. [項目2]: [具体的な質問]
-
-上記の不明点について教えていただけますか？
-```
-
-## 並列処理（Agent tool活用 - 積極的に活用すること）
-
-**並列処理は条件を満たす場合に積極的に使用する。「使えたら使う」ではなく「条件を満たせば使う」が原則。**
-
-**主要手段**: Agent tool（`isolation: worktree`）- 常に利用可能、実験的フラグ不要
-
-### サブスキルへの並列処理指示
-
-各サブスキルを呼び出す際、以下を明示的に指示する:
-
-| サブスキル | 並列処理条件 | 方式 |
-|-----------|-------------|------|
-| **task-executing** | 並列実行可能タスク2つ以上 | Agent tool + `isolation: worktree` で並列実行 |
-| **sdd-troubleshooting** | 原因候補3つ以上 | Agent tool（読み取り専用）で並列調査 |
-| **sdd-document-management** | フルスキャン時 | Agent tool + `isolation: worktree` で4機能並列 |
-| **逆順レビュー** | 3層すべて存在 | Agent tool（読み取り専用）で並列レビュー |
-
-Jules CLIが利用可能な場合:
-
-| 条件 | 方式 |
-|------|------|
-| Jules利用可能 + 3タスク以上 | Jules（非同期PR） + Agent tool + worktree のハイブリッド |
-| Jules利用可能 + 1-2タスク | Jules単体で非同期依頼 |
-
-### 並列処理運用ルール
-
-1. **worktreeによる作業分離**: `isolation: worktree`で各サブエージェントが独立したgit worktreeで動作し、並行作業中の上書き衝突を防止（統合時にマージコンフリクトが発生し得る点に注意）
-2. **十分なコンテキスト提供**: サブエージェントにはタスクファイルの完全な内容・参照設計・受入基準を含める
-3. **完了待機**: すべてのサブエージェントの完了を待ってから次のフェーズへ
-4. **結果統合と検証**: worktreeの変更をメインブランチにマージし、コンフリクトがあれば手動解決。統合テストを実行
-
-**並列処理パターン・呼び出し例**: [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md)
+**条件を満たす場合は積極的に使用する。** 判定基準・パターン・呼び出し例は [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md) を参照。
 
 ## タスク同期プロトコル
 
-docs/sdd/tasks/のタスクとTodoWriteを同期し、ユーザーにリアルタイムで進捗を表示します。
-
-### ステータスマッピング
-
-| SDD (docs/sdd/tasks/) | TodoWrite |
-|-------------------|-----------|
-| `TODO` | `pending` |
-| `IN_PROGRESS` | `in_progress` |
-| `DONE` | `completed` |
-| `BLOCKED` | `pending`（[BLOCKED]付記） |
-| `REVIEW` | `in_progress`（[REVIEW]付記） |
-
-- **SDDが正（Source of Truth）**: 詳細仕様はdocs/sdd/tasks/に記載
-- **TodoWriteは可視化用**: `[TASK-XXX]`形式でcontentに記載
-- **非SDDタスクを保持**: TodoWrite更新時、contentが`[Phase-`または`[BLOCKED] [Phase-`で始まらないtodoはそのまま保持する（SDDスキル外で作成されたタスクを上書きしない）
-
-**詳細**: [references/task_sync_guide_ja.md](references/task_sync_guide_ja.md)
+docs/sdd/tasks/のタスクとTodoWriteの同期ルール。詳細は [references/task_sync_guide_ja.md](references/task_sync_guide_ja.md) を参照。
 
 ## リソース
 
