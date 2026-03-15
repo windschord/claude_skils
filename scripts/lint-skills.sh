@@ -81,6 +81,13 @@ while IFS= read -r skill_file; do
     continue
   fi
 
+  # Verify closing --- exists
+  closing_count=$(awk 'NR>1 && /^---$/{print NR; exit}' "$skill_file")
+  if [ -z "$closing_count" ]; then
+    err "$rel_path: Frontmatter missing closing '---'"
+    continue
+  fi
+
   # Extract frontmatter (between first and second ---)
   frontmatter=$(awk 'NR==1{next} /^---$/{exit} {print}' "$skill_file")
 
@@ -126,13 +133,13 @@ done < <(find_skills)
 echo ""
 
 # --- Check 3: Reference files TOC check ---
-echo "--- Reference files TOC check (>${MIN_REF_LINES_FOR_TOC} lines need TOC) ---"
+echo "--- Reference files TOC check (>=${MIN_REF_LINES_FOR_TOC} lines need TOC) ---"
 while IFS= read -r ref_file; do
   check
   rel_path="${ref_file#"$ROOT_DIR/"}"
   line_count=$(wc -l < "$ref_file" | tr -d ' ')
 
-  if [ "$line_count" -gt "$MIN_REF_LINES_FOR_TOC" ]; then
+  if [ "$line_count" -ge "$MIN_REF_LINES_FOR_TOC" ]; then
     # Check for TOC markers or common TOC patterns
     if grep -qiE '(## 目次|## Contents|## Table of Contents|<!-- TOC -->)' "$ref_file"; then
       ok "$rel_path: TOC found (${line_count} lines)"

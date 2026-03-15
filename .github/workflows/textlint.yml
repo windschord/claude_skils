@@ -34,6 +34,9 @@ jobs:
 
       - name: Run skill lint
         if: github.actor != 'dependabot[bot]'
+        # Normal mode: errors fail CI, warnings are informational.
+        # Non-SDD skills have known warnings (TOC, line count) that are out of scope.
+        # Use --strict locally to treat warnings as errors.
         run: bash scripts/lint-skills.sh
 
       - name: Comment PR on failure
