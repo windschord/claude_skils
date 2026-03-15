@@ -133,7 +133,7 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/operations_design_template_cloud_native_ja.md** - 運用設計テンプレート（クラウドネイティブ）
 - **assets/templates/operations_design_template_onpremise_ja.md** - 運用設計テンプレート（オンプレミス）
 - **assets/templates/operations_design_template_saas_ja.md** - 運用設計テンプレート（SaaS）
-- **hearing_items/2-9_security_compliance.md** - セキュリティコンプライアンスヒアリング項目
+- **hearing_items/2-9_security_compliance_ja.md** - セキュリティコンプライアンスヒアリング項目
 - **references/conversation_logging_ja.md** - ヒアリングログガイド
 - **references/industry_research_guide_ja.md** - 業界調査ガイド
 - **references/operations_design_guide_ja.md** - 運用設計ガイド

@@ -31,11 +31,13 @@ description: スキルの説明
 ```text
 my-new-skill/
 ├── SKILL.md               # スキル定義（必須）
-├── references/             # リファレンス（Claude実行時参照）
+├── references/             # リファレンス（Claude実行時参照、任意）
 │   └── guide_ja.md
-└── assets/templates/       # テンプレート（ドキュメント生成用）
+└── assets/templates/       # テンプレート（ドキュメント生成用、任意）
     └── template_ja.md
 ```
+
+> **Note:** `references/` と `assets/templates/` はスキルの性質に応じて省略可能です（例: `knowledge-base/` はSKILL.mdのみで動作）。
 
 **命名規則:**
 
