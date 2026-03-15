@@ -29,7 +29,7 @@ docs/sdd/archive/
 5. 承認されたファイルをdocs/sdd/archive/に移動
 6. 移動元のindex.mdを更新
 7. アーカイブのindex.mdを更新
-8. CLAUDE.mdのFeature Specification Summaryを更新（★ 必須 ★）
+8. CLAUDE.mdの各仕様セクション（API Endpoints, DB Schema, Services等）を更新（★ 必須 ★）
 ```
 
 ## アーカイブ時の処理
