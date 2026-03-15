@@ -105,8 +105,13 @@ while IFS= read -r skill_file; do
   desc_value=$(echo "$frontmatter" | grep -E '^description:' | head -1 | sed 's/^description:[[:space:]]*//')
   # Handle YAML block scalar indicators (|, |-, >, >-)
   if [ -z "$desc_value" ] || echo "$desc_value" | grep -qE '^\|[-]?$|^>[-]?$'; then
-    # Multi-line: extract all lines after "description:" until next top-level field
-    desc_value=$(sed -n '/^---$/,/^---$/p' "$skill_file" | sed -n '/^description:/,/^[a-z]/p' | tail -n +2 | sed '$d' | tr -d '\n' | sed 's/^[[:space:]]*//')
+    # Multi-line: extract indented lines after "description:" until next top-level field
+    desc_value=$(echo "$frontmatter" | awk '
+      /^description:/ { found=1; next }
+      found && /^[a-zA-Z0-9_-]+:/ { exit }
+      found { gsub(/^[[:space:]]+/, ""); printf "%s ", $0 }
+    ')
+    desc_value=$(echo "$desc_value" | sed 's/[[:space:]]*$//')
   fi
 
   if [ -z "$desc_value" ]; then
