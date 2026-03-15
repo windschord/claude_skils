@@ -82,7 +82,7 @@ sdd-documentation（オーケストレーター）
 - **references/analysis_guide_ja.md** - 分析ガイドライン
 
 ### sdd-document-management/
-- **SKILL.md** - スキル定義ファイル（4機能の定義・承認フロー）
+- **SKILL.md** - スキル定義ファイル（5機能の定義・承認フロー）
 - **assets/templates/consistency_report_template_ja.md** - 整合性レポートテンプレート
 - **assets/templates/sync_report_template_ja.md** - 同期レポートテンプレート
 - **assets/templates/archive_report_template_ja.md** - アーカイブレポートテンプレート
@@ -92,6 +92,7 @@ sdd-documentation（オーケストレーター）
 - **references/sync_check_ja.md** - 同期チェックガイド
 - **references/archive_ja.md** - アーカイブガイド
 - **references/optimize_ja.md** - 最適化ガイド
+- **references/claude_md_sync_ja.md** - CLAUDE.md同期ガイド
 
 ### pr-comment-fixer/
 - **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）
