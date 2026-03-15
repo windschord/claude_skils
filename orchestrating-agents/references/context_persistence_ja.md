@@ -1,5 +1,18 @@
 # コンテキスト永続化
 
+<!-- TOC -->
+## 目次
+
+- [概要](#概要)
+- [.orchestrating-agents/ ディレクトリ構成](#orchestrating-agents-ディレクトリ構成)
+- [.gitignore への追加](#gitignore-への追加)
+- [mission.md の構造と更新タイミング](#missionmd-の構造と更新タイミング)
+- [task_ledger.md の構造と更新タイミング](#task_ledgermd-の構造と更新タイミング)
+- [workorders/TASK-XXX.md の構造と更新タイミング](#workorderstask-xxxmd-の構造と更新タイミング)
+- [Worktree との関係](#worktree-との関係)
+- [コンテキスト圧縮後の再読み込み手順](#コンテキスト圧縮後の再読み込み手順)
+<!-- /TOC -->
+
 ## 概要
 
 親・子セッションがコンテキスト圧縮されても状態を維持するための永続化メカニズム。`.orchestrating-agents/` ディレクトリに全ての状態をファイルとして保存し、圧縮後に再読み込みすることで作業を継続する。
@@ -13,6 +26,8 @@
 ├── mission.md                  # 親のミッション定義
 ├── task_ledger.md              # タスク台帳（親のみ更新、ユーザー確認用）
 ├── session_state.md            # セッション状態（レジューム用）
+├── archive/
+│   └── completed_tasks.md
 └── workorders/                 # 子のワークオーダー
     ├── TASK-001.md
     ├── TASK-002.md

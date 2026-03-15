@@ -10,7 +10,7 @@ mission_path: .orchestrating-agents/mission.md
 - name: {{child-name}}
   agent_id: {{agent_id}}
   status: {{running | completed | failed | paused}}
-  task: {{TASK-XXX}}
+  task: [{{TASK-XXX}}]
   worktree_branch: {{worktree/child-name or N/A}}
   workorder_path: .orchestrating-agents/workorders/{{TASK-XXX}}.md
 

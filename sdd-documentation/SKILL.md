@@ -266,6 +266,14 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 複数フェーズを自律的に実行する場合は、`orchestrating-agents` スキルの3階層エージェント構造を活用する。
 
+### 事前確認（明示情報 / 不明情報）
+
+自律実行モード開始前に以下を分類する:
+- **明示情報**: ユーザーが指定した対象フェーズ・成果物・制約
+- **不明情報**: 受入基準、優先順位、停止条件、並列化可否の根拠
+
+不明情報がある場合は、実行を開始せずユーザーに確認してから進行する。
+
 - 親（Director）がSDDワークフロー全体を管理
 - 子（Manager）が各フェーズ（requirements/design/tasks/executing）を担当
 - 孫（Worker）が個別タスクを並列実行（task-executingフェーズのみ）

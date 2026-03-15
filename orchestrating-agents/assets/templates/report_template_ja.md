@@ -45,8 +45,8 @@ status: {{completed | failed | needs_retry}}
 {{変更ファイルリスト}}
 
 ## Acceptance Criteria Status
-- [ ] {{基準1}}: {{達成/未達成}}
-- [ ] {{基準2}}: {{達成/未達成}}
+- {{基準1}}: {{達成/未達成}}
+- {{基準2}}: {{達成/未達成}}
 
 ## Issues (if any)
 {{問題の詳細}}
