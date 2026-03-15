@@ -365,7 +365,7 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 
 3. タスクブロック時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
-   - TodoWriteで該当タスクのcontentに[BLOCKED]を付記
+   - TodoWriteで該当タスクのstatusをpendingに変更し、contentに[BLOCKED]を付記
 
 4. レビュー対応時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをREVIEWに更新
