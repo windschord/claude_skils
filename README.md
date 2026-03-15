@@ -119,6 +119,7 @@ claude_skils/
 ├── operations-design/                 # 運用設計スキル
 │   ├── SKILL.md
 │   ├── assets/templates/
+│   ├── hearing_items/
 │   └── references/
 ├── knowledge-base/                    # ナレッジベース管理スキル（SKILL.mdのみで動作）
 │   └── SKILL.md
