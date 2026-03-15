@@ -121,8 +121,8 @@ sdd-documentation（オーケストレーター）
 
 ### incident-rca/
 - **SKILL.md** - なぜなぜ分析スキル
-- **assets/templates/log_template.md** - 分析ログテンプレート
-- **assets/templates/result_template.md** - 分析結果テンプレート
+- **assets/templates/log_template_ja.md** - 分析ログテンプレート
+- **assets/templates/result_template_ja.md** - 分析結果テンプレート
 - **sessions/** - セッションデータ
 
 ### operations-design/
@@ -134,7 +134,7 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/operations_design_template_onpremise_ja.md** - 運用設計テンプレート（オンプレミス）
 - **assets/templates/operations_design_template_saas_ja.md** - 運用設計テンプレート（SaaS）
 - **hearing_items/2-9_security_compliance.md** - セキュリティコンプライアンスヒアリング項目
-- **references/conversation_logging.md** - ヒアリングログガイド
+- **references/conversation_logging_ja.md** - ヒアリングログガイド
 - **references/industry_research_guide_ja.md** - 業界調査ガイド
 - **references/operations_design_guide_ja.md** - 運用設計ガイド
 

@@ -120,7 +120,7 @@ claude_skils/
 │   ├── SKILL.md
 │   ├── assets/templates/
 │   └── references/
-├── knowledge-base/                    # ナレッジベース管理スキル
+├── knowledge-base/                    # ナレッジベース管理スキル（SKILL.mdのみで動作）
 │   └── SKILL.md
 ├── report-summarizing/                # レポート要約スキル
 │   ├── SKILL.md
