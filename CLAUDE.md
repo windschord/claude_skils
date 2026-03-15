@@ -47,6 +47,7 @@ sdd-documentation（オーケストレーター）
 - **references/workflow_guide_ja.md** - ワークフローガイド
 - **references/agent_teams_guide_ja.md** - エージェントチーム活用ガイド
 - **references/task_sync_guide_ja.md** - タスク同期（TodoWrite連携）ガイド
+- **references/checklist_ja.md** - チェックリスト
 
 ### requirements-defining/
 - **SKILL.md** - スキル定義ファイル
@@ -64,6 +65,7 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/decision_template_ja.md** - 技術的決定テンプレート
 - **references/design_patterns_ja.md** - 設計パターンリファレンス
 - **references/ears_notation_ja.md** - EARS記法（要件参照用）
+- **references/cicd_guide_ja.md** - CI/CDガイド
 
 ### task-planning/
 - **SKILL.md** - スキル定義ファイル
@@ -74,6 +76,7 @@ sdd-documentation（オーケストレーター）
 ### task-executing/
 - **references/execution_guide_ja.md** - 実行ガイド
 - **references/commit_templates_ja.md** - コミットテンプレート
+- **references/jules_integration_ja.md** - Jules連携ガイド
 
 ### sdd-troubleshooting/
 - **SKILL.md** - スキル定義ファイル（問題確認・原因分析・承認フロー）
@@ -82,7 +85,7 @@ sdd-documentation（オーケストレーター）
 - **references/analysis_guide_ja.md** - 分析ガイドライン
 
 ### sdd-document-management/
-- **SKILL.md** - スキル定義ファイル（4機能の定義・承認フロー）
+- **SKILL.md** - スキル定義ファイル（5機能の定義・承認フロー）
 - **assets/templates/consistency_report_template_ja.md** - 整合性レポートテンプレート
 - **assets/templates/sync_report_template_ja.md** - 同期レポートテンプレート
 - **assets/templates/archive_report_template_ja.md** - アーカイブレポートテンプレート
@@ -92,6 +95,7 @@ sdd-documentation（オーケストレーター）
 - **references/sync_check_ja.md** - 同期チェックガイド
 - **references/archive_ja.md** - アーカイブガイド
 - **references/optimize_ja.md** - 最適化ガイド
+- **references/claude_md_sync_ja.md** - CLAUDE.md同期ガイド
 
 ### pr-comment-fixer/
 - **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）
@@ -102,15 +106,61 @@ sdd-documentation（オーケストレーター）
 - **references/loop_controller_ja.md** - ループ制御ロジック詳細
 - **assets/templates/fix_report_template_ja.md** - 修正結果レポートテンプレート
 
-### その他のスキル
-- **incident-rca/SKILL.md** - なぜなぜ分析スキル
-- **operations-design/SKILL.md** - 運用設計スキル
-- **report-summarizing/SKILL.md** - レポート要約スキル
-- **jules-cli/SKILL.md** - Jules CLI統合スキル
-- **depth-interviewing-career/SKILL.md** - キャリアインタビュースキル
-- **depth-interviewing-product/SKILL.md** - 製品インタビュースキル
-- **knowledge-base/SKILL.md** - ナレッジベース管理スキル
-- **things-url/SKILL.md** - Things URLタスク共有スキル
+### ai-code-review/
+- **SKILL.md** - スキル定義ファイル（6観点からの体系的PRレビュー）
+- **assets/templates/review_comment_template_ja.md** - レビューコメントテンプレート
+- **references/review_guide_ja.md** - レビューガイド
+- **references/rereview_guide_ja.md** - 再レビューガイド
+
+### health-check/
+- **SKILL.md** - スキル定義ファイル（インフラメトリクス定期調査・健全性評価）
+- **assets/templates/health_check_report_template_ja.md** - ヘルスチェックレポートテンプレート
+- **assets/templates/knowledge_base_template_ja.md** - ナレッジベーステンプレート
+- **references/metrics_guide_ja.md** - メトリクスガイド
+- **references/analysis_principles_ja.md** - 分析原則ガイド
+- **references/browser_automation_guide_ja.md** - ブラウザ自動化ガイド
+
+### incident-rca/
+- **SKILL.md** - なぜなぜ分析スキル
+- **assets/templates/log_template_ja.md** - 分析ログテンプレート
+- **assets/templates/result_template_ja.md** - 分析結果テンプレート
+- **sessions/** - セッションデータ
+
+### operations-design/
+- **SKILL.md** - 運用設計スキル
+- **assets/templates/conversation_log_template_ja.md** - ヒアリングログテンプレート
+- **assets/templates/operations_design_template_ja.md** - 運用設計テンプレート（汎用）
+- **assets/templates/operations_design_template_cloud_instance_ja.md** - 運用設計テンプレート（クラウドインスタンス）
+- **assets/templates/operations_design_template_cloud_native_ja.md** - 運用設計テンプレート（クラウドネイティブ）
+- **assets/templates/operations_design_template_onpremise_ja.md** - 運用設計テンプレート（オンプレミス）
+- **assets/templates/operations_design_template_saas_ja.md** - 運用設計テンプレート（SaaS）
+- **hearing_items/2-9_security_compliance_ja.md** - セキュリティコンプライアンスヒアリング項目
+- **references/conversation_logging_ja.md** - ヒアリングログガイド
+- **references/industry_research_guide_ja.md** - 業界調査ガイド
+- **references/operations_design_guide_ja.md** - 運用設計ガイド
+
+### report-summarizing/
+- **SKILL.md** - レポート要約スキル
+- **assets/templates/executive_summary_template_ja.md** - エグゼクティブサマリーテンプレート
+
+### depth-interviewing-career/
+- **SKILL.md** - キャリアインタビュースキル
+- **assets/templates/interview_log_template_ja.md** - インタビューログテンプレート
+
+### depth-interviewing-product/
+- **SKILL.md** - 製品インタビュースキル
+- **assets/templates/interview_log_template_ja.md** - インタビューログテンプレート
+
+### knowledge-base/
+- **SKILL.md** - ナレッジベース管理スキル
+
+### things-url/
+- **SKILL.md** - Things URLタスク共有スキル
+- **references/applescript_reference_ja.md** - Things 3 AppleScriptリファレンス
+- **references/url_scheme_reference_ja.md** - Things URLスキームリファレンス
+
+### jules-cli/
+- **SKILL.md** - Jules CLI統合スキル
 
 ## デバッグ・エラー修正の必須プロセス
 
@@ -190,3 +240,27 @@ docs/sdd/tasks/のタスクとTodoWriteを同期する:
 2. テンプレートファイルを直接参照（各サブスキルの`assets/templates/`配下）
 3. Writeツールでドキュメントを手動作成
 4. 作成後にチェックリストで品質確認
+
+## README.mdの最新化ルール
+
+スキルの追加・削除・名称変更・カテゴリ変更を行った場合、**README.mdも必ず同時に更新すること**。
+
+### 更新対象箇所
+
+1. **「利用可能なスキル」テーブル** - スキル名・カテゴリ・説明を追加/削除/修正
+2. **「ディレクトリ構造」セクション** - ディレクトリツリーにスキルディレクトリを追加/削除
+
+### 更新タイミング
+
+- 新しいスキルディレクトリを作成したとき
+- 既存スキルを削除・リネームしたとき
+- スキルのカテゴリや説明を変更したとき
+- `agents/`や`scripts/`等の共通ディレクトリに変更があったとき
+
+### チェックリスト
+
+スキル変更時のコミット前に以下を確認:
+
+- [ ] README.mdの「利用可能なスキル」テーブルが実際のスキルディレクトリと一致している
+- [ ] README.mdの「ディレクトリ構造」が実際のディレクトリ構成と一致している
+- [ ] CLAUDE.mdの「スキルファイル一覧」セクションが最新である

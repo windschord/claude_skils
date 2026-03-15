@@ -26,15 +26,26 @@
 | ファイル参照 | 参照先ファイルが存在するか |
 | ステータス整合 | 依存タスクのステータスが矛盾していないか |
 
+### 4. CLAUDE.md vs 実装の整合性
+
+| チェック項目 | 内容 |
+|-------------|------|
+| API一覧 | CLAUDE.mdのAPI Endpoints vs 実装のルーティングファイル |
+| サービス一覧 | CLAUDE.mdのServices vs 実装のサービスディレクトリ |
+| DBスキーマ | CLAUDE.mdのDB Schema vs 実装のスキーマ定義ファイル |
+| ページ一覧 | CLAUDE.mdのPages vs 実装のページディレクトリ |
+| 不足セクション | Pages, WebSocket Message Types, State Machines, Business Rules の存在確認 |
+
 ## 実行手順
 
 ```text
 1. docs/sdd/requirements/ のすべてのREQ-XXX、US-XXXをリストアップ
 2. docs/sdd/design/ の設計要素と要件の対応を確認
 3. docs/sdd/tasks/ のタスクと設計の対応を確認
-4. 矛盾・不整合をレポートにまとめる
-5. ★ ユーザーに提示し承認を得る ★
-6. 承認された修正を実行
+4. CLAUDE.mdの仕様記載と実装コードの乖離を確認
+5. 矛盾・不整合をレポートにまとめる
+6. ★ ユーザーに提示し承認を得る ★
+7. 承認された修正を実行
 ```
 
 ## ユーザー承認フロー
@@ -47,6 +58,9 @@
 - 過剰設計: X件
 - 参照エラー: X件
 - 用語不一致: X件
+- CLAUDE.md未記載API: X件
+- CLAUDE.md未記載サービス: X件
+- CLAUDE.md不足セクション: X件
 
 詳細レポートを確認し、以下の対応を選択してください：
 

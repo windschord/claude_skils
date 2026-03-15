@@ -5,9 +5,12 @@
   "private": true,
   "scripts": {
     "textlint": "textlint \"**/*.md\"",
-    "textlint:fix": "textlint --fix \"**/*.md\""
+    "textlint:fix": "textlint --fix \"**/*.md\"",
+    "skill-lint": "bash scripts/lint-skills.sh",
+    "generate-toc": "bash scripts/generate-toc.sh --all"
   },
   "devDependencies": {
+    "github-slugger": "^2.0.0",
     "textlint": "14.8.4",
     "textlint-rule-preset-ja-technical-writing": "^10.0.1"
   }
