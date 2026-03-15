@@ -78,6 +78,9 @@ sdd-documentation（オーケストレーター）
 - **references/commit_templates_ja.md** - コミットテンプレート
 - **references/jules_integration_ja.md** - Jules連携ガイド
 
+### agents/
+- **task-executing.md** - タスク実行エージェント定義（model: sonnet）。Agent toolのsubagent_typeとして使用される。task-executing/のreferencesを参照して動作する。
+
 ### sdd-troubleshooting/
 - **SKILL.md** - スキル定義ファイル（問題確認・原因分析・承認フロー）
 - **assets/templates/analysis_report_template_ja.md** - 分析レポートテンプレート

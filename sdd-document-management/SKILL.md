@@ -1,7 +1,8 @@
 ---
 name: sdd-document-management
-description: SDDドキュメントの整合性チェック、実装同期確認、アーカイブ、ファイル最適化を行う。ドキュメント間の矛盾検出、実装との乖離確認、完了タスクの整理、肥大化ファイルの分割が必要な場合に使用する。
-version: "1.0.0"
+description: SDDドキュメントの整合性チェック、実装同期確認、アーカイブ、ファイル最適化を行う。ドキュメント間の矛盾検出、実装との乖離確認、完了タスクの整理、肥大化ファイルの分割が必要な場合に使用する。Do NOT use for ドキュメントの新規作成（requirements-defining、software-designing、task-planningを使用すること）。
+metadata:
+  version: "1.0.0"
 ---
 
 # SDDドキュメント管理スキル

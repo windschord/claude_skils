@@ -1,7 +1,8 @@
 ---
 name: software-designing
-description: 技術設計書を作成・編集します。アーキテクチャ設計、コンポーネント定義、API設計、データベーススキーマの文書化が必要な場合に使用してください。requirements/が存在する場合は整合性を確認します。
-version: "1.0.0"
+description: 技術設計書を作成・編集する。アーキテクチャ設計、コンポーネント定義、API設計、データベーススキーマの文書化が必要な場合に使用する。設計フェーズのみを単独で実行する際に使用する。Do NOT use for SDDワークフロー全体の管理（sdd-documentationを使用すること）。
+metadata:
+  version: "1.0.0"
 ---
 
 # 設計スキル
