@@ -215,7 +215,6 @@ for file in "${FILES[@]}"; do
     {
       head -n ${insert_after} "$file"
       # Only add blank line if the line before TOC is not already empty
-      local last_line
       last_line=$(sed -n "${insert_after}p" "$file")
       if [ -n "$last_line" ]; then
         echo ""
