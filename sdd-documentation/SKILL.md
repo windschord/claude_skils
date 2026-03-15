@@ -1,7 +1,8 @@
 ---
 name: sdd-documentation
-description: ソフトウェア設計ドキュメント（SDD）を作成・管理・実装・トラブルシュートする。requirements/、design/、tasks/の作成、タスク実行、逆順レビュー、問題分析・修正を統括。SDDワークフロー全体の管理、エラー・バグ・動作不良の分析と修正、追加実装・機能追加に対応。
-version: "1.0.0"
+description: SDDワークフロー全体を統括するオーケストレーター。要件定義・設計・タスク計画・実装・逆順レビューの一連のフローを管理する。新規プロジェクトのSDD一括作成、複数フェーズにまたがるワークフロー管理、エラー・バグの体系的な分析と修正に使用する。Do NOT use for 個別フェーズのみの作業（requirements-defining、software-designing、task-planningを直接使用すること）。
+metadata:
+  version: "1.0.0"
 ---
 
 # SDD ドキュメンテーションスキル
