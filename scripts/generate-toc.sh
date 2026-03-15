@@ -63,7 +63,7 @@ done
 if $ALL_MODE; then
   while IFS= read -r ref_file; do
     line_count=$(wc -l < "$ref_file" | tr -d ' ')
-    if [ "$line_count" -gt "$MIN_LINES_FOR_TOC" ]; then
+    if [ "$line_count" -ge "$MIN_LINES_FOR_TOC" ]; then
       FILES+=("$ref_file")
     fi
   done < <(find "$ROOT_DIR" -path "*/references/*.md" -not -path "*/node_modules/*" -not -path "*/.git/*" | sort)

@@ -21,9 +21,20 @@ jobs:
         if: github.actor != 'dependabot[bot]'
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        if: github.actor != 'dependabot[bot]'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: github.actor != 'dependabot[bot]'
+        run: npm ci
+
       - name: Run skill lint
         if: github.actor != 'dependabot[bot]'
-        run: bash scripts/lint-skills.sh
+        run: bash scripts/lint-skills.sh --strict
 
       - name: Comment PR on failure
         if: failure() && github.actor != 'dependabot[bot]'
@@ -31,12 +42,28 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.rest.issues.createComment({
+            const body = ':warning: Skill Lint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで確認:\n```bash\nbash scripts/lint-skills.sh\n```';
+            const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':warning: Skill Lint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで確認:\n```bash\nbash scripts/lint-skills.sh\n```'
-            })
+            });
+            const existing = comments.find(c => c.body.includes('Skill Lint検査で問題が検出'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+            }
 
   textlint:
     runs-on: ubuntu-latest
@@ -71,9 +98,25 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.rest.issues.createComment({
+            const body = ':warning: Textlint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで修正するには:\n```bash\nnpm install\nnpm run textlint\nnpm run textlint:fix  # 自動修正を試みる\n```';
+            const { data: comments } = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':warning: Textlint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで修正するには:\n```bash\nnpm install\nnpm run textlint\nnpm run textlint:fix  # 自動修正を試みる\n```'
-            })
+            });
+            const existing = comments.find(c => c.body.includes('Textlint検査で問題が検出'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+            }
