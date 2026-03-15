@@ -162,7 +162,9 @@ sdd-documentation（オーケストレーター）
 - **references/applescript_reference_ja.md** - Things 3 AppleScriptリファレンス
 - **references/url_scheme_reference_ja.md** - Things URLスキームリファレンス
 
-### orchestrating-agents/
+### orchestrating-agents/ + agents/orchestrator.md + agents/manager.md
+- **agents/orchestrator.md** - 親（Director）セッション用エージェント定義
+- **agents/manager.md** - 子（Manager）セッション用エージェント定義
 - **SKILL.md** - 3階層エージェント構造（Director/Manager/Worker）による自律的タスク完遂基盤
 - **references/hierarchy_protocol_ja.md** - 3階層プロトコル（通信フォーマット）
 - **references/queue_management_ja.md** - キュー管理仕様
