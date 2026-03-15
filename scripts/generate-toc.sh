@@ -27,7 +27,7 @@ usage() {
   echo "Usage: $(basename "$0") [OPTIONS] [FILE...]"
   echo ""
   echo "Options:"
-  echo "  --all       Process all reference files with >${MIN_LINES_FOR_TOC} lines"
+  echo "  --all       Process all reference files with >=${MIN_LINES_FOR_TOC} lines"
   echo "  --dry-run   Preview changes without modifying files"
   echo "  -h, --help  Show this help"
   echo ""
