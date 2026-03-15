@@ -102,6 +102,20 @@ sdd-documentation（オーケストレーター）
 - **references/loop_controller_ja.md** - ループ制御ロジック詳細
 - **assets/templates/fix_report_template_ja.md** - 修正結果レポートテンプレート
 
+### ai-code-review/
+- **SKILL.md** - スキル定義ファイル（6観点からの体系的PRレビュー）
+- **assets/templates/review_comment_template_ja.md** - レビューコメントテンプレート
+- **references/review_guide_ja.md** - レビューガイド
+- **references/rereview_guide_ja.md** - 再レビューガイド
+
+### health-check/
+- **SKILL.md** - スキル定義ファイル（インフラメトリクス定期調査・健全性評価）
+- **assets/templates/health_check_report_template_ja.md** - ヘルスチェックレポートテンプレート
+- **assets/templates/knowledge_base_template_ja.md** - ナレッジベーステンプレート
+- **references/metrics_guide_ja.md** - メトリクスガイド
+- **references/analysis_principles_ja.md** - 分析原則ガイド
+- **references/browser_automation_guide_ja.md** - ブラウザ自動化ガイド
+
 ### その他のスキル
 - **incident-rca/SKILL.md** - なぜなぜ分析スキル
 - **operations-design/SKILL.md** - 運用設計スキル

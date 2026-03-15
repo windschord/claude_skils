@@ -114,7 +114,8 @@ claude_skils/
 │   └── references/
 ├── incident-rca/                      # インシデントRCAスキル
 │   ├── SKILL.md
-│   └── assets/templates/
+│   ├── assets/templates/
+│   └── sessions/
 ├── operations-design/                 # 運用設計スキル
 │   ├── SKILL.md
 │   ├── assets/templates/
