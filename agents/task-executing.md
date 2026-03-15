@@ -365,11 +365,11 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 
 3. タスクブロック時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
-   - TodoWriteで該当タスクのstatusをpendingに変更し、contentに[BLOCKED]を付記
+   - TodoWriteで該当タスクのstatusをpendingに変更し、contentの先頭に[BLOCKED]を付与
 
 4. レビュー対応時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをREVIEWに更新
-   - TodoWriteで該当タスクのcontentに[REVIEW]を付記し、statusをin_progressに更新
+   - TodoWriteで該当タスクのcontentの先頭に[REVIEW]を付与し、statusをin_progressに更新
 ```
 
 ### TodoWrite更新の形式
@@ -463,7 +463,7 @@ TASK-XXX が完了しました。
 タスク完了後、子（Manager）に以下の形式で報告する:
 
 ```text
-TASK-XXX が完了しました。
+[TASK-XXX] が完了しました。
 - 受入基準: すべて達成 / 一部未達成（詳細を記載）
 - コミット: [コミットハッシュ]
 - 変更ファイル: [ファイルリスト]
@@ -481,7 +481,7 @@ TASK-XXX が完了しました。
   - 推定される原因（わかる範囲で）
 
 ```text
-TASK-XXX でエラーが発生しました。
+[TASK-XXX] でエラーが発生しました。
 - エラー内容: [エラーメッセージ]
 - 実行中の操作: [操作内容]
 - 部分完了: [完了した作業の概要]

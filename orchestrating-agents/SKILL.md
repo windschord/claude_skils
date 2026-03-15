@@ -1,6 +1,8 @@
 ---
 name: orchestrating-agents
 description: Orchestrates multi-step tasks autonomously using a 3-tier agent hierarchy (Director/Manager/Worker). Use when user says "run this end-to-end", "handle everything", "execute all tasks", or needs parallel task execution with queuing, course correction, and session resume. Provides FIFO task queue, escalation policy, git worktree isolation, and context persistence across agent sessions.
+metadata:
+  version: "1.0.0"
 ---
 
 # Orchestrating Agents スキル

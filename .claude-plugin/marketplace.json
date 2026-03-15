@@ -42,7 +42,8 @@
       ],
       "agents": [
         "./agents/orchestrator.md",
-        "./agents/manager.md"
+        "./agents/manager.md",
+        "./agents/task-executing.md"
       ]
     },
     {
