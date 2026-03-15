@@ -38,14 +38,19 @@
 
 ## .gitignore への追加
 
-親がミッションを定義する際、`.orchestrating-agents/` が `.gitignore` に登録されていなければ追加する。
+親がミッションを定義する際、以下のパターンが `.gitignore` に登録されていなければ追加する。
 
 ```text
 # .gitignore に以下を追加
-.orchestrating-agents/
+.orchestrating-agents/mission.md
+.orchestrating-agents/task_ledger.md
+.orchestrating-agents/session_state.md
+.orchestrating-agents/archive/
 ```
 
-**理由:** オーケストレーション状態は一時的なセッション情報であり、リポジトリにコミットすべきではない。
+**git追跡方針:**
+- `workorders/` は子がworktree内でコミットし、親がメインブランチにマージするため、git追跡対象とする
+- `mission.md`、`task_ledger.md`、`session_state.md`、`archive/` はセッション固有の一時データとして `.gitignore` に追加する
 
 ---
 
