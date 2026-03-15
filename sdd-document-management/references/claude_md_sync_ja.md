@@ -84,8 +84,9 @@ C) 今回は修正せずレポートのみ保存
 
 | 優先度 | 条件 | 対応 |
 |--------|------|------|
-| High | 不足セクション（Pages等） | セクション新規作成 |
+| High | 必須セクションの欠落（API Endpoints, DB Schema, Services, Environment Variables） | セクション新規作成 |
 | High | 未記載API（3件以上） | 即座に追記 |
+| Medium | 推奨セクションの欠落（Pages, WebSocket Message Types, State Machines, Business Rules） | 計画的にセクション作成 |
 | Medium | 未記載サービス | 計画的に追記 |
 | Medium | DBスキーマ不一致 | 実装を確認して更新 |
 | Low | 過剰記載（削除済み機能） | 確認後に削除 |
