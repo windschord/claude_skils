@@ -1,6 +1,8 @@
 ---
 name: things-url
-description: Things 3とClaude Codeのタスクを双方向で共有します。URLスキームによるタスク送信（書き込み）と、AppleScript（osascript）によるタスク読み取りの両方に対応。TodoWrite/docs/sdd/tasks/との同期も可能です。
+description: Things 3とClaude Codeのタスクを双方向で共有する。URLスキームによるタスク送信とAppleScriptによるタスク読み取りに対応する。macOS環境でThings 3とのタスク同期が必要な場合に使用する。Do NOT use for macOS以外の環境でのタスク管理。
+metadata:
+  version: "1.0.0"
 ---
 
 # Things URL タスク共有スキル

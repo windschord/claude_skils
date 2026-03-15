@@ -73,10 +73,13 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/task_detail_template_ja.md** - タスク詳細テンプレート
 - **references/task_guidelines_ja.md** - タスク管理ガイドライン
 
-### task-executing/
+### task-executing/ + agents/task-executing.md
+- **agents/task-executing.md** - エージェント定義ファイル（model: sonnet、Agent toolのsubagent_typeとして使用）
 - **references/execution_guide_ja.md** - 実行ガイド
 - **references/commit_templates_ja.md** - コミットテンプレート
 - **references/jules_integration_ja.md** - Jules連携ガイド
+
+> **注**: task-executing はSKILL.mdを持たず、エージェント定義は `agents/task-executing.md` に配置。`task-executing/references/` のリソースを参照して動作する。
 
 ### sdd-troubleshooting/
 - **SKILL.md** - スキル定義ファイル（問題確認・原因分析・承認フロー）

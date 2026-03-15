@@ -1,8 +1,10 @@
 ---
 name: task-executing
-description: docs/sdd/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。orchestrating-agentsスキルの3階層構成ではWorker（孫）としても動作し、子（Manager）からの指示に基づいて単一タスクを実行します。SDDワークフローの実装フェーズで積極的に使用してください。
+description: docs/sdd/tasks/に記載されたタスクを実行し、コード実装を行うエージェント。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビューで整合性を確認する。orchestrating-agentsスキルの3階層構成ではWorker（孫）としても動作する。SDDワークフローの実装フェーズで使用する。Do NOT use for 要件定義・設計・タスク計画の作成（各サブスキルを使用すること）。
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+metadata:
+  version: "1.0.0"
 ---
 
 # タスク実行エージェント
