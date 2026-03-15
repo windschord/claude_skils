@@ -262,6 +262,27 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 詳細は [requirements-defining/references/ears_notation_ja.md](../requirements-defining/references/ears_notation_ja.md) を参照。
 
+## 自律実行モード（orchestrating-agents連携）
+
+複数フェーズを自律的に実行する場合は、`orchestrating-agents` スキルの3階層エージェント構造を活用する。
+
+- 親（Director）がSDDワークフロー全体を管理
+- 子（Manager）が各フェーズ（requirements/design/tasks/executing）を担当
+- 孫（Worker）が個別タスクを並列実行（task-executingフェーズのみ）
+
+詳細: `orchestrating-agents/SKILL.md`
+
+### SDDスキルへの適用マッピング
+
+| サブスキル | 階層モード | 理由 |
+|-----------|-----------|------|
+| requirements-defining | 2階層 | 単一作業、並列化不要 |
+| software-designing | 2階層 | 同上 |
+| task-planning | 2階層 | 同上 |
+| task-executing | 3階層 | 複数タスクの並列実行が可能 |
+| sdd-troubleshooting | 条件分岐 | 仮説3つ以上なら3階層 |
+| sdd-document-management | 3階層 | フルスキャン時に5機能を並列実行 |
+
 ## 並列処理（Agent tool活用）
 
 **条件を満たす場合は積極的に使用する。** 判定基準・パターン・呼び出し例は [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md) を参照。
