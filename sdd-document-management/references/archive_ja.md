@@ -56,7 +56,7 @@ docs/sdd/archive/
 
 ```text
 反映手順:
-1. アーカイブ対象のdesign/*.mdからAPI、DB、サービス等の定義を抽出
+1. アーカイブ対象のSDD（requirements/*.md, design/*.md, tasks/*.md）からAPI、DB、サービス等の定義を抽出
 2. CLAUDE.mdの該当セクションを検索
 3. 未記載の項目を追記（既存の項目は更新不要）
 4. セクション自体が存在しない場合は新規作成
@@ -85,7 +85,7 @@ docs/sdd/archive/
 対応を選択してください：
 
 A) すべてアーカイブ + CLAUDE.md更新（リンクも自動更新）
-B) 個別に選択
+B) 個別に選択（※ CLAUDE.md更新は選択に関わらず必須）
 C) 今回はアーカイブしない
 ```
 
