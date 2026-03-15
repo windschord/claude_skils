@@ -102,6 +102,34 @@
 
 ---
 
+## CLAUDE.md更新計画
+
+アーカイブ対象プロジェクトの実装結果をCLAUDE.mdに反映します。
+
+### 反映対象
+
+| カテゴリ | 追加項目 | CLAUDE.md反映先セクション |
+|---------|---------|--------------------------|
+| API | [エンドポイント] | API Endpoints |
+| DBスキーマ | [テーブル/カラム] | DB Schema |
+| サービス | [サービス名] | Services |
+| ページ | [ページ名] | Pages |
+| WebSocket | [メッセージ型] | WebSocket Message Types |
+| 状態遷移 | [状態名] | State Machines |
+| ビジネスルール | [ルール名] | Business Rules |
+| 環境変数 | [変数名] | Environment Variables |
+
+### 不足セクション
+
+CLAUDE.mdに以下のセクションが存在しない場合は新規作成:
+
+- [ ] Pages（画面一覧と主要機能）
+- [ ] WebSocket Message Types（メッセージ種別と方向）
+- [ ] State Machines（状態遷移）
+- [ ] Business Rules（重要なビジネスルール）
+
+---
+
 ## インデックス更新計画
 
 ### 削除するエントリ
@@ -187,6 +215,8 @@
 | 移動したファイル | X件 |
 | 更新したインデックス | X件 |
 | 更新した参照 | X件 |
+| CLAUDE.mdに追記した項目 | X件 |
+| CLAUDE.mdに新規作成したセクション | X件 |
 
 ### 作成されたディレクトリ
 
