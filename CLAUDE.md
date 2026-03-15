@@ -47,6 +47,7 @@ sdd-documentation（オーケストレーター）
 - **references/workflow_guide_ja.md** - ワークフローガイド
 - **references/agent_teams_guide_ja.md** - エージェントチーム活用ガイド
 - **references/task_sync_guide_ja.md** - タスク同期（TodoWrite連携）ガイド
+- **references/checklist_ja.md** - チェックリスト
 
 ### requirements-defining/
 - **SKILL.md** - スキル定義ファイル
@@ -64,6 +65,7 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/decision_template_ja.md** - 技術的決定テンプレート
 - **references/design_patterns_ja.md** - 設計パターンリファレンス
 - **references/ears_notation_ja.md** - EARS記法（要件参照用）
+- **references/cicd_guide_ja.md** - CI/CDガイド
 
 ### task-planning/
 - **SKILL.md** - スキル定義ファイル
@@ -74,6 +76,7 @@ sdd-documentation（オーケストレーター）
 ### task-executing/
 - **references/execution_guide_ja.md** - 実行ガイド
 - **references/commit_templates_ja.md** - コミットテンプレート
+- **references/jules_integration_ja.md** - Jules連携ガイド
 
 ### sdd-troubleshooting/
 - **SKILL.md** - スキル定義ファイル（問題確認・原因分析・承認フロー）
@@ -116,15 +119,47 @@ sdd-documentation（オーケストレーター）
 - **references/analysis_principles_ja.md** - 分析原則ガイド
 - **references/browser_automation_guide_ja.md** - ブラウザ自動化ガイド
 
-### その他のスキル
-- **incident-rca/SKILL.md** - なぜなぜ分析スキル
-- **operations-design/SKILL.md** - 運用設計スキル
-- **report-summarizing/SKILL.md** - レポート要約スキル
-- **jules-cli/SKILL.md** - Jules CLI統合スキル
-- **depth-interviewing-career/SKILL.md** - キャリアインタビュースキル
-- **depth-interviewing-product/SKILL.md** - 製品インタビュースキル
-- **knowledge-base/SKILL.md** - ナレッジベース管理スキル
-- **things-url/SKILL.md** - Things URLタスク共有スキル
+### incident-rca/
+- **SKILL.md** - なぜなぜ分析スキル
+- **assets/templates/log_template.md** - 分析ログテンプレート
+- **assets/templates/result_template.md** - 分析結果テンプレート
+- **sessions/** - セッションデータ
+
+### operations-design/
+- **SKILL.md** - 運用設計スキル
+- **assets/templates/conversation_log_template_ja.md** - ヒアリングログテンプレート
+- **assets/templates/operations_design_template_ja.md** - 運用設計テンプレート（汎用）
+- **assets/templates/operations_design_template_cloud_instance_ja.md** - 運用設計テンプレート（クラウドインスタンス）
+- **assets/templates/operations_design_template_cloud_native_ja.md** - 運用設計テンプレート（クラウドネイティブ）
+- **assets/templates/operations_design_template_onpremise_ja.md** - 運用設計テンプレート（オンプレミス）
+- **assets/templates/operations_design_template_saas_ja.md** - 運用設計テンプレート（SaaS）
+- **hearing_items/2-9_security_compliance.md** - セキュリティコンプライアンスヒアリング項目
+- **references/conversation_logging.md** - ヒアリングログガイド
+- **references/industry_research_guide_ja.md** - 業界調査ガイド
+- **references/operations_design_guide_ja.md** - 運用設計ガイド
+
+### report-summarizing/
+- **SKILL.md** - レポート要約スキル
+- **assets/templates/executive_summary_template_ja.md** - エグゼクティブサマリーテンプレート
+
+### depth-interviewing-career/
+- **SKILL.md** - キャリアインタビュースキル
+- **assets/templates/interview_log_template_ja.md** - インタビューログテンプレート
+
+### depth-interviewing-product/
+- **SKILL.md** - 製品インタビュースキル
+- **assets/templates/interview_log_template_ja.md** - インタビューログテンプレート
+
+### knowledge-base/
+- **SKILL.md** - ナレッジベース管理スキル
+
+### things-url/
+- **SKILL.md** - Things URLタスク共有スキル
+- **references/applescript_reference_ja.md** - Things 3 AppleScriptリファレンス
+- **references/url_scheme_reference_ja.md** - Things URLスキームリファレンス
+
+### jules-cli/
+- **SKILL.md** - Jules CLI統合スキル
 
 ## デバッグ・エラー修正の必須プロセス
 
