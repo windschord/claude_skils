@@ -7,6 +7,8 @@ on:
       - '**.md'
       - 'package.json'
       - 'package-lock.json'
+      - 'scripts/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: read
@@ -47,6 +49,7 @@ jobs:
 
       - name: Comment PR on failure
         if: ${{ always() && steps.run_skill_lint.outcome == 'failure' && github.actor != 'dependabot[bot]' }}
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -106,6 +109,7 @@ jobs:
 
       - name: Comment PR on failure
         if: ${{ always() && steps.run_textlint.outcome == 'failure' && github.actor != 'dependabot[bot]' }}
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
