@@ -215,7 +215,7 @@ CLAUDE.mdに存在すべきだが未作成のセクション:
 | Pages | [ページディレクトリ] | 推奨 | Medium |
 | WebSocket Message Types | [WebSocket実装] | 推奨 | Medium |
 | State Machines | [状態管理コード] | 推奨 | Medium |
-| Business Rules | [ビジネスロジック] | 推奨 | Low |
+| Business Rules | [ビジネスロジック] | 推奨 | Medium |
 
 **推奨アクション**
 - [ ] CLAUDE.mdに不足セクションを追加
