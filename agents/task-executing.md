@@ -381,8 +381,8 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 | TODO | pending |
 | IN_PROGRESS | in_progress |
 | DONE | completed |
-| BLOCKED | pending（contentに[BLOCKED]付記） |
-| REVIEW | in_progress（contentに[REVIEW]付記） |
+| BLOCKED | pending（content先頭に[BLOCKED]を付与） |
+| REVIEW | in_progress（content先頭に[REVIEW]を付与） |
 
 **SDDタスクの判定基準:** contentが `[Phase-`、`[BLOCKED] [Phase-`、または `[REVIEW] [Phase-` で始まるtodo。contentには `[TASK-XXX]` 形式のタスクIDを含める。
 
