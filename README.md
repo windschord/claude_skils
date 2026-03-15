@@ -29,12 +29,17 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | task-executing | タスク実行・逆順レビュー |
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
 | | sdd-document-management | ドキュメント管理・メンテナンス |
-| **分析** | incident-rca | なぜなぜ分析によるインシデント根本原因特定 |
+| **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
+| | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
+| **運用・監視** | health-check | インフラメトリクスの定期調査・健全性評価 |
+| | incident-rca | なぜなぜ分析によるインシデント根本原因特定 |
+| | operations-design | ITIL 4/SRE/DevOps運用設計書作成 |
 | **インタビュー** | depth-interviewing-career | 社員キャリアインタビュー |
 | | depth-interviewing-product | 製品ユーザーインタビュー |
-| **ユーティリティ** | operations-design | ITIL 4/SRE/DevOps運用設計書作成 |
+| **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
-| | jules-cli | Jules CLIによるタスク委譲・管理 |
+| **ユーティリティ** | jules-cli | Jules CLIによるタスク委譲・管理 |
+| | things-url | Things 3とのタスク双方向共有 |
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
 
@@ -59,6 +64,12 @@ claude_skils/
 │
 ├── .claude-plugin/
 │   └── marketplace.json               # マーケットプレイス設定
+├── agents/                            # エージェント定義
+│   └── task-executing.md              # タスク実行エージェント
+├── scripts/                           # ユーティリティスクリプト
+│   ├── generate-toc.sh                # 目次生成
+│   ├── github-slug.mjs                # GitHubスラグ生成
+│   └── lint-skills.sh                 # スキル定義リント
 ├── CLAUDE.md                          # Claude Code用ガイド（スキル内部リソース）
 ├── README.md                          # このファイル
 ├── LICENSE                            # MITライセンス
@@ -89,6 +100,18 @@ claude_skils/
 │   ├── assets/templates/
 │   └── references/
 │
+├── ai-code-review/                    # AIコードレビュースキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
+├── pr-comment-fixer/                  # PRコメント自動修正スキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
+├── health-check/                      # サービスヘルスチェックスキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
 ├── incident-rca/                      # インシデントRCAスキル
 │   ├── SKILL.md
 │   └── assets/templates/
@@ -96,11 +119,16 @@ claude_skils/
 │   ├── SKILL.md
 │   ├── assets/templates/
 │   └── references/
+├── knowledge-base/                    # ナレッジベース管理スキル
+│   └── SKILL.md
 ├── report-summarizing/                # レポート要約スキル
 │   ├── SKILL.md
 │   └── assets/templates/
 ├── jules-cli/                         # Jules CLIスキル
 │   └── SKILL.md
+├── things-url/                        # Things URLタスク共有スキル
+│   ├── SKILL.md
+│   └── references/
 ├── depth-interviewing-career/         # キャリアインタビュースキル
 │   ├── SKILL.md
 │   └── assets/templates/
