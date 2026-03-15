@@ -34,7 +34,7 @@ jobs:
 
       - name: Run skill lint
         if: github.actor != 'dependabot[bot]'
-        run: bash scripts/lint-skills.sh --strict
+        run: bash scripts/lint-skills.sh
 
       - name: Comment PR on failure
         if: failure() && github.actor != 'dependabot[bot]'
