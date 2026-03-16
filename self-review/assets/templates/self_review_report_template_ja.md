@@ -63,8 +63,8 @@
       "path": "src/example.ts",
       "lines_added": 50,
       "lines_deleted": 10,
-      "priority": "high",
-      "category": "ビジネスロジック"
+      "priority": "high|medium|low",
+      "category": "セキュリティ関連|API / データベース|ビジネスロジック|設定・インフラ|UI/表示|テスト|ドキュメント"
     }
   ],
   "previous_review": null
@@ -82,9 +82,9 @@
     "report_file": "前回レポートのファイルパス",
     "status_summary": {
       "resolved": 0,
-      "partially_resolved": 0,
+      "partially-resolved": 0,
       "unresolved": 0,
-      "wont_fix": 0,
+      "wont-fix": 0,
       "regressed": 0
     },
     "findings_status": [
@@ -124,3 +124,11 @@
   }
 }
 ```
+
+### resolution.statusと再レビュー時statusの対応関係
+
+| resolution.status（修正直後） | 再レビュー時の判定結果 |
+|------------------------------|---------------------|
+| `fixed` | → `resolved` または `regressed`（修正が正しいか再確認） |
+| `skipped` | → `unresolved` または `wont-fix`（ユーザー意図による） |
+| `deferred` | → `unresolved`（後続対応として残存） |
