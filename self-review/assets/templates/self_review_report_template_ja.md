@@ -1,145 +1,126 @@
-# セルフレビューレポート
+# セルフレビューレポートフォーマット
 
-## 概要
+このファイルはレポートファイル（`.self-review/review-YYYY-MM-DD-HHMMSS.json`）の出力フォーマットを定義します。
 
-| 項目 | 内容 |
-|------|------|
-| レビュー日時 | {YYYY-MM-DD HH:MM:SS} |
-| 対象ブランチ | {branch_name} |
-| ベースブランチ | {base_branch} |
-| 差分取得方法 | {diff_method}（例: ブランチ間差分、ステージ済みのみ） |
-| 変更ファイル数 | {file_count} |
-| 変更行数 | +{additions} / -{deletions} |
+## 出力フォーマット
 
-## レビュー結果マトリクス
-
-| 観点 | critical | warning | suggestion | nitpick |
-|------|----------|---------|------------|---------|
-| セキュリティ | {count} | {count} | {count} | {count} |
-| ドキュメント乖離 | {count} | {count} | {count} | {count} |
-| 可読性・複雑度 | {count} | {count} | {count} | {count} |
-| ライブラリ選定 | {count} | {count} | {count} | {count} |
-| 変更説明 | {count} | {count} | {count} | {count} |
-| 既知脆弱性 | {count} | {count} | {count} | {count} |
-| **合計** | **{total}** | **{total}** | **{total}** | **{total}** |
-
-## 総合判定
-
-- [ ] 問題なし（指摘なし）
-- [ ] 軽微な指摘のみ（suggestion/nitpickのみ）
-- [ ] 修正推奨（warningあり）
-- [ ] 修正必須（criticalあり）
-
-## 指摘一覧
-
-### Critical
-
-<!-- critical指摘がない場合は「なし」と記載 -->
-
-#### F-{NNN}: {指摘タイトル}
-
-- **ファイル**: `{file_path}:{line}`
-- **カテゴリ**: {category}
-- **問題**: {問題の説明}
-- **推奨修正**: {修正方針の説明}
-
-<details>
-<summary>AI向け修正情報</summary>
+レポートファイルは以下のJSON構造で出力する。メインClaudeが再レビュー時に読み込んで前回指摘との差分確認に使用する。
 
 ```json
 {
-  "id": "F-{NNN}",
-  "file": "{file_path}",
-  "line": "{line}",
-  "severity": "critical",
-  "category": "{category}",
-  "title": "{指摘タイトル}",
-  "fix": {
-    "old_text": "{置換対象のコードテキスト}",
-    "new_text": "{置換後のコードテキスト}",
-    "description": "{補足説明}"
+  "metadata": {
+    "version": "2.0.0",
+    "timestamp": "YYYY-MM-DDTHH:MM:SSZ",
+    "branch": "feature/xxx",
+    "base_branch": "main",
+    "diff_method": "branch",
+    "files_changed": 5,
+    "lines_added": 120,
+    "lines_deleted": 30
   },
-  "fix_strategy": {
-    "approach": "{推奨する修正アプローチ}",
-    "alternatives": ["{代替案}"],
-    "impact": "{影響範囲}",
-    "effort": "small | medium | large"
+  "summary": {
+    "critical": 0,
+    "warning": 0,
+    "suggestion": 0,
+    "nitpick": 0,
+    "total": 0
   },
-  "context": "{該当行の前後3行程度のコード断片}",
-  "rule": "{関連ルール}",
-  "verification_hint": "{修正後の確認ポイント}"
+  "findings": [
+    {
+      "id": "F-001",
+      "file": "src/example.ts",
+      "line": "42-45",
+      "severity": "critical",
+      "category": "security",
+      "title": "問題の端的な説明",
+      "reason": "なぜ問題なのか、根拠",
+      "fix": {
+        "old_text": "置換対象テキスト",
+        "new_text": "置換後テキスト"
+      },
+      "fix_strategy": {
+        "approach": "推奨する修正アプローチ",
+        "alternatives": [],
+        "impact": "影響範囲",
+        "effort": "small"
+      },
+      "context": "前後3行のコード断片",
+      "rule": "OWASP-A03",
+      "verification_hint": "修正後の確認ポイント",
+      "source_agent": "A",
+      "resolution": null
+    }
+  ],
+  "cross_checks": [
+    {
+      "pattern": "検出した問題パターン",
+      "files_checked": ["確認済みファイル一覧"],
+      "additional_occurrences": ["他ファイル:行番号"]
+    }
+  ],
+  "files": [
+    {
+      "path": "src/example.ts",
+      "lines_added": 50,
+      "lines_deleted": 10,
+      "priority": "high",
+      "category": "ビジネスロジック"
+    }
+  ],
+  "previous_review": null
 }
 ```
 
-</details>
+## 再レビュー時のフォーマット
 
-### Warning
+再レビュー時は`previous_review`フィールドに前回情報を含める:
 
-<!-- warning指摘がない場合は「なし」と記載 -->
+```json
+{
+  "previous_review": {
+    "timestamp": "前回レビューのタイムスタンプ",
+    "report_file": "前回レポートのファイルパス",
+    "status_summary": {
+      "resolved": 0,
+      "partially_resolved": 0,
+      "unresolved": 0,
+      "wont_fix": 0,
+      "regressed": 0
+    },
+    "findings_status": [
+      {
+        "id": "F-001",
+        "status": "resolved|partially-resolved|unresolved|wont-fix|regressed",
+        "comment": "状態判定の根拠"
+      }
+    ]
+  }
+}
+```
 
-#### F-{NNN}: {指摘タイトル}
+## フィールド説明
 
-（criticalと同一形式）
+| フィールド | 用途 |
+|-----------|------|
+| `metadata` | メインClaudeがレポートの基本情報を即座に把握するため |
+| `summary` | 指摘件数の集計。ユーザー報告時にそのまま使用 |
+| `findings` | 全指摘の構造化データ。`fix`はEditツールに直接渡せる形式 |
+| `findings[].source_agent` | どのエージェントが検出したか（デバッグ・品質確認用） |
+| `findings[].resolution` | 初回レビュー時は`null`。修正適用後に結果を記録 |
+| `cross_checks` | 横断チェック結果。同一パターンの問題を漏れなく把握 |
+| `files` | 変更ファイルの分類情報。再レビュー時のスコープ確認用 |
+| `previous_review` | 再レビュー時のみ。前回指摘の修正状況追跡用 |
 
-### Suggestion
+## resolution記録（修正適用後）
 
-<!-- suggestion指摘がない場合は「なし」と記載 -->
+修正を適用した場合、該当findingの`resolution`を更新する:
 
-#### F-{NNN}: {指摘タイトル}
-
-（criticalと同一形式）
-
-### Nitpick
-
-<!-- nitpick指摘がない場合は「なし」と記載 -->
-
-#### F-{NNN}: {指摘タイトル}
-
-（criticalと同一形式）
-
-## 修正対応状況
-
-<!-- 修正を適用した場合に記入 -->
-
-| ID | 指摘 | 重大度 | 対応状況 | コメント |
-|----|------|--------|---------|---------|
-| F-{NNN} | {指摘タイトル} | {severity} | {resolved/unresolved/wont-fix} | {コメント} |
-
-## 変更ファイル一覧
-
-| ファイル | 変更行数 | カテゴリ | 優先度 |
-|---------|---------|---------|--------|
-| `{file_path}` | +{add}/-{del} | {category} | {高/中/低} |
-
----
-
-<!-- 再レビュー時に使用するセクション -->
-
-## 再レビュー（前回レポートとの比較）
-
-<!-- 再レビュー時のみ記入。初回レビュー時はこのセクション全体を削除する -->
-
-### 前回レビュー情報
-
-| 項目 | 内容 |
-|------|------|
-| 前回レビュー日時 | {previous_review_date} |
-| 前回レポートファイル | {previous_report_file} |
-
-### 前回指摘の修正状況
-
-| ID | 指摘 | 重大度 | 状態 | コメント |
-|----|------|--------|------|---------|
-| F-{NNN} | {指摘タイトル} | {severity} | {resolved/partially-resolved/unresolved/wont-fix/regressed} | {コメント} |
-
-### 修正状況サマリー
-
-- resolved: {count}件
-- partially-resolved: {count}件
-- unresolved: {count}件
-- wont-fix: {count}件
-- regressed: {count}件
-
-### 新規指摘
-
-（上記「指摘一覧」セクションと同一形式で記載）
+```json
+{
+  "resolution": {
+    "status": "fixed|skipped|deferred",
+    "applied_at": "YYYY-MM-DDTHH:MM:SSZ",
+    "comment": "修正内容や見送り理由"
+  }
+}
+```
