@@ -111,6 +111,8 @@
 | `files` | 変更ファイルの分類情報。再レビュー時のスコープ確認用 |
 | `previous_review` | 再レビュー時のみ。前回指摘の修正状況追跡用 |
 
+> **注**: ai-code-reviewとの差異として、本フォーマットでは`scope`フィールドと`fix.description`フィールドを含まない。
+
 ## resolution記録（修正適用後）
 
 修正を適用した場合、該当findingの`resolution`を更新する:

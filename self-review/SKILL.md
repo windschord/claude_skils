@@ -53,8 +53,10 @@ metadata:
 | 2 | ドキュメントとの乖離 | `docs-drift`, `internal-consistency` | C |
 | 3 | 可読性・複雑度 | `readability` | B |
 | 4 | ライブラリ選定の妥当性 | `library` | C |
-| 5 | 変更説明の適切性 | `change-description` | C |
+| 5 | 変更説明の適切性 [^1] | `change-description` | C |
 | 6 | 既知脆弱性の検出 | `known-vulnerability` | A |
+
+[^1]: ai-code-reviewの「PR説明の適切性」（category: `pr-description`）に対応。ローカルレビュー用に名称とcategory値を変更。
 
 **各観点の詳細レビュー基準**: [../ai-code-review/references/review_guide_ja.md](../ai-code-review/references/review_guide_ja.md)
 
@@ -207,6 +209,7 @@ git diff ${BASE}...HEAD
 - `cross_checks`: 横断チェック結果をメインに返し、メインが統合判断する
 - `summary`: メインが各エージェントの結果を即座に集計できる
 - **説明文やマークダウンは不要**: メインClaudeがJSONを直接解釈し、ユーザー向け報告はメインが生成する
+- **ai-code-reviewとの差異**: `scope`フィールド（PR対応範囲の判定）はローカルレビューでは不要なため省略。`fix.description`（ai-code-review側でも任意）もローカルでは省略
 
 > **注**: レポート出力時にメインClaudeが`source_agent`（検出エージェント）と`resolution`（修正状況、初期値null）を各findingに追加する。サブエージェントはこれらを出力しない。
 
