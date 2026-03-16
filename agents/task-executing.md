@@ -1,6 +1,6 @@
 ---
 name: task-executing
-description: docs/sdd/tasks/に記載されたタスクを実行し、コード実装を行うエージェント。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビューで整合性を確認する。SDDワークフローの実装フェーズで使用する。Do NOT use for 要件定義・設計・タスク計画の作成（各サブスキルを使用すること）。
+description: docs/sdd/tasks/に記載されたタスクを実行し、コード実装を行うエージェント。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビューで整合性を確認する。orchestrating-agentsスキルの3階層構成ではWorker（孫）としても動作する。SDDワークフローの実装フェーズで使用する。Do NOT use for 要件定義・設計・タスク計画の作成（各サブスキルを使用すること）。
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 metadata:
@@ -23,7 +23,7 @@ requirements-defining → software-designing → task-planning → task-executin
 ### 主な機能
 
 - docs/sdd/tasks/からタスクを読み取り、実行順序を決定
-- タスクごとのステータス更新（TODO → IN_PROGRESS → DONE）
+- タスクごとのステータス更新（TODO → IN_PROGRESS → REVIEW → DONE、レビュー不要時はREVIEWをスキップ）
 - 統一されたコミットテンプレートによるGit管理
 - 実装後の逆順レビュー（実装→タスク→設計→要件の整合性確認）
 - 並列実行可能なタスクの並列処理
@@ -115,10 +115,14 @@ requirements-defining → software-designing → task-planning → task-executin
 ### ステータス遷移
 
 ```text
-TODO → IN_PROGRESS → DONE
+TODO → IN_PROGRESS → REVIEW → DONE
          ↓
-      BLOCKED（問題発生時）
+      BLOCKED
 ```
+
+- BLOCKED: 問題発生時（依存関係の未解決等）
+- REVIEW: レビュー対応時（レビュー完了後DONEに遷移）
+- レビュー指摘がない場合は IN_PROGRESS → DONE に直接遷移
 
 ### 更新タイミング
 
@@ -127,6 +131,7 @@ TODO → IN_PROGRESS → DONE
 | タスク開始時 | `IN_PROGRESS` | タスクファイルとindex.mdを更新、コミット |
 | タスク完了時 | `DONE` | 完了サマリー追加、更新、コミット |
 | 問題発生時 | `BLOCKED` | ブロック理由を記載 |
+| レビュー対応時 | `REVIEW` | レビュー指摘を記載 |
 
 ## タスク完了前チェックリスト
 
@@ -351,26 +356,47 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 ```text
 1. タスク開始時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
-   - TodoWriteで該当タスク（[TASK-XXX]を含むtodo）をin_progressに更新
+   - TodoWriteで該当タスクをin_progressに更新（既存プレフィックスがあれば除去し、contentを「[Phase-N/TASK-XXX] ...」に正規化）
    - コミット
 
 2. タスク完了時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
-   - TodoWriteで該当タスクをcompletedに更新
+   - TodoWriteで該当タスクをcompletedに更新（既存プレフィックスがあれば除去し、contentを「[Phase-N/TASK-XXX] ...」に正規化）
    - コミット
 
 3. タスクブロック時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをBLOCKEDに更新
-   - TodoWriteで該当タスクのcontentに[BLOCKED]を付記
+   - TodoWriteで該当タスクのstatusをpendingに変更し、contentの先頭に[BLOCKED]を付与
+
+4. レビュー対応時:
+   - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをREVIEWに更新
+   - TodoWriteで該当タスクのcontentの先頭に[REVIEW]を付与し、statusをin_progressに更新
+
+※ プレフィックス正規化ルール:
+   - contentに付与できる状態プレフィックスは[BLOCKED]または[REVIEW]の最大1つ
+   - 状態遷移時は既存プレフィックスを除去してから新しいプレフィックスを付与する
+   - IN_PROGRESS/DONEへの遷移時はプレフィックスを除去し、contentを「[Phase-N/TASK-XXX] ...」に復元する
 ```
 
 ### TodoWrite更新の形式
 
+**状態マッピング:**
+
+| SDD | TodoWrite |
+|-----|-----------|
+| TODO | pending |
+| IN_PROGRESS | in_progress |
+| DONE | completed |
+| BLOCKED | pending（content先頭に[BLOCKED]を付与） |
+| REVIEW | in_progress（content先頭に[REVIEW]を付与） |
+
+**SDDタスクの判定基準:** contentが `[Phase-N/TASK-XXX]`、`[BLOCKED] [Phase-N/TASK-XXX]`、または `[REVIEW] [Phase-N/TASK-XXX]` で始まるtodo。
+
+**非SDDタスクの保持:** 上記の判定基準に合致しないtodoはSDDワークフロー外で作成されたタスクであり、TodoWrite更新時にそのまま保持する（上書き・削除しない）。
+
 ```text
 TodoWriteの更新では、既存のtodoリスト全体を渡す。
 対象タスクのstatusのみ変更し、他のタスクはそのまま維持する。
-非SDDタスク（contentが[Phase-で始まらないtodo）が存在する場合もそのまま保持して含めること。
-SDDスキルが管理するのはSDDタスク（contentが[Phase-または[BLOCKED] [Phase-で始まるtodo）のみ。
 
 todos = [
   // --- 非SDDタスク（既存を保持） ---
@@ -402,7 +428,7 @@ todos = [
 - **完了通知**: 実装完了後にリーダーへメッセージを送信:
 
 ```text
-TASK-XXX が完了しました。
+[TASK-XXX] が完了しました。
 - 受入基準: すべて達成
 - コミット: [コミットハッシュ]
 - 変更ファイル: [ファイルリスト]
@@ -419,6 +445,55 @@ TASK-XXX が完了しました。
 5. **docs/sdd/tasks/index.mdを一括更新**: 全メンバーの完了報告を受けてindex.mdのステータスを一括更新
 6. **TodoWrite一括更新**: 完了したタスクをまとめてTodoWriteで更新
 7. **逆順レビュー**: すべてのタスク完了後に逆順レビューを実施
+
+## Worker（孫）モード
+
+### orchestrating-agentsスキルの孫（Worker）としての動作
+
+このエージェントがorchestrating-agentsスキルの3階層構成においてWorker（孫）として起動された場合、子（Manager）から受け取った指示に基づいて単一タスクを実行する。
+
+### 起動時の確認事項
+
+1. 子（Manager）からの指示内容（タスクID、対象ファイル、受入基準）を確認
+2. 指定された docs/sdd/tasks/phase-N/TASK-XXX.md を読み取り、実装内容を把握
+3. worktree内で独立して作業を開始
+
+### worktree内での注意事項
+
+ファイル競合回避・index.md編集禁止・TodoWrite更新の委任等の基本ルールは「チームメンバーの注意事項」と同一。加えて:
+- worktree固有のパスを前提としたハードコードを避ける
+- コミットはworktree内のブランチに対して行う
+- TodoWrite更新とdocs/sdd/tasks/index.mdの更新はManagerに委任（Workerは更新しない）
+
+### 完了時の報告フォーマット
+
+タスク完了後、子（Manager）に以下の形式で報告する:
+
+```text
+[TASK-XXX] が完了しました。
+- 受入基準: すべて達成 / 一部未達成（詳細を記載）
+- コミット: [コミットハッシュ]
+- 変更ファイル: [ファイルリスト]
+- 備考: [特記事項があれば記載]
+```
+
+### エラー発生時の挙動
+
+- エラーが発生した場合、自分ではリトライしない
+- エラー内容を子（Manager）にエスカレーションする
+- エスカレーション時には以下の情報を含める:
+  - エラーメッセージとスタックトレース
+  - 実行していた操作の内容
+  - 部分的に完了した作業の状況
+  - 推定される原因（わかる範囲で）
+
+```text
+[TASK-XXX] でエラーが発生しました。
+- エラー内容: [エラーメッセージ]
+- 実行中の操作: [操作内容]
+- 部分完了: [完了した作業の概要]
+- 推定原因: [原因の推測]
+```
 
 ## リソース
 
