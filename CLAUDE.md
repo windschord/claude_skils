@@ -115,6 +115,11 @@ sdd-documentation（オーケストレーター）
 - **references/review_guide_ja.md** - レビューガイド
 - **references/rereview_guide_ja.md** - 再レビューガイド
 
+### self-review/
+- **SKILL.md** - スキル定義ファイル（サブエージェント並列によるローカル変更の6観点セルフレビュー）
+- **assets/templates/self_review_report_template_ja.md** - セルフレビューレポートテンプレート
+- **references/self_review_guide_ja.md** - セルフレビューガイド（差分取得・修正適用・SDD連携）
+
 ### health-check/
 - **SKILL.md** - スキル定義ファイル（インフラメトリクス定期調査・健全性評価）
 - **assets/templates/health_check_report_template_ja.md** - ヘルスチェックレポートテンプレート

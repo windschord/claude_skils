@@ -30,6 +30,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
 | | sdd-document-management | ドキュメント管理・メンテナンス |
 | **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
+| | self-review | サブエージェント並列によるローカル変更の6観点セルフレビュー |
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
 | **運用・監視** | health-check | インフラメトリクスの定期調査・健全性評価 |
 | | incident-rca | なぜなぜ分析によるインシデント根本原因特定 |
@@ -101,6 +102,10 @@ claude_skils/
 │   └── references/
 │
 ├── ai-code-review/                    # AIコードレビュースキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
+├── self-review/                       # セルフレビュースキル
 │   ├── SKILL.md
 │   ├── assets/templates/
 │   └── references/
