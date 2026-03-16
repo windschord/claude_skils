@@ -355,12 +355,12 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 ```text
 1. タスク開始時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
-   - TodoWriteで該当タスク（[TASK-XXX]を含むtodo）をin_progressに更新
+   - TodoWriteで該当タスクをin_progressに更新（既存プレフィックスがあれば除去し、contentを「[Phase-N/TASK-XXX] ...」に正規化）
    - コミット
 
 2. タスク完了時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
-   - TodoWriteで該当タスクをcompletedに更新
+   - TodoWriteで該当タスクをcompletedに更新（既存プレフィックスがあれば除去し、contentを「[Phase-N/TASK-XXX] ...」に正規化）
    - コミット
 
 3. タスクブロック時:
