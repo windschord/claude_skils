@@ -44,23 +44,14 @@ jobs:
           fi
 
   mutation:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run mutation testing
+        # Strykerのthresholds.breakで85%未満を検出（stryker.config.jsで設定）
+        # 設定例: thresholds: { high: 90, low: 85, break: 85 }
         run: npx stryker run
-      - name: Check mutation score threshold
-        run: |
-          # ミューテーションスコア85%未満で失敗
-          score=$(jq '.mutationScore // empty' reports/mutation/mutation.json)
-          if [ -z "$score" ]; then
-            echo "Error: Could not read mutationScore from mutation report"
-            exit 1
-          fi
-          if (( $(echo "$score < 85" | bc -l) )); then
-            echo "Mutation score ${score}% is below 85%"
-            exit 1
-          fi
 
   lint:
     runs-on: ubuntu-latest
