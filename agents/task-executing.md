@@ -389,7 +389,7 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 | BLOCKED | pending（content先頭に[BLOCKED]を付与） |
 | REVIEW | in_progress（content先頭に[REVIEW]を付与） |
 
-**SDDタスクの判定基準:** contentが `[Phase-`、`[BLOCKED] [Phase-`、または `[REVIEW] [Phase-` で始まるtodo。contentには `[TASK-XXX]` 形式のタスクIDを含める。
+**SDDタスクの判定基準:** contentが `[Phase-N/TASK-XXX]`、`[BLOCKED] [Phase-N/TASK-XXX]`、または `[REVIEW] [Phase-N/TASK-XXX]` で始まるtodo。
 
 **非SDDタスクの保持:** 上記の判定基準に合致しないtodoはSDDワークフロー外で作成されたタスクであり、TodoWrite更新時にそのまま保持する（上書き・削除しない）。
 
