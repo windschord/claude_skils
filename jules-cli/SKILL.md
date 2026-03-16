@@ -1,6 +1,8 @@
 ---
 name: jules-cli
-description: docs/sdd/tasks/に記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にdocs/sdd/tasks/を更新します。
+description: docs/sdd/tasks/に記載されたタスクをJules CLIを使って依頼・管理する。タスクをフォーマットしてJulesに送信し、進捗を追跡して完了後にdocs/sdd/tasks/を更新する。SDDタスクをGoogleのJulesエージェントに委任する場合に使用する。Do NOT use for Jules CLI未導入の環境でのタスク実行（task-executingを使用すること）。
+metadata:
+  version: "1.0.0"
 ---
 
 # Jules CLI統合スキル

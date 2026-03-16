@@ -1,7 +1,8 @@
 ---
 name: pr-comment-fixer
-description: GitHub PRのレビューコメント（インラインスレッド・レビュー本文・Issueコメント）を自動検出し、修正を適用するスキル。CodeRabbit・Copilot等のbotコメントにも対応。
-version: "2.0.0"
+description: GitHub PRのレビューコメントを自動検出し、コード修正を適用する。インラインスレッド・レビュー本文・Issueコメントに対応し、CodeRabbit・Copilot等のbotコメントも処理する。PRレビュー後の修正作業を自動化したい場合に使用する。Do NOT use for レビュー自体の実施（ai-code-reviewを使用すること）。
+metadata:
+  version: "2.0.0"
 ---
 
 # PRコメント自動修正スキル

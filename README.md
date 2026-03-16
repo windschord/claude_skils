@@ -30,6 +30,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
 | | sdd-document-management | ドキュメント管理・メンテナンス |
 | **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
+| | self-review | サブエージェント並列によるローカル変更の6観点セルフレビュー |
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
 | **運用・監視** | health-check | インフラメトリクスの定期調査・健全性評価 |
 | | incident-rca | なぜなぜ分析によるインシデント根本原因特定 |
@@ -39,6 +40,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
 | **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
+| **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
 | **ユーティリティ** | jules-cli | Jules CLIによるタスク委譲・管理 |
 | | things-url | Things 3とのタスク双方向共有 |
 
@@ -66,7 +68,9 @@ claude_skils/
 ├── .claude-plugin/
 │   └── marketplace.json               # マーケットプレイス設定
 ├── agents/                            # エージェント定義
-│   └── task-executing.md              # タスク実行エージェント
+│   ├── orchestrator.md               # オーケストレーター（親セッション）
+│   ├── manager.md                    # マネージャー（子セッション）
+│   └── task-executing.md              # タスク実行エージェント（孫としても動作）
 ├── scripts/                           # ユーティリティスクリプト
 │   ├── generate-toc.sh                # 目次生成
 │   ├── github-slug.mjs                # GitHubスラグ生成
@@ -105,6 +109,10 @@ claude_skils/
 │   ├── SKILL.md
 │   ├── assets/templates/
 │   └── references/
+├── self-review/                       # セルフレビュースキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
 ├── pr-comment-fixer/                  # PRコメント自動修正スキル
 │   ├── SKILL.md
 │   ├── assets/templates/
@@ -130,6 +138,10 @@ claude_skils/
 ├── report-summarizing/                # レポート要約スキル
 │   ├── SKILL.md
 │   └── assets/templates/
+├── orchestrating-agents/              # エージェントオーケストレーションスキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
 ├── jules-cli/                         # Jules CLIスキル
 │   └── SKILL.md
 ├── things-url/                        # Things URLタスク共有スキル

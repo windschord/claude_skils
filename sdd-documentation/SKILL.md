@@ -1,7 +1,8 @@
 ---
 name: sdd-documentation
-description: ソフトウェア設計ドキュメント（SDD）を作成・管理・実装・トラブルシュートする。requirements/、design/、tasks/の作成、タスク実行、逆順レビュー、問題分析・修正を統括。SDDワークフロー全体の管理、エラー・バグ・動作不良の分析と修正、追加実装・機能追加に対応。
-version: "1.0.0"
+description: SDDワークフロー全体を統括するオーケストレーター。要件定義・設計・タスク計画・実装・逆順レビューの一連のフローを管理する。新規プロジェクトのSDD一括作成、複数フェーズにまたがるワークフロー管理、エラー・バグの体系的な分析と修正に使用する。Do NOT use for 個別フェーズのみの作業（requirements-defining、software-designing、task-planningを直接使用すること）。
+metadata:
+  version: "1.0.0"
 ---
 
 # SDD ドキュメンテーションスキル
@@ -261,6 +262,35 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 ## EARS記法
 
 詳細は [requirements-defining/references/ears_notation_ja.md](../requirements-defining/references/ears_notation_ja.md) を参照。
+
+## 自律実行モード（orchestrating-agents連携）
+
+複数フェーズを自律的に実行する場合は、`orchestrating-agents` スキルの3階層エージェント構造を活用する。
+
+### 事前確認（明示情報 / 不明情報）
+
+自律実行モード開始前に以下を分類する:
+- **明示情報**: ユーザーが指定した対象フェーズ・成果物・制約
+- **不明情報**: 受入基準、優先順位、停止条件、並列化可否の根拠
+
+不明情報がある場合は、実行を開始せずユーザーに確認してから進行する。
+
+- 親（Director）がSDDワークフロー全体を管理
+- 子（Manager）が各フェーズ（requirements/design/tasks/executing）を担当
+- 孫（Worker）が個別タスクを並列実行（task-executingフェーズのみ）
+
+詳細: `orchestrating-agents/SKILL.md`
+
+### SDDスキルへの適用マッピング
+
+| サブスキル | 階層モード | 理由 |
+|-----------|-----------|------|
+| requirements-defining | 2階層 | 単一作業、並列化不要 |
+| software-designing | 2階層 | 同上 |
+| task-planning | 2階層 | 同上 |
+| task-executing | 3階層 | 複数タスクの並列実行が可能 |
+| sdd-troubleshooting | 条件分岐 | 仮説3つ以上なら3階層 |
+| sdd-document-management | 3階層 | フルスキャン時に5機能を並列実行 |
 
 ## 並列処理（Agent tool活用）
 

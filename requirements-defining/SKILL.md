@@ -1,7 +1,8 @@
 ---
 name: requirements-defining
-description: EARS記法を用いた要件定義書を作成・編集します。ユーザーストーリーの作成、受入基準の定義、非機能要件の整理が必要な場合に使用してください。
-version: "1.0.0"
+description: EARS記法を用いた要件定義書を作成・編集する。ユーザーストーリーの作成、受入基準の定義、非機能要件の整理が必要な場合に使用する。要件定義フェーズのみを単独で実行する際に使用する。Do NOT use for SDDワークフロー全体の管理（sdd-documentationを使用すること）。
+metadata:
+  version: "1.0.0"
 ---
 
 # 要件定義スキル
