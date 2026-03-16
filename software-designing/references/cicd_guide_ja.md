@@ -1,5 +1,21 @@
 # CI/CD・品質基準ガイド
 
+
+<!-- TOC -->
+## 目次
+
+- [必須品質基準](#必須品質基準)
+- [GitHub Actions CI設定](#github-actions-ci設定)
+- [設計書への記載項目](#設計書への記載項目)
+- [言語別推奨ツール](#言語別推奨ツール)
+- [デプロイメント設計](#デプロイメント設計)
+  - [環境構成](#環境構成)
+  - [デプロイメントパイプライン](#デプロイメントパイプライン)
+- [セキュリティスキャン](#セキュリティスキャン)
+  - [推奨ツール](#推奨ツール)
+  - [GitHub Actions統合](#github-actions統合)
+<!-- /TOC -->
+
 設計段階で定義すべきCI/CD設定と品質基準の詳細ガイドです。
 
 ## 必須品質基準
@@ -9,7 +25,7 @@
 | 項目 | 基準値 | ツール例 |
 |------|--------|---------|
 | テストカバレッジ | 80%以上 | Jest, pytest, go test |
-| ミューテーションスコア | 85%以上 | Stryker, PIT, mutmut, cargo-mutants |
+| ミューテーションスコア | 85%以上 | Stryker, PIT, mutmut, go-mutesting, cargo-mutants |
 | Linter | エラー0件 | ESLint, Ruff, golangci-lint |
 | コード複雑性 | 低（循環的複雑度10以下） | SonarQube, lizard, gocyclo |
 
@@ -48,6 +64,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
       - name: Run mutation testing
         # Strykerのthresholds.breakで85%未満を検出（stryker.config.jsで設定）
         # 設定例: thresholds: { high: 90, low: 85, break: 85 }
