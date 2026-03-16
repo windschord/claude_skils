@@ -130,6 +130,15 @@
       "skills": [
         "./pr-comment-fixer"
       ]
+    },
+    {
+      "name": "self-review",
+      "description": "ローカルの変更差分を3つのサブエージェントで並列レビューし、セキュリティ・可読性等6観点で品質チェックを行います。PR作成前やタスク完了前のローカル品質チェックに使用し、指摘の直接修正にも対応します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./self-review"
+      ]
     }
   ]
 }
