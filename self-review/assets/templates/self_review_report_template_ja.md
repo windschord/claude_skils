@@ -42,7 +42,7 @@
         "approach": "推奨する修正アプローチ",
         "alternatives": [],
         "impact": "影響範囲",
-        "effort": "small"
+        "effort": "small|medium|large"
       },
       "context": "前後3行のコード断片",
       "rule": "OWASP-A03",
