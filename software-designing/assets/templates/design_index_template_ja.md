@@ -87,6 +87,7 @@ graph TD
 | 項目 | 基準値 | 採用ツール |
 |------|--------|-----------|
 | テストカバレッジ | 80%以上 | [Jest/pytest/go test等] |
+| ミューテーションスコア | 85%以上 | [Stryker/PIT/mutmut/go-mutesting/cargo-mutants等] |
 | Linter | エラー0件 | [ESLint/Ruff/golangci-lint等] |
 | コード複雑性 | 循環的複雑度10以下 | [lizard/radon/gocyclo等] |
 
