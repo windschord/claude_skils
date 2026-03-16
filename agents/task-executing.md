@@ -23,7 +23,7 @@ requirements-defining → software-designing → task-planning → task-executin
 ### 主な機能
 
 - docs/sdd/tasks/からタスクを読み取り、実行順序を決定
-- タスクごとのステータス更新（TODO → IN_PROGRESS → DONE）
+- タスクごとのステータス更新（TODO → IN_PROGRESS → REVIEW → DONE、レビュー不要時はREVIEWをスキップ）
 - 統一されたコミットテンプレートによるGit管理
 - 実装後の逆順レビュー（実装→タスク→設計→要件の整合性確認）
 - 並列実行可能なタスクの並列処理
