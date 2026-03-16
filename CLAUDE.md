@@ -188,6 +188,10 @@ sdd-documentation（オーケストレーター）
 ### jules-cli/
 - **SKILL.md** - Jules CLI統合スキル
 
+### saas-spec-document/
+- **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）
+- **assets/templates/service_specification_template_ja.md** - サービス仕様書テンプレート
+
 ## デバッグ・エラー修正の必須プロセス
 
 **エラーやバグに遭遇した場合は、必ず`sdd-troubleshooting`スキルを使用してください。**

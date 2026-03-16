@@ -39,6 +39,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | depth-interviewing-product | 製品ユーザーインタビュー |
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
+| **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
 | **ユーティリティ** | jules-cli | Jules CLIによるタスク委譲・管理 |
 | | things-url | Things 3とのタスク双方向共有 |
@@ -131,6 +132,9 @@ claude_skils/
 │   └── references/
 ├── knowledge-base/                    # ナレッジベース管理スキル（SKILL.mdのみで動作）
 │   └── SKILL.md
+├── saas-spec-document/                # SaaSサービス仕様書スキル
+│   ├── SKILL.md
+│   └── assets/templates/
 ├── report-summarizing/                # レポート要約スキル
 │   ├── SKILL.md
 │   └── assets/templates/
