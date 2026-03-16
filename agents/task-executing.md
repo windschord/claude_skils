@@ -454,7 +454,7 @@ todos = [
 ### 起動時の確認事項
 
 1. 子（Manager）からの指示内容（タスクID、対象ファイル、受入基準）を確認
-2. 指定されたTASK-XXX.mdを読み取り、実装内容を把握
+2. 指定された docs/sdd/tasks/phase-N/TASK-XXX.md を読み取り、実装内容を把握
 3. worktree内で独立して作業を開始
 
 ### worktree内での注意事項
