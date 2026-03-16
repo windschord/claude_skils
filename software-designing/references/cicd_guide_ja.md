@@ -52,7 +52,11 @@ jobs:
       - name: Check mutation score threshold
         run: |
           # ミューテーションスコア85%未満で失敗
-          score=$(cat reports/mutation/mutation.json | jq '.schemaVersion' // empty && cat reports/mutation/mutation.json | jq '.mutationScore')
+          score=$(jq '.mutationScore // empty' reports/mutation/mutation.json)
+          if [ -z "$score" ]; then
+            echo "Error: Could not read mutationScore from mutation report"
+            exit 1
+          fi
           if (( $(echo "$score < 85" | bc -l) )); then
             echo "Mutation score ${score}% is below 85%"
             exit 1
