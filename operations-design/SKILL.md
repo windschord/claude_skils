@@ -539,10 +539,10 @@ flowchart TD
 コンサルタント: ありがとうございます。[選択されたパターン]に適した運用設計書テンプレートを使用します。
 
                 [選択されたパターンに応じたテンプレートを使用]
-                - A選択時: operations_design_template_cloud_native_ja.md
-                - B選択時: operations_design_template_cloud_instance_ja.md
-                - C選択時: operations_design_template_onpremise_ja.md
-                - D選択時: operations_design_template_saas_ja.md
+                - A選択時: assets/templates/operations_design_template_cloud_native_ja.md
+                - B選択時: assets/templates/operations_design_template_cloud_instance_ja.md
+                - C選択時: assets/templates/operations_design_template_onpremise_ja.md
+                - D選択時: assets/templates/operations_design_template_saas_ja.md
                   ※ SaaS選択時は以下の順序でヒアリングを重点的に実施:
                     （各項目をステップ1の業界調査後、ステップ2のヒアリングで順番に確認する）
                     1. テナント分離戦略（プール/サイロ/ハイブリッド）
@@ -1430,14 +1430,14 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 ### assets/templates/
 
 **運用設計書テンプレート（インフラパターン別）**:
-- `operations_design_template_ja.md`: 汎用テンプレート（パターン未選択時）
-- `operations_design_template_cloud_native_ja.md`: クラウドネイティブ/サーバレス/Kubernetes対応
-- `operations_design_template_cloud_instance_ja.md`: クラウドインスタンス/IaaS対応（LAMP等）
-- `operations_design_template_onpremise_ja.md`: オンプレミス対応
-- `operations_design_template_saas_ja.md`: SaaS運用設計対応（マルチテナント・コンテナ基盤・クラウドプロバイダー非依存）
+- `assets/templates/operations_design_template_ja.md`: 汎用テンプレート（パターン未選択時）
+- `assets/templates/operations_design_template_cloud_native_ja.md`: クラウドネイティブ/サーバレス/Kubernetes対応
+- `assets/templates/operations_design_template_cloud_instance_ja.md`: クラウドインスタンス/IaaS対応（LAMP等）
+- `assets/templates/operations_design_template_onpremise_ja.md`: オンプレミス対応
+- `assets/templates/operations_design_template_saas_ja.md`: SaaS運用設計対応（マルチテナント・コンテナ基盤・クラウドプロバイダー非依存）
 
 **その他のテンプレート**:
-- `conversation_log_template_ja.md`: 会話ログテンプレート
+- `assets/templates/conversation_log_template_ja.md`: 会話ログテンプレート
 
 ### references/
 - `operations_design_guide_ja.md`: 運用設計の詳細ガイド
