@@ -459,9 +459,10 @@ todos = [
 
 ### worktree内での注意事項
 
-ファイル競合回避・index.md編集禁止等の基本ルールは「チームメンバーの注意事項」と同一。加えて:
+ファイル競合回避・index.md編集禁止・TodoWrite更新の委任等の基本ルールは「チームメンバーの注意事項」と同一。加えて:
 - worktree固有のパスを前提としたハードコードを避ける
 - コミットはworktree内のブランチに対して行う
+- TodoWrite更新とdocs/sdd/tasks/index.mdの更新はManagerに委任（Workerは更新しない）
 
 ### 完了時の報告フォーマット
 
