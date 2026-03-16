@@ -370,6 +370,11 @@ sdd-documentationスキルは、以下の順序でサブスキルを呼び出し
 4. レビュー対応時:
    - docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをREVIEWに更新
    - TodoWriteで該当タスクのcontentの先頭に[REVIEW]を付与し、statusをin_progressに更新
+
+※ プレフィックス正規化ルール:
+   - contentに付与できる状態プレフィックスは[BLOCKED]または[REVIEW]の最大1つ
+   - 状態遷移時は既存プレフィックスを除去してから新しいプレフィックスを付与する
+   - IN_PROGRESS/DONEへの遷移時はプレフィックスを除去し、contentを「[Phase-N/TASK-XXX] ...」に復元する
 ```
 
 ### TodoWrite更新の形式
