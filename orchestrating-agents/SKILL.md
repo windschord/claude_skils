@@ -61,11 +61,12 @@ metadata:
 起動時に以下の全ステップを順に実行すること。**スキップ禁止**。
 
 ```text
-□ 1. .orchestrating-agents/ ディレクトリを作成 + .gitignore 更新（環境準備の最初に実施）
-□ 2. mission.md を作成（テンプレート必須参照）
-□ 3. タスク分解 + TaskCreate でキュー登録
-□ 4. task_ledger.md を作成（テンプレート必須参照）
-□ 5. session_state.md を作成（テンプレート必須参照）
+□ 1. 環境準備: .orchestrating-agents/ ディレクトリ作成 + .gitignore 更新（環境準備の最初に実施）
+□ 2. ミッション定義: mission.md を作成（テンプレート必須参照）
+□ 3. タスク分解: TaskCreate でキュー登録 + task_ledger.md を作成（テンプレート必須参照）
+□ 4. セッション状態初期化: session_state.md を作成（テンプレート必須参照）
+□ 5. 子セッション起動: general-purpose型で子を起動（テンプレート必須参照）
+□ 6. キュー処理: FIFOでタスクを順次実行
 ```
 
 ### 1. 環境準備
