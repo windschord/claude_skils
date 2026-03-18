@@ -26,10 +26,11 @@ task_type: {{スキル種別（例: task-executing, requirements-defining）}}
 - session_state_path: .orchestrating-agents/session_state.md
 
 ## Instructions
-1. workorder_pathにワークオーダーファイルを作成すること
-2. 作業開始前にsession_state.mdを更新すること
-3. 作業完了後、報告フォーマットに従って親に報告すること
-4. コンテキスト圧縮が発生した場合、workorder_pathを再読み込みすること
+1. まず orchestrating-agents/assets/templates/workorder_template_ja.md を Read ツールで読み込むこと（必須）
+2. workorder_pathにワークオーダーファイルをテンプレートに従って作成すること（スキップ禁止）
+3. 作業完了後、orchestrating-agents/assets/templates/report_template_ja.md を Read ツールで読み込み、報告フォーマットに従って親に報告すること
+4. 3階層モードで孫を起動する場合、orchestrating-agents/assets/templates/child_prompt_template_ja.md を Read ツールで読み込むこと
+5. コンテキスト圧縮が発生した場合、workorder_pathを再読み込みすること
 
 ---
 
