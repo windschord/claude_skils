@@ -43,7 +43,8 @@ Agent tool(
 )
 ```
 
-**重要**: `subagent_type` は必ず `"general-purpose"` を使用する。子が孫を起動する3階層モードでは Agent tool へのアクセスが必須であり（= tools に Agent が必要）、general-purpose 型はこの要件を確実に満たす。一貫性と確実性のため general-purpose に統一する。
+**技術要件**: 子が孫を起動する3階層モードでは、子のエージェント定義の tools に Agent が含まれている必要がある。
+**運用ポリシー**: `subagent_type` は `"general-purpose"` に統一する。general-purpose 型は Agent tool を含むことが保証されており、一貫性と確実性を確保できる。
 
 テンプレート参照: `orchestrating-agents/assets/templates/parent_prompt_template_ja.md`（**Read で読み込んでから使用**）
 
@@ -85,7 +86,7 @@ Agent tool(
 
 子セッションの完了後、worktreeの変更をマージしたら以下を必ず実行:
 
-1. `git diff HEAD~1..HEAD` でマージコミットが導入した全変更を確認（リモートの main ではなく、直近のマージ差分を確実に比較する）
+1. `git diff ORIG_HEAD..HEAD` でマージが導入した全変更を確認（fast-forwardでも複数コミット取込でも正確に差分を取得）
 2. 子に与えた制約（例: テストファイルのみ変更可）に違反する変更がないか検証
 3. 想定外のプロダクションコード変更があれば `git revert` で取り消し、子に再指示
 4. 全体テスト・ビルドを実行して統合問題を検出
