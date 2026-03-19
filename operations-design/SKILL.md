@@ -282,7 +282,7 @@ WebSearchツールを使用して以下を調査:
 
 このスキルの具体的な使用シナリオを確認したい場合は、以下のドキュメントを参照してください：
 
-📄 **詳細な使用例**: [guides/usage_examples.md](./guides/usage_examples.md)
+📄 **詳細な使用例**: [references/usage_examples.md](./references/usage_examples.md)
 
 **含まれる例**:
 - 例1: クラウドネイティブWebサービスの運用設計（所要時間: 約3時間）
@@ -673,7 +673,7 @@ WebSearchツールを使用して以下を調査:
 
 セクションごとの反復的アプローチの詳細な実装手順については、以下のドキュメントを参照してください：
 
-📄 **詳細ワークフロー**: [guides/detailed_workflow.md](./guides/detailed_workflow.md)
+📄 **詳細ワークフロー**: [references/detailed_workflow.md](./references/detailed_workflow.md)
 
 **含まれる内容**:
 - ステップ2: テンプレート構造の提示（最終形の提示）
@@ -773,7 +773,7 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 - 一貫性チェック後
 - セッション終了時
 
-**詳細なガイド**: `guides/conversation_logging.md` を Readツールで参照し、会話ログの作成方法、記録フォーマット、活用方法を確認してください。
+**詳細なガイド**: `references/conversation_logging_ja.md` を Readツールで参照し、会話ログの作成方法、記録フォーマット、活用方法を確認してください。
 
 ## 運用設計書作成の原則
 
@@ -896,7 +896,7 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 
 問題発生時の対処方法については、以下のドキュメントを参照してください：
 
-📄 **トラブルシューティングガイド**: [guides/troubleshooting.md](./guides/troubleshooting.md)
+📄 **トラブルシューティングガイド**: [references/troubleshooting.md](./references/troubleshooting.md)
 
 **含まれる問題と解決方法**:
 1. 業界トレンド調査が空振りする
@@ -911,7 +911,7 @@ C) 99.99%（月間ダウンタイム約4分） ⭐⭐
 
 このスキルが生成する成果物の例については、以下のドキュメントを参照してください：
 
-📄 **成果物の例**: [guides/deliverables_examples.md](./guides/deliverables_examples.md)
+📄 **成果物の例**: [references/deliverables_examples.md](./references/deliverables_examples.md)
 
 **含まれる内容**:
 - 運用設計書の構成例（約50ページ）

@@ -1,40 +1,139 @@
-name: Textlint
+name: Lint
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - '**.md'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
-  textlint:
+  skill-lint:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Skip for Dependabot
+        if: github.actor == 'dependabot[bot]'
+        run: echo "Skipping skill-lint for Dependabot PR"
+
       - name: Checkout code
+        if: github.actor != 'dependabot[bot]'
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: github.actor != 'dependabot[bot]'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
+        if: github.actor != 'dependabot[bot]'
         run: npm ci
 
-      - name: Run textlint
-        run: npm run textlint
+      - name: Run skill lint
+        id: run_skill_lint
+        if: github.actor != 'dependabot[bot]'
+        # Normal mode: errors fail CI, warnings are informational.
+        # Non-SDD skills have known warnings (TOC, line count) that are out of scope.
+        # Use --strict locally to treat warnings as errors.
+        run: bash scripts/lint-skills.sh
 
       - name: Comment PR on failure
-        if: failure()
+        if: ${{ always() && steps.run_skill_lint.outcome == 'failure' && github.actor != 'dependabot[bot]' }}
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            github.rest.issues.createComment({
+            const marker = '<!-- skill-lint-failure-comment -->';
+            const body = `${marker}\n:warning: Skill Lint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで確認:\n\`\`\`bash\nbash scripts/lint-skills.sh\n\`\`\``;
+            const comments = await github.paginate(github.rest.issues.listComments, {
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':warning: Textlint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで修正するには:\n```bash\nnpm install\nnpm run textlint\nnpm run textlint:fix  # 自動修正を試みる\n```'
-            })
+              per_page: 100,
+            });
+            const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+            }
+
+  textlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Skip for Dependabot
+        if: github.actor == 'dependabot[bot]'
+        run: echo "Skipping textlint for Dependabot PR"
+
+      - name: Checkout code
+        if: github.actor != 'dependabot[bot]'
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: github.actor != 'dependabot[bot]'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: github.actor != 'dependabot[bot]'
+        run: npm ci
+
+      - name: Run textlint
+        id: run_textlint
+        if: github.actor != 'dependabot[bot]'
+        run: npm run textlint
+
+      - name: Comment PR on failure
+        if: ${{ always() && steps.run_textlint.outcome == 'failure' && github.actor != 'dependabot[bot]' }}
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const marker = '<!-- textlint-failure-comment -->';
+            const body = `${marker}\n:warning: Textlint検査で問題が検出されました。詳細はActionsログを確認してください。\n\nローカルで修正するには:\n\`\`\`bash\nnpm install\nnpm run textlint\nnpm run textlint:fix  # 自動修正を試みる\n\`\`\``;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body,
+              });
+            }

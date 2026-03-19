@@ -4,26 +4,46 @@
     "name": "Winds Chord"
   },
   "metadata": {
-    "description": "Development skills for Claude Code including SDD documentation, automated task execution, and Jules CLI integration",
-    "version": "1.2.0"
+    "description": "Claude Code用の開発・ドキュメンテーション・分析スキルコレクション",
+    "version": "2.0.0"
   },
   "plugins": [
     {
-      "name": "sdd-docs",
-      "description": "ソフトウェア設計ドキュメント（SDD）を作成・修正・更新・管理します。3つの主要ファイル - requirements.md（EARS記法によるユーザーストーリー）、design.md（技術アーキテクチャ）、tasks.md（実装計画）の新規作成、既存ドキュメントの編集、EARS記法への変換、要件・設計・タスクの追加や修正が必要な場合に使用してください。",
+      "name": "sdd-documentation",
+      "description": "ソフトウェア設計ドキュメント（SDD）を作成・管理・実装します。4つのサブスキル（requirements-defining、software-designing、task-planning、task-executing）を統括し、requirements/（EARS記法）、design/（技術設計）、tasks/（タスク計画）の作成から実装・逆順レビューまでの全工程を管理します。",
       "source": "./",
       "strict": false,
       "skills": [
-        "./sdd-docs"
+        "./sdd-documentation",
+        "./requirements-defining",
+        "./software-designing",
+        "./task-planning",
+        "./task-executing",
+        "./sdd-troubleshooting",
+        "./sdd-document-management"
       ]
     },
     {
-      "name": "task-executor",
-      "description": "docs/tasks.mdに記載されたタスクを読み取り、サブエージェントを使用して実装を自動実行します。並列実装可能なタスクは並列で処理し、タスクごとにコミットを作成します。タスク完了後はtasks.mdを更新して完了をマークします。",
+      "name": "task-executing",
+      "description": "docs/sdd/tasks/に記載されたタスクを実行し、実装を行います。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビュー（実装→タスク→設計→要件）で整合性を確認します。SDDワークフローの実装フェーズで使用してください。",
+      "source": "./",
+      "strict": false,
+      "agents": [
+        "./agents/task-executing.md"
+      ]
+    },
+    {
+      "name": "orchestrating-agents",
+      "description": "3階層エージェント構造（Director/Manager/Worker）による自律的タスク完遂基盤。FIFOキューイング、軌道変更、エスカレーション、Git Worktree並列実行、コンテキスト永続化、セッションレジュームを提供します。",
       "source": "./",
       "strict": false,
       "skills": [
-        "./task-executor"
+        "./orchestrating-agents"
+      ],
+      "agents": [
+        "./agents/orchestrator.md",
+        "./agents/manager.md",
+        "./agents/task-executing.md"
       ]
     },
     {
@@ -37,7 +57,7 @@
     },
     {
       "name": "jules-cli",
-      "description": "docs/tasks.mdに記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にtasks.mdを更新します。",
+      "description": "docs/sdd/tasks/に記載されたタスクをJules CLIを使って依頼・管理します。タスクを日本語でフォーマットしてJulesに送信し、進捗を追跡して完了後にdocs/sdd/tasks/を更新します。",
       "source": "./",
       "strict": false,
       "skills": [
@@ -51,6 +71,96 @@
       "strict": false,
       "skills": [
         "./operations-design"
+      ]
+    },
+    {
+      "name": "report-summarizing",
+      "description": "調査結果や分析レポートをエグゼクティブサマリー + 本編の2部構成で整理します。Mermaidダイアグラムによる全体像の可視化、結論・推奨事項・重要ポイントの要約を冒頭に配置し、長大なドキュメントを意思決定者向けに読みやすく構造化します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./report-summarizing"
+      ]
+    },
+    {
+      "name": "depth-interviewing-career",
+      "description": "社員のキャリア観・働きがい・職場環境をデプスインタビュー形式で聞き出すスキルです。オープンエンドな質問を通じて本音を引き出し、構造化された分析レポートを作成します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./depth-interviewing-career"
+      ]
+    },
+    {
+      "name": "depth-interviewing-product",
+      "description": "製品やサービスに対するユーザーの利用実態・満足度・改善要望をデプスインタビュー形式で聞き出すスキルです。顧客インサイトを発見し、構造化された分析レポートを作成します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./depth-interviewing-product"
+      ]
+    },
+    {
+      "name": "ai-code-review",
+      "description": "指定されたPRをセキュリティ、ドキュメントとの乖離、可読性・複雑度、ライブラリ選定の4観点でレビューし、人間向け・AI向けの2形式でPRにコメントを投稿します。初回レビューおよび修正後の再レビューに対応。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./ai-code-review"
+      ]
+    },
+    {
+      "name": "health-check",
+      "description": "インフラメトリクスの定期調査を体系的に実施し、サービスの健全性を評価するスキルです。2層アプローチ（全体俯瞰→詳細深掘り）で11カテゴリのメトリクスを確認し、相関分析と5大原則に基づいた構造化レポートを作成します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./health-check"
+      ]
+    },
+    {
+      "name": "knowledge-base",
+      "description": "ローカルMarkdownファイルによる個人ナレッジベースを管理するスキルです。ノートの保存・追記、検索・参照、会議メモの構造化、整理・要約、既存ファイルの取り込みに対応し、ワークスペース単位で情報を分類管理します。Git（ローカルのみ）で履歴管理し、VS Codeで閲覧可能な構成を維持します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./knowledge-base"
+      ]
+    },
+    {
+      "name": "things-url",
+      "description": "Things URLスキームを使ってClaude Codeのタスク（TodoWrite/docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有します。タスクの作成・更新・表示用のURLを生成してクリップボードにコピーまたは直接開きます。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./things-url"
+      ]
+    },
+    {
+      "name": "pr-comment-fixer",
+      "description": "GitHub PRのレビューコメント（インラインスレッド・レビュー本文・Issueコメント）を自動検出し、コード修正を適用するスキルです。CodeRabbit・Copilot等のbotコメントにも対応し、修正→push→再レビュー検出のループを自動化します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./pr-comment-fixer"
+      ]
+    },
+    {
+      "name": "saas-spec-document",
+      "description": "SaaSサービス向けのサービス仕様書を作成します。運用設計書や要件定義書をインプットとして活用し、経済産業省「SaaS向けSLAガイドライン」に準拠したサービス仕様書を生成します。ガイドライン準拠の7カテゴリ（可用性、信頼性、データ管理、セキュリティ、サポート、拡張性、コンプライアンス）に加え、サービス概要・料金・責任分界を含む全10セクションを網羅します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./saas-spec-document"
+      ]
+    },
+    {
+      "name": "self-review",
+      "description": "ローカルの変更差分を3つのサブエージェントで並列レビューし、セキュリティ・可読性等6観点で品質チェックを行います。PR作成前やタスク完了前のローカル品質チェックに使用し、指摘の直接修正にも対応します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./self-review"
       ]
     }
   ]
