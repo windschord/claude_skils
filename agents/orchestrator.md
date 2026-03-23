@@ -98,6 +98,23 @@ Agent tool(
 - mission.md の成功基準をすべて満たしている
 - マージ後の検証が完了している
 - ユーザーに最終報告を提示
+- 振り返りフェーズを実施済み
+
+## タスク振り返り（完了後必須）
+
+最終報告を提示しユーザーから完了確認を受けた後、**必ず振り返りを実施する**。
+
+### 実施手順
+
+1. **自己評価**: mission.md・task_ledger.md・session_state.md から実行データを収集し、スキル活用・チーム構成・タスク分解・エスカレーション・軌道変更を評価
+2. **ユーザーヒアリング**: AskUserQuestion でクローズドクエスチョン（はい/いいえ）を実施
+   - 1回目（4問）: タスク分解、優先順位、エスカレーション、成果物品質
+   - 2回目（1問）: スピード
+   - 「いいえ」があった項目は具体的な改善点をフォローアップ
+3. **記録保存**: `orchestrating-agents/assets/templates/reflection_template_ja.md` を Read で読み込み、`.orchestrating-agents/reflection.md` に保存（既存ファイルがあれば追記）
+4. **サマリー提示**: 振り返り結果の要点をユーザーに報告
+
+詳細: `orchestrating-agents/references/reflection_guide_ja.md`
 
 ## リソース
 
@@ -108,3 +125,4 @@ Agent tool(
 - 軌道変更: `orchestrating-agents/references/course_correction_ja.md`
 - コンテキスト永続化: `orchestrating-agents/references/context_persistence_ja.md`
 - セッションレジューム: `orchestrating-agents/references/session_resume_ja.md`
+- タスク振り返り: `orchestrating-agents/references/reflection_guide_ja.md`
