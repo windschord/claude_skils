@@ -177,6 +177,7 @@ sdd-documentation（オーケストレーター）
 - **references/course_correction_ja.md** - 軌道変更メカニズム
 - **references/context_persistence_ja.md** - コンテキスト永続化（ミッション/台帳/ワークオーダー）
 - **references/session_resume_ja.md** - セッションレジューム手順
+- **references/reflection_guide_ja.md** - タスク振り返りガイド
 - **assets/templates/parent_prompt_template_ja.md** - 親→子 指示テンプレート
 - **assets/templates/child_prompt_template_ja.md** - 子→孫 指示テンプレート
 - **assets/templates/report_template_ja.md** - 報告フォーマットテンプレート
@@ -184,6 +185,7 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/task_ledger_template_ja.md** - タスク台帳テンプレート
 - **assets/templates/workorder_template_ja.md** - ワークオーダーテンプレート
 - **assets/templates/session_state_template_ja.md** - セッション状態テンプレート
+- **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
 ### jules-cli/
 - **SKILL.md** - Jules CLI統合スキル
