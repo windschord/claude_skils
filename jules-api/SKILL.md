@@ -1,6 +1,6 @@
 ---
 name: jules-api
-description: Jules REST APIを使用してタスクを対話的に依頼・管理する。セッション作成・プラン承認・メッセージ送信・進捗監視をAPI経由で行い、Claudeと協調してタスクを完遂する。ベースブランチ指定とPR自動作成に対応。Do NOT use for Jules CLI環境でのタスク実行（jules-cliを使用すること）。
+description: Jules REST APIを使用してタスクを対話的に依頼・管理する。セッション作成・プラン承認・メッセージ送信・進捗監視をAPI経由で行い、Claudeと協調してタスクを完遂する。ベースブランチ指定とPR自動作成に対応。Do NOT use for JULES_API_KEY未設定の環境でのタスク実行（task-executingを使用すること）。
 metadata:
   version: "1.0.0"
 ---
@@ -18,18 +18,6 @@ Jules REST APIを使用して、docs/sdd/tasks/に記載されたタスクをGoo
 - アクティビティ監視によるリアルタイム進捗追跡
 - セッションへのメッセージ送信による対話的な指示追加
 - Claudeとの協調作業（Julesの出力をClaudeが評価・フィードバック）
-
-## jules-cliスキルとの違い
-
-| 項目 | jules-cli | jules-api（本スキル） |
-|------|-----------|----------------------|
-| 通信方式 | CLIコマンド（`jules`） | REST API（curl） |
-| 認証 | CLI認証（`jules auth login`） | 環境変数 `JULES_API_KEY` |
-| 対話性 | 一方向（依頼→結果取得） | 双方向（メッセージ送受信） |
-| プラン確認 | 自動承認のみ | 承認フロー対応（Claudeが確認） |
-| ブランチ指定 | 依頼文テキストで指定 | API パラメータで明示的に指定 |
-| 進捗監視 | `jules status`コマンド | アクティビティAPIでリアルタイム監視 |
-| Claude協調 | なし | Julesの出力をClaudeが評価・フィードバック |
 
 ## 前提条件
 
@@ -253,7 +241,7 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}" \
 
 ### 基本構造
 
-jules-cliスキルと同じ依頼文フォーマットを使用します:
+以下の依頼文フォーマットを使用します:
 
 ```text
 タスク: [タスクタイトル]（[TASK-XXX]）
@@ -439,7 +427,7 @@ APIリクエスト失敗時は最大4回まで指数バックオフ（2s, 4s, 8s
 
 ### 実行の制限
 
-jules-cliスキルと同様:
+以下の場合はJulesへの依頼を控えます:
 1. **タスクの曖昧性**: 受入基準が不明確な場合は依頼しない
 2. **リスクの高い操作**: 本番環境への直接変更は行わない
 3. **ユーザーの判断が必要な場合**: 技術選択やアーキテクチャの決定

@@ -26,7 +26,7 @@
   - [レビューの流れ](#レビューの流れ)
   - [チェック項目](#チェック項目)
   - [不整合発見時の報告](#不整合発見時の報告)
-- [Jules CLI統合実行モード](#jules-cli統合実行モード)
+- [Jules API統合実行モード](#jules-api統合実行モード)
 - [制約事項](#制約事項)
   - [自動実行を行わない場合](#自動実行を行わない場合)
 <!-- /TOC -->
@@ -410,9 +410,9 @@ Task 1.1: BLOCKED
 3. 次のタスクに進む（後で対応）
 ```
 
-## Jules CLI統合実行モード
+## Jules API統合実行モード
 
-Jules CLIが利用可能な場合のモード判定、実行ステップ、ハイブリッドモードの詳細は [jules_integration_ja.md](jules_integration_ja.md) を参照。
+Jules API（JULES_API_KEY）が利用可能な場合のモード判定、実行ステップ、プラン承認ワークフロー、ハイブリッドモードの詳細は [jules_integration_ja.md](jules_integration_ja.md) を参照。
 
 ## 制約事項
 

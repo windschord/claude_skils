@@ -191,9 +191,6 @@ sdd-documentation（オーケストレーター）
 - **SKILL.md** - Jules API統合スキル（REST APIによる対話的タスク管理、ベースブランチ指定、プラン承認、Claude協調）
 - **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）
 
-### jules-cli/
-- **SKILL.md** - Jules CLI統合スキル
-
 ### saas-spec-document/
 - **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）
 - **assets/templates/service_specification_template_ja.md** - サービス仕様書テンプレート
