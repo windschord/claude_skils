@@ -1,4 +1,4 @@
-# Jules CLI統合実行モード
+# Jules統合実行モード
 
 
 <!-- TOC -->
@@ -6,6 +6,7 @@
 
 - [概要](#概要)
   - [実行モードの判定](#実行モードの判定)
+  - [Jules APIモードの実行ステップ](#jules-apiモードの実行ステップ)
   - [Jules CLIモードの実行ステップ](#jules-cliモードの実行ステップ)
   - [タスクファイルへの段階的記録](#タスクファイルへの段階的記録)
   - [ハイブリッドモード](#ハイブリッドモード)
@@ -15,40 +16,119 @@
   - [自動実行を行わない場合](#自動実行を行わない場合)
 <!-- /TOC -->
 
-task-executingスキルにおけるJules CLI統合の詳細ガイドです。
+task-executingスキルにおけるJules統合（API/CLI）の詳細ガイドです。
 
 ## 概要
 
-Jules CLI（Googleの非同期コーディングエージェント）が利用可能な環境では、タスクの実装をJulesに委任できます。Julesは開発ブランチに対してPR（Pull Request）を作成し、レビュー→マージのフローでタスクを完了させます。
+Googleの非同期コーディングエージェントJulesが利用可能な環境では、タスクの実装をJulesに委任できます。Julesは開発ブランチに対してPR（Pull Request）を作成し、レビュー→マージのフローでタスクを完了させます。
+
+JulesとのインテグレーションにはAPIモード（推奨）とCLIモードの2つがあります:
+
+| 項目 | APIモード（推奨） | CLIモード |
+|------|------------------|-----------|
+| スキル | jules-api | jules-cli |
+| 通信方式 | REST API（curl） | CLIコマンド（`jules`） |
+| 認証 | 環境変数 `JULES_API_KEY` | `jules auth login` |
+| 対話性 | 双方向（メッセージ送受信、プラン承認） | 一方向（依頼→結果取得） |
+| ブランチ指定 | APIパラメータで明示的に指定 | 依頼文テキストで指定 |
+| Claude協調 | プラン評価・フィードバック送信 | なし |
 
 ### 実行モードの判定
 
 タスク実行フェーズの開始時に、以下のフローで実行モードを判定します:
 
 ```text
-┌─────────────────────────────────────────────────────────┐
-│               実行モード判定フロー                        │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  Q1. Jules CLIが利用可能か？（jules --version で確認）    │
-│      YES → Q2へ                                         │
-│      NO  → ローカル実行モード（Agent/Agent Teams）        │
-│                                                         │
-│  Q2. 開発ブランチが指定されているか？                     │
-│      YES → Q3へ                                         │
-│      未指定 → ユーザーに開発ブランチを確認 → Q3へ         │
-│                                                         │
-│  Q3. ユーザーがJules実行を希望するか？                    │
-│      全タスクJules → Jules CLIモード                      │
-│      一部Jules     → ハイブリッドモード                   │
-│      Jules不要     → ローカル実行モード                   │
-│                                                         │
-│  結果:                                                   │
-│  Jules CLIモード     → 全タスクをJulesに依頼、PRベース    │
-│  ハイブリッドモード   → 一部Jules（PR）、一部ローカル      │
-│  ローカル実行モード   → Agent/Agent Teamsで直接実装        │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                   実行モード判定フロー                         │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Q1. JULES_API_KEY が設定されているか？                       │
+│      YES → Jules APIモード判定へ（Q2へ）                      │
+│      NO  → Q1b. Jules CLIが利用可能か？（jules --version）    │
+│             YES → Jules CLIモード判定へ（Q2へ）               │
+│             NO  → ローカル実行モード（Agent/Agent Teams）     │
+│                                                              │
+│  Q2. 開発ブランチが指定されているか？                         │
+│      YES → Q3へ                                              │
+│      未指定 → ユーザーに開発ブランチを確認 → Q3へ             │
+│                                                              │
+│  Q3. ユーザーがJules実行を希望するか？                        │
+│      全タスクJules → Jules APIモード / Jules CLIモード         │
+│      一部Jules     → ハイブリッドモード                       │
+│      Jules不要     → ローカル実行モード                       │
+│                                                              │
+│  結果:                                                       │
+│  Jules APIモード     → 全タスクをAPI経由で依頼、対話的管理     │
+│  Jules CLIモード     → 全タスクをCLI経由で依頼、PRベース      │
+│  ハイブリッドモード   → 一部Jules（PR）、一部ローカル          │
+│  ローカル実行モード   → Agent/Agent Teamsで直接実装            │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Jules APIモードの実行ステップ
+
+JULES_API_KEY が設定されている場合に使用します。詳細は `jules-api/SKILL.md` を参照してください。
+
+#### ステップ1: ソースと開発ブランチの確認
+
+```text
+1. List Sources API でリポジトリのソース名を取得
+   curl -s 'https://jules.googleapis.com/v1alpha/sources' \
+     -H "x-goog-api-key: $JULES_API_KEY"
+2. ユーザーに開発ブランチ（PR作成先）を確認
+3. sourceContext パラメータに設定
+```
+
+#### ステップ2: タスクの依存関係分析と並列グループ化
+
+CLIモードと同様にdocs/sdd/tasks/index.mdからTODO状態のタスクを取得し、依存関係グラフを構築して並列実行可能なグループを特定します。
+
+#### ステップ3: セッション作成（タスク依頼）
+
+```bash
+# 各タスクについてセッションを作成
+curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: $JULES_API_KEY" \
+  -d '{
+    "prompt": "タスクの依頼文",
+    "sourceContext": {
+      "source": "sources/github/owner/repo",
+      "githubRepoContext": {
+        "startingBranch": "develop"
+      }
+    },
+    "automationMode": "AUTO_CREATE_PR",
+    "requirePlanApproval": true,
+    "title": "TASK-XXX: タスクタイトル"
+  }'
+```
+
+#### ステップ4: プラン承認ワークフロー
+
+```text
+1. List Activities API でプラン生成（planGenerated）を検出
+2. Claudeがプランを評価（受入基準との整合、技術的妥当性）
+3. ユーザーに確認
+4. Approve Plan API で承認（または Send Message API で修正依頼）
+```
+
+#### ステップ5: 進捗追跡と対話
+
+```text
+1. List Activities API で進捗を定期確認
+2. 必要に応じて Send Message API で追加指示
+3. Claudeがアクティビティを分析し、問題を検知した場合はフィードバック
+```
+
+#### ステップ6: 完了確認とPR取得
+
+```text
+1. Get Session API でセッション状態を確認
+2. session.output からPR情報（URL、タイトル）を取得
+3. docs/sdd/tasks/ を更新
 ```
 
 ### Jules CLIモードの実行ステップ
@@ -172,8 +252,18 @@ EOF
 
 Julesで実行したタスクには、進行に応じて段階的に情報を追記します:
 
-**段階1: Jules依頼時（Jules Task IDを即時記録）**
+**段階1: Jules依頼時（IDを即時記録）**
 
+APIモード:
+```markdown
+## 実行情報
+**実行方式**: Jules API
+**Jules Session ID**: {SESSION_ID}
+**PR作成先**: develop
+**開始日時**: 2025-01-15 10:30
+```
+
+CLIモード:
 ```markdown
 ## 実行情報
 **実行方式**: Jules CLI

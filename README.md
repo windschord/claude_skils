@@ -41,7 +41,8 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
 | **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
-| **ユーティリティ** | jules-cli | Jules CLIによるタスク委譲・管理 |
+| **ユーティリティ** | jules-api | Jules REST APIによる対話的タスク管理（ベースブランチ指定、プラン承認、Claude協調） |
+| | jules-cli | Jules CLIによるタスク委譲・管理 |
 | | things-url | Things 3とのタスク双方向共有 |
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
@@ -141,6 +142,9 @@ claude_skils/
 ├── orchestrating-agents/              # エージェントオーケストレーションスキル
 │   ├── SKILL.md
 │   ├── assets/templates/
+│   └── references/
+├── jules-api/                         # Jules API統合スキル
+│   ├── SKILL.md
 │   └── references/
 ├── jules-cli/                         # Jules CLIスキル
 │   └── SKILL.md
