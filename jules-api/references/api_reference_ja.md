@@ -36,7 +36,7 @@ Jules REST APIは3つのコアコンセプトで構成されます:
 
 ### APIキーの取得
 
-1. Julesウェブアプリ（https://jules.google）にアクセス
+1. [Julesウェブアプリ](https://jules.google)にアクセス
 2. Settings ページに移動
 3. 新しいAPIキーを作成（最大3つ）
 
@@ -61,7 +61,7 @@ Content-Type: application/json
 https://jules.googleapis.com/v1alpha/
 ```
 
-**注意**: Jules APIはアルファ版です。仕様、APIキー、定義が変更される可能性があります。
+**注意**: Jules APIはアルファ版です。仕様、APIキー、定義は変更される可能性があります。
 
 ## エンドポイント一覧
 

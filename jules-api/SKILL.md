@@ -441,5 +441,5 @@ APIリクエスト失敗時は最大4回まで指数バックオフ（2s, 4s, 8s
 ### 外部リンク
 
 - Jules API公式ドキュメント: https://developers.google.com/jules/api
-- Jules APIリファレンス: https://jules.google/docs/api/reference/overview/
+- Jules APIリファレンス: https://developers.google.com/jules/api/reference/rest
 - Julesウェブアプリ: https://jules.google
