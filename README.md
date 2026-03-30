@@ -12,7 +12,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 
 ## クイックスタート
 
-```
+```text
 /plugin marketplace add https://github.com/windschord/claude_skils.git
 ```
 
@@ -39,7 +39,8 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | depth-interviewing-product | 製品ユーザーインタビュー |
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
-| **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
+| **SaaS** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
+| | saas-design | SaaSサービス設計書作成（13セクション包括コンサルティング） |
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
 | **ユーティリティ** | jules-api | Jules REST APIによる対話的タスク管理（ベースブランチ指定、プラン承認、Claude協調） |
 | | things-url | Things 3とのタスク双方向共有 |
@@ -147,6 +148,10 @@ claude_skils/
 ├── saas-spec-document/                # SaaSサービス仕様書スキル
 │   ├── SKILL.md
 │   └── assets/templates/
+├── saas-design/                       # SaaSサービス設計スキル
+│   ├── SKILL.md
+│   ├── assets/templates/
+│   └── references/
 ├── report-summarizing/                # レポート要約スキル
 │   ├── SKILL.md
 │   └── assets/templates/
