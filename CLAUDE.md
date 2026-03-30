@@ -187,8 +187,9 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/session_state_template_ja.md** - セッション状態テンプレート
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
-### jules-cli/
-- **SKILL.md** - Jules CLI統合スキル
+### jules-api/
+- **SKILL.md** - Jules API統合スキル（REST APIによる対話的タスク管理、ベースブランチ指定、プラン承認、Claude協調）
+- **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）
 
 ### saas-spec-document/
 - **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）

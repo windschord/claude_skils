@@ -185,7 +185,7 @@ docs/sdd/
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
 4. task-planning → docs/sdd/tasks/
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
-5. 実行モード判定: Jules CLI / Agent tool並列処理（タスク実行フェーズのみ）
+5. 実行モード判定: Jules API / Agent tool並列処理（タスク実行フェーズのみ）
       ↓
 6. ドキュメント逆順レビュー
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
@@ -212,9 +212,9 @@ docs/sdd/
 
 **並列処理パターンと呼び出し例**: [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md)
 
-### タスク実行モード判定（Jules CLI統合）
+### タスク実行モード判定（Jules API統合）
 
-Jules CLIが利用可能な場合のモード判定とアサイン戦略の詳細は [task-executing/references/jules_integration_ja.md](../task-executing/references/jules_integration_ja.md) を参照。
+Jules API（JULES_API_KEY）が利用可能な場合のモード判定とアサイン戦略の詳細は [task-executing/references/jules_integration_ja.md](../task-executing/references/jules_integration_ja.md) を参照。
 
 ### トラブルシューティングフロー（デバッグ・エラー修正時は必須）
 
