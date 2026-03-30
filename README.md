@@ -46,6 +46,18 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
 
+## 環境変数
+
+一部のスキルでは環境変数の設定が必要です。
+
+| 環境変数 | 対象スキル | 説明 |
+|---------|-----------|------|
+| `JULES_API_KEY` | jules-api | Jules REST APIの認証キー。[Julesウェブアプリ](https://jules.google)のSettingsページで発行 |
+
+```bash
+export JULES_API_KEY="your-api-key-here"
+```
+
 ## ドキュメント
 
 | ドキュメント | 説明 |
