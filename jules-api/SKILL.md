@@ -151,7 +151,7 @@ Jules API の `Session.state` は以下の値を取ります（`jules-api/refere
 | `DONE` | 正常完了（PR作成済み） | sendMessage で修正を依頼（Jules が同一ブランチで再作業） |
 | `FAILED` | エラーで停止 | 下記「セッション再利用不能時のフォールバック」を参照 |
 
-> 実際の state 値は Jules API 公式ドキュメント（https://developers.google.com/jules/api/reference/rest）で確認してください。API はアルファ版のため変更の可能性があります。
+> 実際の state 値は [Jules API 公式ドキュメント](https://developers.google.com/jules/api/reference/rest) で確認してください。API はアルファ版のため変更の可能性があります。
 
 #### セッション再利用不能時のフォールバック
 
