@@ -333,8 +333,8 @@ fi
 
 # GitHub APIでPRのheadブランチ名を取得
 curl -s "https://api.github.com/repos/{owner}/{repo}/pulls/{PR番号}" \
-  -H "Authorization: token $GITHUB_TOKEN" | jq '.head.ref'
-# 例: "jules/task-001-abc12345"
+  -H "Authorization: token $GITHUB_TOKEN" | jq -r '.head.ref'
+# 例: jules/task-001-abc12345
 ```
 
 #### ステップ8: docs/sdd/tasks/の更新
