@@ -48,6 +48,19 @@ Jules APIでリポジトリを操作するには、事前にJulesウェブアプ
 
 ## ワークフロー
 
+### 起動時の判定: 新規タスクかレビュー対応か
+
+```text
+スキル起動時に、まず対応の種別を判断する:
+
+  Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
+     YES → 「レビュー指摘・仕様変更対応フロー」へ（既存セッションを再利用）
+     NO  → 「基本的な実行フロー」へ（新規セッションを作成）
+
+  ※ レビュー指摘対応に新セッションを作成してはならない。
+     新セッションは新ブランチ・新PRを生成し、元のPRを更新できない。
+```
+
 ### 基本的な実行フロー
 
 ```text
@@ -86,6 +99,83 @@ Jules APIでリポジトリを操作するには、事前にJulesウェブアプ
 11. docs/sdd/tasks/を更新（ステータスをREVIEWに変更）
    ↓
 12. レビュー完了後、DONEにマーク
+```
+
+### レビュー指摘・仕様変更対応フロー
+
+**PRのレビュー指摘や仕様変更が必要な場合は、必ず既存セッションを再利用する。**
+新セッションを作成すると新ブランチ・新PRが生成され、元のPRを更新できない。
+
+```text
+1. タスクファイルから Jules Session ID を取得
+   - docs/sdd/tasks/ の「実行情報」セクションを参照
+   ↓
+2. セッション状態を確認（Get Session API）
+   curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}" \
+     -H "x-goog-api-key: $JULES_API_KEY" | jq '{state, webUrl}'
+   ↓
+3. 修正指示をメッセージ送信（Send Message API）
+   - レビュー指摘の内容を具体的に伝える
+   - 「既存のPRブランチに修正してください」と明記する
+   ↓
+4. セッション再起動の確認（List Activities API）
+   - 新しい progressUpdate / planGenerated アクティビティを検出
+   ↓
+5. 必要に応じてプラン承認（requirePlanApproval の場合）
+   ↓
+6. 完了確認
+   - 既存のPRが更新されていることを確認
+   ↓
+7. タスクファイルにレビュー対応内容を追記
+```
+
+#### ステップ3: 修正指示メッセージの書き方
+
+```bash
+curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}:sendMessage" \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: $JULES_API_KEY" \
+  -d '{
+    "prompt": "PRレビューで以下の指摘がありました。既存のPRブランチに修正を加えてください。\n\n## レビュー指摘\n\n1. [指摘内容1]\n   - 対応方針: [具体的な修正内容]\n\n2. [指摘内容2]\n   - 対応方針: [具体的な修正内容]\n\n新しいPRは作成しないでください。既存のPRブランチを更新してください。"
+  }'
+```
+
+#### セッション状態別の対応
+
+Jules API の `Session.state` は以下の値を取ります（`jules-api/references/api_reference_ja.md` の Session リソース定義も参照）:
+
+| セッション状態 | 意味 | 対応 |
+|--------------|------|------|
+| `WORKING` | プラン承認待ち・実行中 | そのまま sendMessage で追加指示 |
+| `DONE` | 正常完了（PR作成済み） | sendMessage で修正を依頼（Jules が同一ブランチで再作業） |
+| `FAILED` | エラーで停止 | 下記「セッション再利用不能時のフォールバック」を参照 |
+
+> 実際の state 値は [Jules API 公式ドキュメント](https://developers.google.com/jules/api/reference/rest) で確認してください。API はアルファ版のため変更の可能性があります。
+
+#### セッション再利用不能時のフォールバック
+
+既存セッションへのメッセージ送信が失敗する場合（セッションが完全に終了している等）、
+Jules ブランチをローカルにチェックアウトして修正・プッシュすることで既存 PR を更新する。
+
+> **注意**: `startingBranch` は「Jules がブランチを切り出すベースブランチ（PR作成先）」であり、
+> Jules の作業ブランチを指定しても既存 PR へのコミット追加にはならない（Jules の作業ブランチから
+> 新ブランチを切り、その新ブランチへの新 PR が作成される）。
+> 既存 PR を更新するにはローカルで直接 Jules ブランチにプッシュする。
+
+```bash
+# 1. タスクファイルの「Jules ブランチ名」を確認（例: jules/task-001-abc12345）
+
+# 2. Jules ブランチをローカルにチェックアウト
+git fetch origin
+git checkout jules/task-001-abc12345
+
+# 3. レビュー指摘に対応する修正を実施（手動またはClaudeが実装）
+
+# 4. コミット・プッシュ（既存PRのブランチが更新される）
+git add -p
+git commit -m "fix: [レビュー指摘への対応内容]"
+git push origin jules/task-001-abc12345
 ```
 
 ### 詳細な実行手順
@@ -224,12 +314,36 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}" \
   -H "x-goog-api-key: $JULES_API_KEY" | jq '.output'
 ```
 
+#### ステップ7.5: Jules ブランチ名の取得と記録
+
+セッション完了後、PRのheadブランチ名（Julesが作成したブランチ）を取得して記録する。
+これはレビュー指摘対応時のフォールバックで必要になる。
+
+この手順には `GITHUB_TOKEN`（対象リポジトリの PR 参照権限）が必要。
+- 必要なスコープ: `repo`（プライベートリポジトリ）または `public_repo`（パブリック）
+- GitHub Settings > Developer settings > Personal access tokens で発行可能
+- 未設定の場合は `export GITHUB_TOKEN="your-token"` で設定する
+
+```bash
+# GITHUB_TOKEN が設定されているか確認
+if [ -z "$GITHUB_TOKEN" ]; then
+  echo "Error: GITHUB_TOKEN is not set. See GitHub Settings > Developer settings > Personal access tokens"
+  exit 1
+fi
+
+# GitHub APIでPRのheadブランチ名を取得
+curl -s "https://api.github.com/repos/{owner}/{repo}/pulls/{PR番号}" \
+  -H "Authorization: token $GITHUB_TOKEN" | jq -r '.head.ref'
+# 例: jules/task-001-abc12345
+```
+
 #### ステップ8: docs/sdd/tasks/の更新
 
 ```markdown
 ## 実行情報
 **実行方式**: Jules API
 **Jules Session ID**: {SESSION_ID}
+**Jules ブランチ名**: jules/task-001-xxxxxxxx
 **PR作成先**: develop
 **開始日時**: 2026-03-29 10:30
 **PR番号**: #42
@@ -372,15 +486,34 @@ TODO → IN_PROGRESS（セッション作成後）→ REVIEW（PR作成済み）
 **段階2: PR作成時（セッション完了後に追記）**
 
 ```markdown
+**Jules ブランチ名**: {Julesが作成したブランチ名（例: jules/task-001-abc12345）}
 **PR番号**: #{PR番号}
 **PR URL**: {PR URL}
 **PR作成日時**: {日時}
 ```
 
+> **重要**: 「Jules ブランチ名」はレビュー指摘対応のフォールバック時に必要。
+> GitHub APIまたはPR画面から head ブランチ名を取得して記録すること。
+
 **段階3: PRマージ時（レビュー承認後に追記）**
 
 ```markdown
 **マージ日時**: {日時}
+```
+
+**段階4: レビュー指摘対応時（追記）**
+
+既存セッションへのメッセージ送信後、対応内容を記録する:
+
+```markdown
+## レビュー対応履歴
+
+### [日時] レビュー指摘対応
+**対応方法**: 既存セッション再利用（sendMessage）
+**指摘内容**:
+- [指摘1]
+- [指摘2]
+**対応内容**: [実施した修正の要約]
 ```
 
 ## エラーハンドリング
