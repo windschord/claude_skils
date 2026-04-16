@@ -244,7 +244,7 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}/activities?
 | `id` | string | output | セッションID |
 | `prompt` | string | input | タスクの依頼文 |
 | `title` | string | input/output | セッションタイトル |
-| `state` | string | output | セッションの現在の状態 |
+| `state` | string | output | セッションの現在の状態（下記 Session state 参照） |
 | `webUrl` | string | output | Julesウェブアプリでの閲覧URL |
 | `sourceContext` | SourceContext | input | リポジトリとブランチの指定 |
 | `requirePlanApproval` | boolean | input | プラン承認の要否 |
@@ -252,6 +252,16 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}/activities?
 | `output` | SessionOutput | output | セッションの出力（PR情報等） |
 | `createTime` | string | output | 作成日時 |
 | `updateTime` | string | output | 最終更新日時 |
+
+#### Session state
+
+`Session.state` の取り得る値。Jules API はアルファ版のため、正式な値は[公式リファレンス](https://developers.google.com/jules/api/reference/rest)を確認してください。
+
+| 値 | 意味 |
+|----|------|
+| `WORKING` | プラン生成中・承認待ち・実行中 |
+| `DONE` | 正常完了（PR作成済み） |
+| `FAILED` | エラーで停止 |
 
 ### Activity
 
