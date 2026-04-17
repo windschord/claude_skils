@@ -14,13 +14,13 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./sdd-documentation",
-        "./requirements-defining",
-        "./software-designing",
-        "./task-planning",
-        "./task-executing",
-        "./sdd-troubleshooting",
-        "./sdd-document-management"
+        "./sdd/sdd-documentation",
+        "./sdd/requirements-defining",
+        "./sdd/software-designing",
+        "./sdd/task-planning",
+        "./sdd/task-executing",
+        "./sdd/sdd-troubleshooting",
+        "./sdd/sdd-document-management"
       ]
     },
     {
@@ -38,7 +38,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./orchestrating-agents"
+        "./orchestration/orchestrating-agents"
       ],
       "agents": [
         "./agents/orchestrator.md",
@@ -52,7 +52,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./incident-rca"
+        "./operations/incident-rca"
       ]
     },
     {
@@ -61,7 +61,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./jules-api"
+        "./utility/jules-api"
       ]
     },
     {
@@ -70,7 +70,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./operations-design"
+        "./operations/operations-design"
       ]
     },
     {
@@ -79,7 +79,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./report-summarizing"
+        "./knowledge/report-summarizing"
       ]
     },
     {
@@ -88,7 +88,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./depth-interviewing-career"
+        "./interview/depth-interviewing-career"
       ]
     },
     {
@@ -97,7 +97,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./depth-interviewing-product"
+        "./interview/depth-interviewing-product"
       ]
     },
     {
@@ -106,7 +106,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./ai-code-review"
+        "./code-quality/ai-code-review"
       ]
     },
     {
@@ -115,7 +115,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./health-check"
+        "./operations/health-check"
       ]
     },
     {
@@ -124,7 +124,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./knowledge-base"
+        "./knowledge/knowledge-base"
       ]
     },
     {
@@ -133,7 +133,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./things-url"
+        "./utility/things-url"
       ]
     },
     {
@@ -142,7 +142,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./pr-comment-fixer"
+        "./code-quality/pr-comment-fixer"
       ]
     },
     {
@@ -151,7 +151,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./saas-spec-document"
+        "./saas/saas-spec-document"
       ]
     },
     {
@@ -160,7 +160,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./self-review"
+        "./code-quality/self-review"
       ]
     }
   ]
