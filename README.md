@@ -91,81 +91,95 @@ claude_skils/
 ├── README.md                          # このファイル
 ├── LICENSE                            # MITライセンス
 │
-├── sdd-documentation/                 # SDDオーケストレータースキル
-│   ├── SKILL.md
-│   └── references/
-├── requirements-defining/             # 要件定義サブスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── software-designing/                # 設計サブスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── task-planning/                     # タスク計画サブスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── task-executing/                    # タスク実行サブスキル
-│   └── references/
-├── sdd-troubleshooting/               # トラブルシューティングスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── sdd-document-management/           # ドキュメント管理スキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
+├── sdd/                               # SDDスキル群
+│   ├── sdd-documentation/             # SDDオーケストレータースキル
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── requirements-defining/         # 要件定義サブスキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── software-designing/            # 設計サブスキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── task-planning/                 # タスク計画サブスキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── task-executing/                # タスク実行サブスキル
+│   │   └── references/
+│   ├── sdd-troubleshooting/           # トラブルシューティングスキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   └── sdd-document-management/       # ドキュメント管理スキル
+│       ├── SKILL.md
+│       ├── assets/templates/
+│       └── references/
 │
-├── ai-code-review/                    # AIコードレビュースキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── self-review/                       # セルフレビュースキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── pr-comment-fixer/                  # PRコメント自動修正スキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── health-check/                      # サービスヘルスチェックスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── incident-rca/                      # インシデントRCAスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── sessions/
-├── operations-design/                 # 運用設計スキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   ├── hearing_items/
-│   └── references/
-├── knowledge-base/                    # ナレッジベース管理スキル（SKILL.mdのみで動作）
-│   └── SKILL.md
-├── saas-spec-document/                # SaaSサービス仕様書スキル
-│   ├── SKILL.md
-│   └── assets/templates/
-├── report-summarizing/                # レポート要約スキル
-│   ├── SKILL.md
-│   └── assets/templates/
-├── orchestrating-agents/              # エージェントオーケストレーションスキル
-│   ├── SKILL.md
-│   ├── assets/templates/
-│   └── references/
-├── jules-api/                         # Jules API統合スキル
-│   ├── SKILL.md
-│   └── references/
-├── things-url/                        # Things URLタスク共有スキル
-│   ├── SKILL.md
-│   └── references/
-├── depth-interviewing-career/         # キャリアインタビュースキル
-│   ├── SKILL.md
-│   └── assets/templates/
-└── depth-interviewing-product/        # 製品インタビュースキル
-    ├── SKILL.md
-    └── assets/templates/
+├── code-quality/                      # コード品質スキル群
+│   ├── ai-code-review/                # AIコードレビュースキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── self-review/                   # セルフレビュースキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   └── pr-comment-fixer/              # PRコメント自動修正スキル
+│       ├── SKILL.md
+│       ├── assets/templates/
+│       └── references/
+│
+├── operations/                        # 運用・監視スキル群
+│   ├── health-check/                  # サービスヘルスチェックスキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── incident-rca/                  # インシデントRCAスキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── sessions/
+│   └── operations-design/             # 運用設計スキル
+│       ├── SKILL.md
+│       ├── assets/templates/
+│       ├── hearing_items/
+│       └── references/
+│
+├── interview/                         # インタビュースキル群
+│   ├── depth-interviewing-career/     # キャリアインタビュースキル
+│   │   ├── SKILL.md
+│   │   └── assets/templates/
+│   └── depth-interviewing-product/    # 製品インタビュースキル
+│       ├── SKILL.md
+│       └── assets/templates/
+│
+├── knowledge/                         # ナレッジ管理スキル群
+│   ├── knowledge-base/                # ナレッジベース管理スキル（SKILL.mdのみで動作）
+│   │   └── SKILL.md
+│   └── report-summarizing/            # レポート要約スキル
+│       ├── SKILL.md
+│       └── assets/templates/
+│
+├── saas/                              # SaaS仕様スキル群
+│   └── saas-spec-document/            # SaaSサービス仕様書スキル
+│       ├── SKILL.md
+│       └── assets/templates/
+│
+├── orchestration/                     # オーケストレーションスキル群
+│   └── orchestrating-agents/          # エージェントオーケストレーションスキル
+│       ├── SKILL.md
+│       ├── assets/templates/
+│       └── references/
+│
+└── utility/                           # ユーティリティスキル群
+    ├── jules-api/                     # Jules API統合スキル
+    │   ├── SKILL.md
+    │   └── references/
+    └── things-url/                    # Things URLタスク共有スキル
+        ├── SKILL.md
+        └── references/
 ```
 
 ### ドキュメントの種別

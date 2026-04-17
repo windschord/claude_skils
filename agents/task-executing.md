@@ -86,7 +86,7 @@ requirements-defining → software-designing → task-planning → task-executin
 
 スポーンプロンプトには必ずタスクファイルパス・対象ファイル・技術コンテキストを含める。
 
-**チーム作成プロンプト例**: [sdd-documentation/references/agent_teams_guide_ja.md](sdd-documentation/references/agent_teams_guide_ja.md)
+**チーム作成プロンプト例**: [sdd/sdd-documentation/references/agent_teams_guide_ja.md](sdd/sdd-documentation/references/agent_teams_guide_ja.md)
 
 ### 単一セッション順次実行フロー
 
@@ -499,7 +499,7 @@ todos = [
 
 ### リファレンス
 
-- コミットテンプレート: `task-executing/references/commit_templates_ja.md`
-- 実行ガイド: `task-executing/references/execution_guide_ja.md`
-- エージェントチームガイド: `sdd-documentation/references/agent_teams_guide_ja.md`
-- タスク同期ガイド: `sdd-documentation/references/task_sync_guide_ja.md`
+- コミットテンプレート: `sdd/task-executing/references/commit_templates_ja.md`
+- 実行ガイド: `sdd/task-executing/references/execution_guide_ja.md`
+- エージェントチームガイド: `sdd/sdd-documentation/references/agent_teams_guide_ja.md`
+- タスク同期ガイド: `sdd/sdd-documentation/references/task_sync_guide_ja.md`
