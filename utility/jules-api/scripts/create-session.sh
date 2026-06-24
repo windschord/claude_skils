@@ -6,7 +6,12 @@ SOURCE="${1:?Usage: $0 <source> <branch> <title>}"
 BRANCH="${2:?}"
 TITLE="${3:?}"
 PROMPT=$(cat)
-curl -sf 'https://jules.googleapis.com/v1alpha/sessions' \
+if [[ -z "${PROMPT//[[:space:]]/}" ]]; then
+  echo "Error: prompt is empty" >&2
+  exit 1
+fi
+curl -sf --connect-timeout 10 --max-time 120 \
+  'https://jules.googleapis.com/v1alpha/sessions' \
   -X POST \
   -H "Content-Type: application/json" \
   -H "x-goog-api-key: $JULES_API_KEY" \
