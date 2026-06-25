@@ -193,8 +193,16 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
 ### utility/jules-api/
-- **SKILL.md** - Jules API統合スキル（REST APIによる対話的タスク管理、ベースブランチ指定、プラン承認、Claude協調）
+- **SKILL.md** - Jules API統合スキル（スクリプト経由のタスク管理、ベースブランチ指定、プラン承認、Claude協調）
 - **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）
+- **scripts/list-sources.sh** - 接続済みリポジトリ一覧
+- **scripts/create-session.sh** - セッション作成（prompt: stdin）
+- **scripts/list-sessions.sh** - セッション一覧
+- **scripts/get-session.sh** - セッション詳細・状態確認
+- **scripts/approve-plan.sh** - プラン承認
+- **scripts/send-message.sh** - メッセージ送信（message: stdin）
+- **scripts/list-activities.sh** - アクティビティ一覧
+- **scripts/get-pr-branch.sh** - PRのheadブランチ名取得（GITHUB_TOKEN必須）
 
 ### saas/saas-spec-document/
 - **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）
