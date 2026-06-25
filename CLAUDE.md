@@ -147,6 +147,11 @@ sdd-documentation（オーケストレーター）
 - **references/industry_research_guide_ja.md** - 業界調査ガイド
 - **references/operations_design_guide_ja.md** - 運用設計ガイド
 
+### operations/ipa-nfr-operations-design/
+- **SKILL.md** - IPA非機能要求グレード準拠の運用設計書生成スキル
+- **assets/templates/operations_design_ipa_ja.md** - IPA非機能要求グレード準拠の運用設計書テンプレート
+- **references/ipa_nfr_mapping_ja.md** - IPA非機能要求グレード6カテゴリ→運用設計項目 詳細マッピング表
+
 ### knowledge/report-summarizing/
 - **SKILL.md** - レポート要約スキル
 - **assets/templates/executive_summary_template_ja.md** - エグゼクティブサマリーテンプレート

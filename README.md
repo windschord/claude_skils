@@ -35,6 +35,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | **運用・監視** | health-check | インフラメトリクスの定期調査・健全性評価 |
 | | incident-rca | なぜなぜ分析によるインシデント根本原因特定 |
 | | operations-design | ITIL 4/SRE/DevOps運用設計書作成 |
+| | ipa-nfr-operations-design | IPA非機能要求グレード準拠の運用設計書生成 |
 | **インタビュー** | depth-interviewing-career | 社員キャリアインタビュー |
 | | depth-interviewing-product | 製品ユーザーインタビュー |
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
@@ -141,10 +142,14 @@ claude_skils/
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── sessions/
-│   └── operations-design/             # 運用設計スキル
+│   ├── operations-design/             # 運用設計スキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   ├── hearing_items/
+│   │   └── references/
+│   └── ipa-nfr-operations-design/    # IPA非機能要求グレード準拠 運用設計書生成スキル
 │       ├── SKILL.md
 │       ├── assets/templates/
-│       ├── hearing_items/
 │       └── references/
 │
 ├── interview/                         # インタビュースキル群
