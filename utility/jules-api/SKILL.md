@@ -47,12 +47,16 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 2. list-sources.sh でソース名（sources/github/{owner}/{repo}）を確認
 3. docs/sdd/tasks/ でTODOタスクを確認・選択
 4. ユーザーにベースブランチを確認
-5. echo "<依頼文>" | scripts/create-session.sh <source> <branch> <title>
+5. cat <<'EOF' | scripts/create-session.sh <source> <branch> <title>
+   <依頼文（特殊文字・日本語を含んでも安全）>
+   EOF
 6. scripts/list-activities.sh ${SESSION_ID} で planGenerated を待機
+   （sleep がブロックされる環境は下記「プラン待機の代替手段」を参照）
 7. プランを評価してユーザーに確認 → scripts/approve-plan.sh ${SESSION_ID}
    （問題があれば先に echo "<修正依頼>" | scripts/send-message.sh ${SESSION_ID}）
 8. scripts/list-activities.sh ${SESSION_ID} で completed を待機
 9. scripts/get-session.sh ${SESSION_ID} | jq '.output' でPR URL取得
+   （webUrl が null の場合は下記「webUrl が null の場合」を参照）
 10. scripts/get-pr-branch.sh <owner> <repo> <pr_number> でJulesブランチ名取得・記録
 11. docs/sdd/tasks/ をREVIEWに更新
 ```
@@ -89,6 +93,95 @@ git add -p && git commit -m "fix: レビュー指摘への対応" && git push or
 ```
 
 > `startingBranch`は「Julesがブランチを切り出すベース（PR作成先）」であり、既存PRのブランチを指定しても既存PRへのコミット追加にはならない。
+
+## プラン待機の代替手段
+
+`sleep` が hooks 環境でブロックされる場合、以下のいずれかを使用する:
+
+**方法1: Julesウェブアプリで手動確認（最も確実）**
+
+```text
+1. セッション作成後、ユーザーに案内:
+   「プランが生成されたら https://jules.google でご確認ください。
+    確認できたら「承認してください」とお伝えください。」
+2. ユーザーから確認の返答を受け取ったら scripts/approve-plan.sh ${SESSION_ID} を実行
+```
+
+**方法2: バックグラウンド実行 + 完了通知待ち**
+
+```bash
+# Bash ツールで run_in_background: true を指定して投げ、通知を受けてから次ステップへ
+scripts/list-activities.sh ${SESSION_ID} | jq '.activities[] | select(.planGenerated)'
+```
+
+完了通知が届いたら `approve-plan.sh` を実行する。
+
+**方法3: Monitor ツールによるポーリング**
+
+```bash
+# Monitor ツールにこのコマンドを渡す（sleep は Monitor 内で実行される）
+until scripts/list-activities.sh ${SESSION_ID} 2>/dev/null \
+  | jq -e '.activities[] | select(.planGenerated)' > /dev/null; do sleep 15; done
+```
+
+---
+
+## webUrl が null の場合
+
+セッション作成直後は `webUrl` が `null` になる。`state` が `WORKING` に遷移後に再取得すると得られる場合がある:
+
+```bash
+scripts/get-session.sh ${SESSION_ID} | jq '{state, webUrl}'
+```
+
+webUrl が取得できない間は `https://jules.google` にアクセスしてセッション一覧から該当タイトルを探すようユーザーに案内する。
+
+---
+
+## JSONペイロードと特殊文字・日本語
+
+スクリプト（`create-session.sh`・`send-message.sh`）は内部で `jq --arg` を使用してJSONを生成するため、**バッククォート・シングルクォート・日本語を含む任意のテキストを安全に送れる**。ヒアドキュメント（`<<'EOF'`）を使うとシェル展開なしで渡せる:
+
+```bash
+cat <<'EOF' | scripts/create-session.sh "$SOURCE" "$BRANCH" "TASK-001: 設定修正"
+タスク: `config.yaml` の設定修正（TASK-001）
+
+概要:
+`production` 環境でO'Brien形式のキーが読み込まれない問題を修正する。
+
+受入基準:
+- テスト環境・本番環境で設定が正常に読み込まれること
+EOF
+```
+
+`api_reference_ja.md` のcurlサンプルは説明用の簡略形式であり、特殊文字を含む場合はそのまま使用できない。curlを直接実行する必要がある場合はPythonでJSONファイルを生成してから送ること:
+
+```bash
+python3 - <<'PYEOF' > /tmp/jules_payload.json
+import json, sys
+payload = {
+    "prompt": """タスク: `config.yaml` の設定修正
+
+O'Brien形式のキーが読み込まれない問題を修正する。""",
+    "sourceContext": {
+        "source": "sources/github/owner/repo",
+        "githubRepoContext": {"startingBranch": "develop"}
+    },
+    "automationMode": "AUTO_CREATE_PR",
+    "requirePlanApproval": True,
+    "title": "TASK-001: 設定修正"
+}
+print(json.dumps(payload, ensure_ascii=False))
+PYEOF
+
+curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: $JULES_API_KEY" \
+  --data-binary @/tmp/jules_payload.json
+```
+
+---
 
 ## Jules依頼文の形式
 
