@@ -233,7 +233,9 @@ POST /v1alpha/sessions/{sessionId}:sendMessage
 
 ```bash
 # 推奨: スクリプト経由（特殊文字・日本語対応済み）
-echo "追加の指示内容（特殊文字・日本語含む可能）" | scripts/send-message.sh "${SESSION_ID}"
+cat <<'EOF' | scripts/send-message.sh "${SESSION_ID}"
+追加の指示内容（特殊文字・日本語含む可能）
+EOF
 
 # または直接curl（シンプルなASCIIのみの場合）
 curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}:sendMessage" \
@@ -280,7 +282,7 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}/activities?
 | `prompt` | string | input | タスクの依頼文 |
 | `title` | string | input/output | セッションタイトル |
 | `state` | string | output | セッションの現在の状態（下記 Session state 参照） |
-| `webUrl` | string | output | Julesウェブアプリでの閲覧URL |
+| `webUrl` | string \| null | output | Julesウェブアプリでの閲覧URL（セッション作成直後は `null`、`state` が `WORKING` 以降で取得可能） |
 | `sourceContext` | SourceContext | input | リポジトリとブランチの指定 |
 | `requirePlanApproval` | boolean | input | プラン承認の要否 |
 | `automationMode` | string | input | 自動化モード |

@@ -57,7 +57,7 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 8. プランを評価してユーザーに確認 → scripts/approve-plan.sh ${SESSION_ID}
    （問題があれば先に echo "<修正依頼>" | scripts/send-message.sh ${SESSION_ID}）
 9. scripts/list-activities.sh ${SESSION_ID} で completed を待機
-10. scripts/get-session.sh ${SESSION_ID} | jq '.output' でPR URL取得
+10. scripts/get-session.sh ${SESSION_ID} | jq -r '.output.pullRequests[0].url' でPR URL取得
     （webUrl が null の場合は下記「webUrl が null の場合」を参照）
 11. scripts/get-pr-branch.sh <owner> <repo> <pr_number> でJulesブランチ名取得・記録
 12. docs/sdd/tasks/ をREVIEWに更新
