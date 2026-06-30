@@ -50,15 +50,17 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 5. cat <<'EOF' | scripts/create-session.sh <source> <branch> <title>
    <依頼文（特殊文字・日本語を含んでも安全）>
    EOF
-6. scripts/list-activities.sh ${SESSION_ID} で planGenerated を待機
+6. /goal を設定してJulesセッションの監視を開始
+   （下記「Claudeの監視責任」を参照）
+7. scripts/list-activities.sh ${SESSION_ID} で planGenerated を待機
    （sleep がブロックされる環境は下記「プラン待機の代替手段」を参照）
-7. プランを評価してユーザーに確認 → scripts/approve-plan.sh ${SESSION_ID}
+8. プランを評価してユーザーに確認 → scripts/approve-plan.sh ${SESSION_ID}
    （問題があれば先に echo "<修正依頼>" | scripts/send-message.sh ${SESSION_ID}）
-8. scripts/list-activities.sh ${SESSION_ID} で completed を待機
-9. scripts/get-session.sh ${SESSION_ID} | jq '.output' でPR URL取得
-   （webUrl が null の場合は下記「webUrl が null の場合」を参照）
-10. scripts/get-pr-branch.sh <owner> <repo> <pr_number> でJulesブランチ名取得・記録
-11. docs/sdd/tasks/ をREVIEWに更新
+9. scripts/list-activities.sh ${SESSION_ID} で completed を待機
+10. scripts/get-session.sh ${SESSION_ID} | jq '.output' でPR URL取得
+    （webUrl が null の場合は下記「webUrl が null の場合」を参照）
+11. scripts/get-pr-branch.sh <owner> <repo> <pr_number> でJulesブランチ名取得・記録
+12. docs/sdd/tasks/ をREVIEWに更新
 ```
 
 ### レビュー対応フロー
@@ -93,6 +95,47 @@ git add -p && git commit -m "fix: レビュー指摘への対応" && git push or
 ```
 
 > `startingBranch`は「Julesがブランチを切り出すベース（PR作成先）」であり、既存PRのブランチを指定しても既存PRへのコミット追加にはならない。
+
+## Claudeの監視責任
+
+Julesへのタスク委任は「委任して終わり」ではない。**Claudeがタスクの受け入れ条件を満たす最終責任を持ち**、Julesの実行を能動的に監視・指示する。
+
+### /goal による継続監視（推奨）
+
+セッション作成後すぐに `/goal` でコンプリーション条件を設定する。Claudeはターン間で自動的に監視を続け、条件が満たされると停止する:
+
+```text
+/goal scripts/list-activities.sh ${SESSION_ID} の結果に completed イベントが存在し、
+scripts/get-session.sh ${SESSION_ID} | jq '.output.pullRequests[0].url' でPR URLが取得でき、
+タスクの受け入れ基準がすべてPR内容で確認できること。または30ターン経過したら停止する。
+```
+
+`/goal` がアクティブな間、Claudeは各ターンで自動的に以下を実行する:
+1. `scripts/list-activities.sh ${SESSION_ID}` でアクティビティを確認
+2. `planGenerated` があれば内容を評価し、問題があれば `send-message.sh` で修正を依頼してから `approve-plan.sh` で承認
+3. `completed` になったらPRの内容を確認し、受け入れ基準との照合を報告
+
+### /loop によるポーリング（sleep不可環境）
+
+`sleep` がブロックされる環境や定期確認に `/loop` を使う:
+
+```text
+/loop 5m scripts/list-activities.sh ${SESSION_ID} | jq '.activities[-3:]' を確認し、
+planGenerated があれば評価・approve-plan.sh を実行、completed であれば受け入れ基準を照合して報告
+```
+
+### 介入のタイミング
+
+以下を検知した場合は `send-message.sh` で即座に介入する:
+
+- プランが受け入れ条件をカバーしていない
+- 実装の方向性が設計書と乖離している
+- Julesが追加情報を求めている（ユーザーに確認後、回答を転送）
+- コードの品質問題（テスト不足・エラーハンドリングの欠如等）
+
+「これでいいだろう」と介入を省略しない。受け入れ条件を満たすまで監視・指示を継続する。
+
+---
 
 ## プラン待機の代替手段
 
