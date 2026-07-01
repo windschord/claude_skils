@@ -115,26 +115,59 @@ POST /v1alpha/sessions
 | `requirePlanApproval` | boolean | 任意 | `true`でプラン承認を要求（デフォルト: `false`で自動承認） |
 | `automationMode` | string | 任意 | `AUTO_CREATE_PR`でPR自動作成（デフォルト: PR作成なし） |
 
+**推奨: スクリプト経由（特殊文字・日本語対応済み）**
+
 ```bash
+cat <<'EOF' | scripts/create-session.sh "sources/github/owner/repo" "develop" "TASK-001: セッションタイトル"
+タスク: `config.yaml` の設定修正（TASK-001）
+
+O'Brien形式のキーが読み込まれない問題を修正する。
+EOF
+```
+
+スクリプトは `jq --arg` でJSONを生成するため、バッククォート・シングルクォート・日本語を含む任意のプロンプトを安全に送れる。
+
+**直接curlを使う場合（注意: 特殊文字で壊れる）**
+
+```bash
+# ⚠ プロンプトに特殊文字が含まれる場合はこの形式を使わないこと
 curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
   -X POST \
   -H "Content-Type: application/json" \
   -H "x-goog-api-key: $JULES_API_KEY" \
-  -d '{
-    "prompt": "タスクの依頼文",
+  -d '{"prompt": "シンプルなASCIIプロンプトのみ安全", ...}'
+```
+
+**直接curlで特殊文字を含む場合: Pythonでファイル生成してから送る**
+
+```bash
+python3 - <<'PYEOF' > /tmp/jules_payload.json
+import json
+payload = {
+    "prompt": """タスク: `config.yaml` の設定修正
+
+O'Brien形式のキーが読み込まれない問題を修正する。""",
     "sourceContext": {
-      "source": "sources/github/owner/repo",
-      "githubRepoContext": {
-        "startingBranch": "develop"
-      }
+        "source": "sources/github/owner/repo",
+        "githubRepoContext": {"startingBranch": "develop"}
     },
     "automationMode": "AUTO_CREATE_PR",
-    "requirePlanApproval": true,
+    "requirePlanApproval": True,
     "title": "TASK-001: セッションタイトル"
-  }'
+}
+print(json.dumps(payload, ensure_ascii=False))
+PYEOF
+
+curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: $JULES_API_KEY" \
+  --data-binary @/tmp/jules_payload.json
 ```
 
 **レスポンス**: Session オブジェクト（下記リソース定義参照）
+
+> **注意**: レスポンスおよび作成直後の `GET /sessions/{id}` では `webUrl` が `null` になる場合がある。`state` が `WORKING` に遷移した後で再取得すると `webUrl` が得られる。それまでは `https://jules.google` のセッション一覧からタイトルで探すよう案内する。
 
 #### List Sessions - セッション一覧
 
@@ -199,13 +232,17 @@ POST /v1alpha/sessions/{sessionId}:sendMessage
 | `prompt` | string | 必須 | 送信するメッセージ |
 
 ```bash
+# 推奨: スクリプト経由（特殊文字・日本語対応済み）
+cat <<'EOF' | scripts/send-message.sh "${SESSION_ID}"
+追加の指示内容（特殊文字・日本語含む可能）
+EOF
+
+# または直接curl（シンプルなASCIIのみの場合）
 curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}:sendMessage" \
   -X POST \
   -H "Content-Type: application/json" \
   -H "x-goog-api-key: $JULES_API_KEY" \
-  -d '{
-    "prompt": "追加の指示内容"
-  }'
+  -d '{"prompt": "simple ASCII only message"}'
 ```
 
 **レスポンス**: 空（エージェントの応答は次のアクティビティとして取得）
@@ -245,7 +282,7 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}/activities?
 | `prompt` | string | input | タスクの依頼文 |
 | `title` | string | input/output | セッションタイトル |
 | `state` | string | output | セッションの現在の状態（下記 Session state 参照） |
-| `webUrl` | string | output | Julesウェブアプリでの閲覧URL |
+| `webUrl` | string \| null | output | Julesウェブアプリでの閲覧URL（セッション作成直後は `null`、`state` が `WORKING` 以降で取得可能） |
 | `sourceContext` | SourceContext | input | リポジトリとブランチの指定 |
 | `requirePlanApproval` | boolean | input | プラン承認の要否 |
 | `automationMode` | string | input | 自動化モード |
