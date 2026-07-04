@@ -12,10 +12,24 @@ TITLE="${3:?}"
 FORCE="${4:-}"
 
 if [[ "$FORCE" != "--force" ]]; then
-  EXISTING=$(curl -sf --connect-timeout 10 --max-time 60 \
-    'https://jules.googleapis.com/v1alpha/sessions?pageSize=100' \
-    -H "x-goog-api-key: $JULES_API_KEY" \
-    | jq -r --arg t "$TITLE" '.sessions[]? | select(.title == $t) | .name')
+  PAGE_TOKEN=""
+  EXISTING=""
+  while :; do
+    URL="https://jules.googleapis.com/v1alpha/sessions?pageSize=100"
+    if [[ -n "$PAGE_TOKEN" ]]; then
+      URL="${URL}&pageToken=${PAGE_TOKEN}"
+    fi
+    RESPONSE=$(curl -sf --connect-timeout 10 --max-time 60 \
+      "$URL" \
+      -H "x-goog-api-key: $JULES_API_KEY")
+    MATCH=$(echo "$RESPONSE" | jq -r --arg t "$TITLE" '.sessions[]? | select(.title == $t) | .name')
+    if [[ -n "$MATCH" ]]; then
+      EXISTING="$MATCH"
+      break
+    fi
+    PAGE_TOKEN=$(echo "$RESPONSE" | jq -r '.nextPageToken // empty')
+    [[ -z "$PAGE_TOKEN" ]] && break
+  done
 
   if [[ -n "$EXISTING" ]]; then
     echo "Error: title '$TITLE' のセッションが既に存在します（重複作成を防止するため中断しました）" >&2
