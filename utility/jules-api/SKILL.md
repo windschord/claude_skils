@@ -2,7 +2,7 @@
 name: jules-api
 description: Jules REST APIを使用してタスクを対話的に依頼・管理する。セッション作成・プラン承認・メッセージ送信・進捗監視をAPI経由で行い、Claudeと協調してタスクを完遂する。ベースブランチ指定とPR自動作成に対応。Do NOT use for JULES_API_KEY未設定の環境でのタスク実行（task-executingを使用すること）。
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
 ---
 
 # Jules API統合スキル
@@ -19,8 +19,8 @@ metadata:
 
 | スクリプト | 引数 | 説明 |
 |-----------|------|------|
-| `list-sources.sh` | — | 接続済みリポジトリ一覧 |
-| `create-session.sh` | `<source> <branch> <title>` / prompt: stdin | セッション作成 |
+| `list-sources.sh` | — | 接続済みリポジトリ一覧（全ページを自動取得） |
+| `create-session.sh` | `<source> <branch> <title> [--force]` / prompt: stdin | セッション作成（同名タイトルの重複作成を自動検知して中断） |
 | `list-sessions.sh` | `[page_size=10]` | セッション一覧 |
 | `get-session.sh` | `<session_id>` | セッション詳細・状態確認 |
 | `approve-plan.sh` | `<session_id>` | プラン承認 |
@@ -45,11 +45,14 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 ```text
 1. JULES_API_KEY 確認
 2. list-sources.sh でソース名（sources/github/{owner}/{repo}）を確認
+   （全ページを自動取得するため、対象リポジトリが多数の接続先の後方にあっても見落とさない）
 3. docs/sdd/tasks/ でTODOタスクを確認・選択
 4. ユーザーにベースブランチを確認
 5. cat <<'EOF' | scripts/create-session.sh <source> <branch> <title>
    <依頼文（特殊文字・日本語を含んでも安全）>
    EOF
+   同名タイトルの既存セッションがある場合はスクリプトがエラーで中断する
+   （下記「リトライ時の重複防止」を参照。曖昧な失敗時に承認を待たず再実行しないこと）
 6. /goal を設定してJulesセッションの監視を開始
    （下記「Claudeの監視責任」を参照）
 7. scripts/list-activities.sh ${SESSION_ID} で planGenerated を待機
@@ -59,8 +62,10 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 9. scripts/list-activities.sh ${SESSION_ID} で completed を待機
 10. scripts/get-session.sh ${SESSION_ID} | jq -r '.output.pullRequests[0].url' でPR URL取得
     （webUrl が null の場合は下記「webUrl が null の場合」を参照）
-11. scripts/get-pr-branch.sh <owner> <repo> <pr_number> でJulesブランチ名取得・記録
-12. docs/sdd/tasks/ をREVIEWに更新
+11. PRの差分を確認する（下記「PR差分の確認（必須）」を参照）
+    既存機能の意図しない削除・変更を検知したら send-message.sh で修正依頼 → 9に戻る
+12. scripts/get-pr-branch.sh <owner> <repo> <pr_number> でJulesブランチ名取得・記録
+13. docs/sdd/tasks/ をREVIEWに更新
 ```
 
 ### レビュー対応フロー
@@ -169,6 +174,40 @@ until scripts/list-activities.sh ${SESSION_ID} 2>/dev/null \
 
 ---
 
+## リトライ時の重複防止
+
+`create-session.sh` はセッション作成前に同名タイトルの既存セッションを検索し、見つかった場合はエラーで中断する。
+
+**曖昧な失敗（タイムアウト・応答なし等）が起きても、ユーザーの作業承認を待たずに`create-session.sh`を再実行してはならない。** リクエストがJules側では成功していた場合、再実行は同一タスクの重複セッションを生成する。
+
+```text
+失敗時の対応:
+1. scripts/list-sessions.sh で同名タイトルのセッションが既に存在しないか確認する
+2. 存在する場合はそのセッションを使う（再作成しない）
+3. 存在しない場合のみ、失敗原因（認証・パラメータ等）を特定してから再実行する
+4. 原因が不明なまま闇雲にリトライしない。2-3回失敗した場合はユーザーに報告し、指示を仰ぐ
+5. 意図的に同名タイトルで再作成する必要がある場合のみ、create-session.sh の第4引数に --force を指定する
+```
+
+---
+
+## PR差分の確認（必須）
+
+Julesは既存機能との差分を十分理解せずに、関係のないコードを削除してしまうことがある。**PRをREVIEW・マージ判断する前に、必ず実際の差分内容を読む。**サマリーや `+N/-M` の統計だけで判断しない。
+
+```text
+1. GitHub MCPツール（pull_request_read等）や git diff でPR全体の差分を取得する
+2. 削除・変更された行ごとに、今回のタスクの受入基準・変更目的と関連があるか確認する
+3. 以下に該当する削除を検知したら、REVIEW/DONEにせず send-message.sh で理由を確認する:
+   - タスクのスコープ外のファイル・関数・分岐が削除されている
+   - 既存のテストケースが削除・スキップされている（失敗回避のための削除を含む）
+   - 既存の公開API・設定・エクスポートが削除されている
+4. 不要な削除であればJulesに復元を依頼し、再度差分を確認してからREVIEWに進める
+5. 削除の意図が不明な場合はマージ前にユーザーへ報告し、承認を得る
+```
+
+---
+
 ## webUrl が null の場合
 
 セッション作成直後は `webUrl` が `null` になる。`state` が `WORKING` に遷移後に再取得すると得られる場合がある:
@@ -268,9 +307,9 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 1. 受入基準との整合（カバーされているか）
 2. 技術的妥当性（適切な技術・パターンか）
 3. 過不足の確認（不要・欠如ステップ）
-4. リスク評価（既存コードへの影響、破壊的変更）
+4. リスク評価（既存コードへの影響、破壊的変更、既存機能の削除の有無）
 
-問題がある場合は`send-message.sh`で修正を依頼してから`approve-plan.sh`で承認する。
+問題がある場合は`send-message.sh`で修正を依頼してから`approve-plan.sh`で承認する。プラン承認は差分内容の保証にはならないため、完了後は必ず「PR差分の確認（必須）」を実施する。
 
 ### 実行中のフィードバック
 

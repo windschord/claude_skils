@@ -75,8 +75,15 @@ https://jules.googleapis.com/v1alpha/
 GET /v1alpha/sources
 ```
 
+**クエリパラメータ**:
+
+| パラメータ | 型 | 説明 |
+|-----------|-----|------|
+| `pageSize` | integer | 返却するソース数（1ページあたり） |
+| `pageToken` | string | ページネーショントークン |
+
 ```bash
-curl -s 'https://jules.googleapis.com/v1alpha/sources' \
+curl -s 'https://jules.googleapis.com/v1alpha/sources?pageSize=100' \
   -H "x-goog-api-key: $JULES_API_KEY"
 ```
 
@@ -89,9 +96,12 @@ curl -s 'https://jules.googleapis.com/v1alpha/sources' \
       "name": "sources/github/owner/repo",
       "displayName": "owner/repo"
     }
-  ]
+  ],
+  "nextPageToken": "..."
 }
 ```
+
+> **重要**: 接続済みリポジトリが多い場合、1回のリクエストでは全件が返らないことがある。`nextPageToken` が存在する限り `pageToken` を指定して全ページを取得しないと、対象リポジトリが後方のページにあった場合に見つけられない。`scripts/list-sources.sh` は全ページを自動的に取得して結合する。
 
 ソース名は `sources/github/{owner}/{repo}` 形式です。セッション作成時の `sourceContext.source` にこの値を使用します。
 
