@@ -225,7 +225,7 @@ SDDフェーズ          並列処理          条件・トリガー            
    - 変更があった場合、worktreeのブランチが返される
    - git merge または cherry-pick で統合
 3. テスト全体を再実行して統合後の動作を確認
-4. タスク状態を一括更新（Issueモード: 各Issueをclose / ファイルモード: docs/sdd/tasks/index.md）
+4. タスク状態を一括更新（Issueモード: 各Issueをclose / ファイルモード: 各 docs/sdd/tasks/phase-N/TASK-XXX.md と docs/sdd/tasks/index.md を一緒に更新）
 5. TodoWriteを同期
 6. 逆順レビューを実施
 ```

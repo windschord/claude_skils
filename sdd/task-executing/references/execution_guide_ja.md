@@ -230,7 +230,7 @@ Task 2.1: Dockerコンテナ起動スクリプトの実装
 4. 各サブエージェントは独立したworktreeで実装
 5. すべてのサブエージェント完了後、worktreeの変更をマージ
 6. 統合テストを実行
-7. タスク状態 + TodoWriteを一括更新（Issueモード: 各Issueをclose / ファイルモード: index.md更新）
+7. タスク状態 + TodoWriteを一括更新（Issueモード: 各Issueをclose / ファイルモード: 各TASK-XXX.md と index.md を一緒に更新）
 8. 逆順レビューを実施
 ```
 
@@ -305,7 +305,7 @@ Task 2.1: Dockerコンテナ起動スクリプトの実装
 3. worktreeに変更がない場合:
    - worktreeは自動クリーンアップ済み
 4. 統合テストを実行（全タスクの変更が正しく連携するか確認）
-5. タスク状態を一括更新（Issueモード: 各Issueをclose / ファイルモード: index.md更新）
+5. タスク状態を一括更新（Issueモード: 各Issueをclose / ファイルモード: 各TASK-XXX.md と index.md を一緒に更新）
 6. TodoWriteを同期
 7. 逆順レビューを実施
 ```

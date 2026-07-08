@@ -135,7 +135,7 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
    PRマージ済み      → DONE          → Issueをclose（completed）     → completed
 ```
 
-> **PRとIssueの紐付け**: JulesセッションのプロンプトやPR本文に `(#Issue番号)` を含めることで、PRマージ時にIssueを自動close/相互参照できる。
+> **PRとIssueの紐付け**: JulesセッションのプロンプトやPR本文に `(#Issue番号)` を含めることで、PRとIssueを相互参照できる（あくまで参照用）。Issueのclose（DONE）はステップ6のupdate処理で明示的に行う。
 
 #### ステップ6: 完了確認とPR取得
 
