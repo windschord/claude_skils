@@ -25,7 +25,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | **SDD** | sdd-documentation | SDDオーケストレーター（6つのサブスキルを統括） |
 | | requirements-defining | EARS記法による要件定義 |
 | | software-designing | 技術アーキテクチャ設計 |
-| | task-planning | AIエージェント向けタスク分解 |
+| | task-planning | AIエージェント向けタスク分解（デフォルト: GitHub Issue起票 / オプション: ファイル生成） |
 | | task-executing | タスク実行・逆順レビュー |
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
 | | sdd-document-management | ドキュメント管理・メンテナンス |

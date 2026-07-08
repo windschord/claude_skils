@@ -214,6 +214,19 @@ JWT認証ミドルウェアとルートガードを実装
 | `REVIEW` | レビュー待ち | レビュー完了後にDONEに変更 |
 | `DONE` | 完了 | アーカイブ対象 |
 
+#### ステータスの表現方法（モード別）
+
+| SDDステータス | Issueモード（デフォルト） | ファイルモード（オプション） |
+|--------------|--------------------------|------------------------------|
+| `TODO` | open + ラベル `sdd:status/todo` | ファイルの `ステータス: TODO` |
+| `IN_PROGRESS` | open + ラベル `sdd:status/in-progress` | `ステータス: IN_PROGRESS` |
+| `REVIEW` | open + ラベル `sdd:status/review` | `ステータス: REVIEW` |
+| `BLOCKED` | open + ラベル `sdd:status/blocked` | `ステータス: BLOCKED` |
+| `DONE` | **Issueをclose**（state_reason: completed） | `ステータス: DONE` |
+
+Issueモードではステータス変更時に `mcp__github__issue_write`（method: update）でラベルを付け替える。
+DONE時はステータスラベルを外してIssueをcloseする。
+
 ### ステータス遷移図
 
 ```

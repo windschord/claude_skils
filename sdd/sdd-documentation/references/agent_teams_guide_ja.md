@@ -175,6 +175,8 @@ SDDフェーズ          並列処理          条件・トリガー            
 
 1つのメッセージ内で複数のAgent toolを同時に呼び出すことで並列実行する。
 
+> **タスク詳細の出所**: Issueモード（デフォルト）ではタスク詳細はGitHub Issue本文。プロンプトには「タスク: #<Issue番号>」＋Issue本文全文を貼り付ける。ファイルモードでは下記のようにタスクファイルパス＋内容を貼り付ける。
+
 ```text
 【Agent tool 呼び出し1】
   subagent_type: general-purpose
@@ -182,8 +184,8 @@ SDDフェーズ          並列処理          条件・トリガー            
   prompt: |
     以下のSDDタスクを実装してください。
 
-    タスクファイル: docs/sdd/tasks/phase-1/TASK-001.md
-    [タスクファイルの完全な内容をここに貼り付け]
+    タスク: #12（Issueモード）または docs/sdd/tasks/phase-1/TASK-001.md（ファイルモード）
+    [Issue本文（またはタスクファイル）の完全な内容をここに貼り付け]
 
     参照設計: docs/sdd/design/components/auth-service.md
     参照要件: docs/sdd/requirements/stories/US-001.md
@@ -223,7 +225,7 @@ SDDフェーズ          並列処理          条件・トリガー            
    - 変更があった場合、worktreeのブランチが返される
    - git merge または cherry-pick で統合
 3. テスト全体を再実行して統合後の動作を確認
-4. docs/sdd/tasks/index.md のステータスを一括更新
+4. タスク状態を一括更新（Issueモード: 各Issueをclose / ファイルモード: docs/sdd/tasks/index.md）
 5. TodoWriteを同期
 6. 逆順レビューを実施
 ```
@@ -451,7 +453,7 @@ SDDフェーズ          並列処理          条件・トリガー            
     ├── プラン承認・フィードバック送信
     ├── Agent toolの完了通知を受け取り
     ├── PRレビュー・マージ
-    └── docs/sdd/tasks/ + TodoWrite 一括更新
+    └── タスク状態（Issueモード: Issue close / ファイルモード: docs/sdd/tasks/）+ TodoWrite 一括更新
 ```
 
 **タスク割り当て判定基準**:

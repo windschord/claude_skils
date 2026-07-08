@@ -39,24 +39,32 @@
 
 ## 概要
 
-SDDスキルで管理する`docs/sdd/tasks/`のタスクと、Claude Codeが内部で管理するTodoWriteのタスクを同期するためのガイドです。
+SDDスキルで管理するタスクと、Claude Codeが内部で管理するTodoWriteのタスクを同期するためのガイドです。
+
+タスクの管理先には2モードあります。同期のロジックは共通で、参照元がIssueかファイルかが異なるだけです。
+
+| モード | タスク管理先（Source of Truth） | 使う場面 |
+|--------|-------------------------------|----------|
+| **Issueモード（デフォルト）** | GitHub Issue（`label:sdd:task`） | 指定がない場合は常にこちら |
+| ファイルモード（オプション） | `docs/sdd/tasks/` | ユーザーが「ファイルで」と明示した場合 |
 
 ### 目的
 
 - **ユーザーへのリアルタイム進捗表示**: TodoWriteによりClaude CodeのUI上でタスクの進捗が見える
-- **詳細仕様の保持**: docs/sdd/tasks/には受入基準・TDD手順・技術仕様を記載
+- **詳細仕様の保持**: Issue本文（Issueモード）／docs/sdd/tasks/（ファイルモード）に受入基準・TDD手順・技術仕様を記載
 - **エージェントチームとの連携**: チームメンバーのタスク完了もTodoWriteに反映
 
 ### 原則
 
 ```text
-docs/sdd/tasks/ = Source of Truth（正）
-TodoWrite   = 可視化レイヤー（副）
+Issueモード:  GitHub Issue（label:sdd:task） = Source of Truth（正）
+ファイルモード: docs/sdd/tasks/               = Source of Truth（正）
+TodoWrite                                    = 可視化レイヤー（副）
 ```
 
-- 詳細な仕様・受入基準・TDD手順はdocs/sdd/tasks/に記載
-- TodoWriteはタスクID・タイトル・ステータスのみ管理
-- 同期の方向は常に SDD → TodoWrite（一方向）
+- 詳細な仕様・受入基準・TDD手順はSource of Truth（Issue本文 or docs/sdd/tasks/）に記載
+- TodoWriteはタスクID・タイトル・ステータス（＋Issueモードでは `(#Issue番号)`）のみ管理
+- 同期の方向は常に SDD（Issue/ファイル） → TodoWrite（一方向）
 - **非SDDタスクを保持**: TodoWrite更新時、SDDスキル以外で作成されたtodoを上書きしない
 
 ## マージプロトコル（非SDDタスクとの共存）
@@ -109,27 +117,29 @@ TodoWrite更新後:
 
 ## ステータスマッピング
 
-| SDD (docs/sdd/tasks/) | TodoWrite status | TodoWrite表示 |
-|-------------------|-----------------|---------------|
-| `TODO` | `pending` | 未着手として表示 |
-| `IN_PROGRESS` | `in_progress` | 実行中として表示 |
-| `DONE` | `completed` | 完了として表示 |
-| `BLOCKED` | `pending` | contentに`[BLOCKED]`付記 |
-| `REVIEW` | `in_progress` | contentに`[REVIEW]`付記 |
+| SDDステータス | Issueモード（GitHub Issue） | ファイルモード | TodoWrite status | TodoWrite表示 |
+|--------------|----------------------------|---------------|-----------------|---------------|
+| `TODO` | open + `sdd:status/todo` | `TODO` | `pending` | 未着手として表示 |
+| `IN_PROGRESS` | open + `sdd:status/in-progress` | `IN_PROGRESS` | `in_progress` | 実行中として表示 |
+| `DONE` | **closed**（completed） | `DONE` | `completed` | 完了として表示 |
+| `BLOCKED` | open + `sdd:status/blocked` | `BLOCKED` | `pending` | contentに`[BLOCKED]`付記 |
+| `REVIEW` | open + `sdd:status/review` | `REVIEW` | `in_progress` | contentに`[REVIEW]`付記 |
 
 ## 同期手順
 
 ### 1. タスク計画完了時（task-planning）
 
-docs/sdd/tasks/のすべてのタスクをTodoWriteに一括登録します。
+すべてのタスクをTodoWriteに一括登録します。
 
 **トリガー**: task-planningスキルがタスク一覧を作成完了した時点
 
 **手順**:
 
 ```text
-1. docs/sdd/tasks/index.mdからタスク一覧を読み取る
-2. 各タスクのID、タイトル、ステータスを取得
+1. タスク一覧を読み取る
+   - Issueモード: mcp__github__list_issues（labels: ["sdd:task"]）で起票済みIssueを取得
+   - ファイルモード: docs/sdd/tasks/index.mdからタスク一覧を読み取る
+2. 各タスクのID、タイトル、ステータス（Issueモードでは Issue番号）を取得
 3. 現在のTodoWriteから非SDDタスク（contentが[Phase-または[BLOCKED] [Phase-で始まらないtodo）を抽出して保持
 4. 非SDDタスク + SDDタスクをマージしてTodoWriteに登録:
 
@@ -137,19 +147,19 @@ TodoWrite({
   todos: [
     // --- 非SDDタスク（既存を保持） ---
     { content: "調査: 既存仕様の確認", status: "completed", activeForm: "..." },
-    // --- SDDタスク（新規登録） ---
+    // --- SDDタスク（新規登録／Issueモードは (#Issue番号) を付与） ---
     {
-      content: "[Phase-1/TASK-001] ユーザー認証APIの実装",
+      content: "[Phase-1/TASK-001](#12) ユーザー認証APIの実装",
       status: "pending",
       activeForm: "[TASK-001] ユーザー認証APIの実装"
     },
     {
-      content: "[Phase-1/TASK-002] データモデルの定義",
+      content: "[Phase-1/TASK-002](#13) データモデルの定義",
       status: "pending",
       activeForm: "[TASK-002] データモデルの定義"
     },
     {
-      content: "[Phase-2/TASK-003] API統合テスト",
+      content: "[Phase-2/TASK-003](#14) API統合テスト",
       status: "pending",
       activeForm: "[TASK-003] API統合テスト"
     }
@@ -159,10 +169,11 @@ TodoWrite({
 注意: activeFormはin_progress時にUIに表示される。pending登録時はcontentと同等の
 静的な表現を使用し、「〜を実装中」のような進行形はin_progressへの遷移時に設定する。
 非SDDタスクが存在しない場合はSDDタスクのみで構成する。
+ファイルモードでは (#Issue番号) を省略する。
 ```
 
 **命名規則**:
-- content: `[Phase-N/TASK-XXX] タスクタイトル`
+- content: `[Phase-N/TASK-XXX](#Issue番号) タスクタイトル`（ファイルモードは `(#Issue番号)` を省略）
 - activeForm: `[TASK-XXX] タスクタイトルを{動詞}中`
 
 ### 2. タスク開始時（task-executing）
@@ -174,15 +185,15 @@ TodoWrite({
 **手順**:
 
 ```text
-1. docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをIN_PROGRESSに更新
-2. docs/sdd/tasks/index.mdを更新
-3. コミット
-4. TodoWriteで該当タスクをin_progressに更新:
+1. Source of Truthのステータスを IN_PROGRESS に更新
+   - Issueモード: mcp__github__issue_write（update）で `sdd:status/todo` を外し `sdd:status/in-progress` を付与
+   - ファイルモード: docs/sdd/tasks/phase-N/TASK-XXX.md と index.md のステータスを更新してコミット
+2. TodoWriteで該当タスクをin_progressに更新:
 
 TodoWrite({
   todos: [
-    { content: "[Phase-1/TASK-001] ユーザー認証APIの実装", status: "in_progress", activeForm: "..." },
-    { content: "[Phase-1/TASK-002] データモデルの定義", status: "pending", activeForm: "..." },
+    { content: "[Phase-1/TASK-001](#12) ユーザー認証APIの実装", status: "in_progress", activeForm: "..." },
+    { content: "[Phase-1/TASK-002](#13) データモデルの定義", status: "pending", activeForm: "..." },
     ...
   ]
 })
@@ -199,11 +210,11 @@ TodoWrite({
 **手順**:
 
 ```text
-1. docs/sdd/tasks/phase-N/TASK-XXX.mdのステータスをDONEに更新
-2. docs/sdd/tasks/index.mdを更新
-3. コミット
-4. TodoWriteで該当タスクをcompletedに更新
-5. 次のタスクがあればin_progressに設定
+1. Source of Truthを DONE に更新
+   - Issueモード: mcp__github__issue_write（update）でステータスラベルを外し、Issueをclose（state: closed, state_reason: completed）
+   - ファイルモード: docs/sdd/tasks/phase-N/TASK-XXX.md と index.md のステータスをDONEに更新してコミット
+2. TodoWriteで該当タスクをcompletedに更新
+3. 次のタスクがあればin_progressに設定
 ```
 
 ### 4. タスクブロック時
@@ -213,24 +224,28 @@ TodoWrite({
 **手順**:
 
 ```text
-1. docs/sdd/tasks/のステータスをBLOCKEDに更新
+1. Source of Truthを BLOCKED に更新
+   - Issueモード: `sdd:status/blocked` に付け替え（Issueはopenのまま）
+   - ファイルモード: docs/sdd/tasks/のステータスをBLOCKEDに更新
 2. TodoWriteで該当タスクのcontentを更新:
 
-content: "[BLOCKED] [Phase-1/TASK-001] ユーザー認証APIの実装"
+content: "[BLOCKED] [Phase-1/TASK-001](#12) ユーザー認証APIの実装"
 status: "pending"
 ```
 
 ### 5. トラブルシュートでタスク追加時（sdd-troubleshooting）
 
-**トリガー**: sdd-troubleshootingが修正タスクをdocs/sdd/tasks/に追加した時点
+**トリガー**: sdd-troubleshootingが修正タスクを追加した時点
 
 **手順**:
 
 ```text
-1. docs/sdd/tasks/に新規TASK-XXX.mdを作成
+1. 修正タスクを作成
+   - Issueモード: mcp__github__issue_write（create）でラベル `sdd:task` + `sdd:bugfix` 付きIssueを起票
+   - ファイルモード: docs/sdd/tasks/に新規TASK-XXX.mdを作成
 2. TodoWriteに追加:
    既存のtodoリスト + 新しいtodo:
-   { content: "[Phase-N/TASK-XXX] [BugFix] 問題の修正", status: "pending", activeForm: "..." }
+   { content: "[Phase-N/TASK-XXX](#12) [BugFix] 問題の修正", status: "pending", activeForm: "..." }
 ```
 
 ### 6. ドキュメント管理でタスク追加時（sdd-document-management）
@@ -240,9 +255,11 @@ status: "pending"
 **手順**:
 
 ```text
-1. docs/sdd/tasks/に新規TASK-XXX.mdを作成
+1. 修正タスクを作成
+   - Issueモード: mcp__github__issue_write（create）でラベル `sdd:task` + `sdd:docfix` 付きIssueを起票
+   - ファイルモード: docs/sdd/tasks/に新規TASK-XXX.mdを作成
 2. TodoWriteに追加:
-   { content: "[Phase-N/TASK-XXX] [DocFix] ドキュメント修正", status: "pending", activeForm: "..." }
+   { content: "[Phase-N/TASK-XXX](#12) [DocFix] ドキュメント修正", status: "pending", activeForm: "..." }
 ```
 
 ## エージェントチームとの連携
@@ -262,15 +279,19 @@ status: "pending"
 
 ### チームメンバーの責務
 
-チームメンバーは自分の担当TASK-XXX.mdのステータスのみ更新します:
+チームメンバーは自分の担当タスクのステータスのみ更新します:
 
 ```text
-1. 自分の担当TASK-XXX.mdのステータスをIN_PROGRESSに更新
+1. 自分の担当タスクのステータスをIN_PROGRESSに更新
+   - Issueモード: 担当Issueを `sdd:status/in-progress` に付け替え
+   - ファイルモード: 担当TASK-XXX.mdのステータスをIN_PROGRESSに更新
 2. 実装を実行
-3. TASK-XXX.mdのステータスをDONEに更新
+3. 担当タスクをDONEに更新
+   - Issueモード: 担当Issueをclose（completed）
+   - ファイルモード: TASK-XXX.mdのステータスをDONEに更新
 4. リーダーに完了メッセージを送信
 
-★ docs/sdd/tasks/index.mdの更新はリーダーに委任（マージ競合回避） ★
+★ ファイルモードのindex.md更新はリーダーに委任（マージ競合回避） ★
 ★ TodoWriteの更新はリーダーに委任 ★
 ```
 
@@ -282,28 +303,31 @@ status: "pending"
 
 ## タスクIDの命名規則
 
+> Issueモードでは末尾に `(#Issue番号)` を付ける。ファイルモードでは省略する。
+> 先頭の識別パターン（`[Phase-` / `[BLOCKED] [Phase-`）は両モード共通。
+
 ### 通常タスク
 
 ```text
-content: "[Phase-1/TASK-001] ユーザー認証APIの実装"
+content: "[Phase-1/TASK-001](#12) ユーザー認証APIの実装"
 ```
 
 ### バグ修正タスク
 
 ```text
-content: "[Phase-2/TASK-010] [BugFix] 認証トークンの有効期限修正"
+content: "[Phase-2/TASK-010](#20) [BugFix] 認証トークンの有効期限修正"
 ```
 
 ### ドキュメント修正タスク
 
 ```text
-content: "[Phase-3/TASK-015] [DocFix] 設計書のAPI定義更新"
+content: "[Phase-3/TASK-015](#25) [DocFix] 設計書のAPI定義更新"
 ```
 
 ### BLOCKEDタスク
 
 ```text
-content: "[BLOCKED] [Phase-1/TASK-003] 外部API連携の実装"
+content: "[BLOCKED] [Phase-1/TASK-003](#14) 外部API連携の実装"
 ```
 
 ## 注意事項
@@ -335,11 +359,13 @@ content: "[BLOCKED] [Phase-1/TASK-003] 外部API連携の実装"
    ↓
 6. 受入基準の確認
    ↓
-7. docs/sdd/tasks/のステータスを更新（SDD = Source of Truth）
+7. Source of Truthのステータスを更新
+     - Issueモード: Issueのラベル付け替え／close
+     - ファイルモード: docs/sdd/tasks/更新＋コミット
    ↓
-8. コミット作成
+8. （ファイルモードのみ）コミット作成
    ↓
-9. ★ TodoWrite同期 ★  ← SDD更新・コミット後にTodoWriteへ反映
+9. ★ TodoWrite同期 ★  ← Source of Truth更新後にTodoWriteへ反映
 ```
 
-**順序の原則**: docs/sdd/tasks/（SDD）の更新とコミットを先に行い、その後TodoWriteに反映する。SDDが正であるため、先にSource of Truthを確定させる。
+**順序の原則**: Source of Truth（IssueモードはGitHub Issue、ファイルモードはdocs/sdd/tasks/）の更新を先に行い、その後TodoWriteに反映する。SDDが正であるため、先にSource of Truthを確定させる。

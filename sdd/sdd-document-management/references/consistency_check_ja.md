@@ -41,7 +41,7 @@
 ```text
 1. docs/sdd/requirements/ のすべてのREQ-XXX、US-XXXをリストアップ
 2. docs/sdd/design/ の設計要素と要件の対応を確認
-3. docs/sdd/tasks/ のタスクと設計の対応を確認
+3. タスクと設計の対応を確認（Issueモード: mcp__github__list_issues の label:sdd:task / ファイルモード: docs/sdd/tasks/）
 4. CLAUDE.mdの仕様記載と実装コードの乖離を確認
 5. 矛盾・不整合をレポートにまとめる
 6. ★ ユーザーに提示し承認を得る ★

@@ -42,7 +42,7 @@ metadata:
       ↓
 6. ★ ユーザー承認 ★（必須ゲート - 承認なしで実装禁止）
       ↓
-7. タスク分割 → docs/sdd/tasks/に追加
+7. タスク分割 → GitHub Issue起票（デフォルト）/ docs/sdd/tasks/（オプション）
 ```
 
 **詳細な分析手法**: [references/analysis_guide_ja.md](references/analysis_guide_ja.md)
@@ -144,9 +144,12 @@ metadata:
 - 適切な粒度（20-40分程度）
 - 1タスク1責務
 - 依存関係を明確化
-- docs/sdd/tasks/に追加
+- **デフォルト**: GitHub Issueとして起票（ラベル `sdd:task` + `sdd:bugfix`）。`mcp__github__issue_write`（create）を使用
+- **オプション**: ユーザーがファイル管理を希望した場合のみ docs/sdd/tasks/に追加
 
-**タスクテンプレート**: [assets/templates/bugfix_task_template_ja.md](assets/templates/bugfix_task_template_ja.md)
+**タスクテンプレート**:
+- Issueモード（デフォルト）: [../task-planning/assets/templates/task_issue_template_ja.md](../task-planning/assets/templates/task_issue_template_ja.md)（BugFix用は本文冒頭に問題・原因・分析レポートへのリンクを追記）
+- ファイルモード: [assets/templates/bugfix_task_template_ja.md](assets/templates/bugfix_task_template_ja.md)
 
 ## 成果物の保存
 
@@ -164,7 +167,7 @@ docs/sdd/troubleshooting/
 sdd-documentation
     ├── requirements-defining → docs/sdd/requirements/
     ├── software-designing   → docs/sdd/design/
-    ├── task-planning        → docs/sdd/tasks/
+    ├── task-planning        → GitHub Issue（デフォルト）/ docs/sdd/tasks/
     ├── task-executing       → 実装コード
     └── sdd-troubleshooting  → 問題分析・修正タスク（このスキル）
 ```
@@ -172,7 +175,7 @@ sdd-documentation
 連携するドキュメント:
 - **参照**: docs/sdd/requirements/（仕様照合用）
 - **参照**: docs/sdd/design/（仕様照合用）
-- **更新**: docs/sdd/tasks/（修正タスク追加）
+- **作成**: 修正タスク（デフォルト: GitHub Issue `sdd:task`+`sdd:bugfix` / オプション: docs/sdd/tasks/）
 - **作成**: docs/sdd/troubleshooting/（分析レポート）
 
 ## Agent toolによる並列調査（条件を満たす場合は積極的に使用）
@@ -251,23 +254,25 @@ sdd-documentation
 
 ### 修正タスクの同期
 
-sdd-troubleshootingで修正タスクをdocs/sdd/tasks/に追加した場合、TodoWriteにも同期します:
+sdd-troubleshootingで修正タスクを追加した場合、TodoWriteにも同期します:
 
 ```text
-1. 修正タスクをdocs/sdd/tasks/に作成
+1. 修正タスクを作成
+   - Issueモード（デフォルト）: mcp__github__issue_write（create）でラベル sdd:task+sdd:bugfix 付きIssueを起票
+   - ファイルモード: docs/sdd/tasks/に作成
 2. TodoWriteに修正タスクをpendingで追加:
    todos = [
      ...既存のtodo...,
-     { content: "[TASK-XXX] [BugFix] 問題の修正", status: "pending", activeForm: "[TASK-XXX] 問題を修正中" }
+     { content: "[Phase-N/TASK-XXX](#20) [BugFix] 問題の修正", status: "pending", activeForm: "[TASK-XXX] 問題を修正中" }
    ]
 ```
 
 ### タスクIDの命名
 
-修正タスクには`[BugFix]`プレフィックスを付けてTodoWriteに登録し、通常タスクと区別:
+修正タスクには`[BugFix]`プレフィックスを付けてTodoWriteに登録し、通常タスクと区別（Issueモードは末尾に `(#Issue番号)`）:
 
 ```text
-[TASK-010] [BugFix] 認証トークンの有効期限チェック修正
+[Phase-2/TASK-010](#20) [BugFix] 認証トークンの有効期限チェック修正
 ```
 
 ## リソース

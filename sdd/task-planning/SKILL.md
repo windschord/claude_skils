@@ -1,6 +1,6 @@
 ---
 name: task-planning
-description: 設計書から実装タスクへの分解と管理書を作成・編集する。AIエージェント向けの具体的な実装指示やTDD手順を定義する。タスク計画フェーズのみを単独で実行する際に使用する。Do NOT use for SDDワークフロー全体の管理（sdd-documentationを使用すること）。
+description: 設計書から実装タスクへの分解を行う。デフォルトで各タスクをGitHub Issueとして起票し（1タスク＝1 Issue、詳細はIssue本文に集約、ラベルでフェーズ・ステータス管理）、ユーザーがファイル管理を明示した場合のみdocs/sdd/tasks/にファイル生成する。AIエージェント向けの具体的な実装指示やTDD手順を定義する。タスク計画フェーズのみを単独で実行する際に使用する。Do NOT use for SDDワークフロー全体の管理（sdd-documentationを使用すること）。
 metadata:
   version: "1.0.0"
 ---
@@ -9,13 +9,56 @@ metadata:
 
 設計書を基に、AIエージェント（Claude Code等）が実行可能な具体的なタスクに分解します。
 
-## 概要
+## 出力先（重要）
 
-このスキルは、以下の成果物を作成・管理します：
-- **docs/sdd/tasks/index.md**: タスク一覧（目次・進捗サマリ）
-- **docs/sdd/tasks/[phase]/TASK-XXX.md**: 個別タスク詳細
+このスキルは、タスクを **デフォルトで GitHub Issue として起票** します。1タスク = 1 Issue とし、
+受入基準・TDD手順・技術仕様などの詳細はすべて Issue 本文に集約します。
 
-## ドキュメント構成
+| モード | 出力先 | 使う場面 |
+|--------|--------|----------|
+| **Issue起票（デフォルト）** | GitHub Issue（github MCPツール） | 指定がない場合は常にこちら |
+| ファイル生成（オプション） | `docs/sdd/tasks/[phase]/TASK-XXX.md` | ユーザーが「ファイルで」と明示した場合のみ |
+
+- **Issueモードを選ぶ条件**: github MCPツール（`mcp__github__*`）が利用可能であること。デフォルトはこちら。
+- **ファイルモードへのフォールバック**: github MCPが使えない、またはユーザーが明示的にファイル管理を希望した場合。
+
+## 概要（Issueモード＝デフォルト）
+
+このスキルは、以下を作成・管理します：
+- **GitHub Issue（1タスク＝1 Issue）**: タイトル `[TASK-XXX] タイトル`、本文にタスク詳細を集約
+- **ラベル**: `sdd:task`（識別）、`sdd:phase-N`（フェーズ）、`sdd:status/*`（ステータス）
+- **目次**: `docs/sdd/tasks/index.md` は作成しない。**`label:sdd:task` でフィルタしたGitHub Issue一覧が目次代わり**
+
+### Issueモデル
+
+```text
+GitHub Issues（label:sdd:task でフィルタ = タスク一覧＝目次）
+├── #12  [TASK-001] ユーザー認証API   [sdd:phase-1][sdd:status/todo]
+├── #13  [TASK-002] データモデル定義   [sdd:phase-1][sdd:status/todo]
+├── #14  [TASK-003] API統合テスト      [sdd:phase-2][sdd:status/todo]  (依存: #12,#13)
+└── ...
+```
+
+- **タイトル**: `[TASK-XXX] タスクタイトル`（TASK-XXXは設計・要件ドキュメントとの相互参照用に維持）
+- **本文**: `assets/templates/task_issue_template_ja.md` のフォーマットに従う
+- **ステータス**: ラベル `sdd:status/{todo|in-progress|review|blocked}`。**DONEはIssueをclose**（state_reason: completed）
+- **依存関係**: 本文の「依存関係」にIssue番号で記載（例: `依存: #12`）
+- **並列グループ**: ラベル `sdd:group-A` または本文に明記
+
+### 使用するgithub MCPツール
+
+| 操作 | ツール | 補足 |
+|------|--------|------|
+| Issue作成 | `mcp__github__issue_write`（method: create） | title/body/labels を指定 |
+| Issue更新（ステータス・close） | `mcp__github__issue_write`（method: update） | labels付け替え、state: closed |
+| タスク一覧取得 | `mcp__github__list_issues` / `mcp__github__search_issues` | `labels: ["sdd:task"]` |
+| 重複確認 | `mcp__github__search_issues` | 起票前に既存タスクを確認 |
+
+> **注**: 起票前に `mcp__github__get_me` で権限・対象リポジトリを確認する。ラベルが未作成の場合は初回起票前に作成する（テンプレートの「ラベル体系」を参照）。
+
+## ファイルモード（オプション）のドキュメント構成
+
+ユーザーが「ファイルで管理したい」と明示した場合のみ、従来のファイル構成を使用する：
 
 ```text
 docs/sdd/tasks/
@@ -109,28 +152,41 @@ docs/sdd/tasks/
 
 各タスクにTDD手順（テスト作成 → 失敗確認 → テストコミット → 実装 → 通過確認 → 実装コミット）を記載する。具体的なテストファイルパスとテストケースを明記すること。
 
-## ワークフロー
+## ワークフロー（Issueモード＝デフォルト）
 
 ### 新規作成フロー
 
 1. **ドキュメント確認**: docs/sdd/requirements/、docs/sdd/design/を読み込む
 2. **情報分類**: 明示された情報と不明な情報を分類
 3. **不明点確認**: 必要な情報をユーザーに確認
-4. **ディレクトリ作成**: `docs/sdd/tasks/` 以下にフェーズ別ディレクトリを作成
-5. **index.md作成**: 目次と進捗サマリを記述
-6. **フェーズ分け**: 作業を論理的なフェーズに分割
-7. **タスク分解**: 各フェーズのタスクを `[phase]/TASK-XXX.md` として作成
-8. **index.md更新**: 作成したタスクへのリンクを追加
-9. **依存関係整理**: タスク間の依存関係を明確化
+4. **環境確認**: `mcp__github__get_me` で対象リポジトリ・権限を確認。ラベル（`sdd:task`等）が未作成なら作成
+5. **フェーズ分け**: 作業を論理的なフェーズに分割
+6. **タスク分解**: 各タスクを `assets/templates/task_issue_template_ja.md` に従って本文を構築
+7. **重複確認**: `mcp__github__search_issues` で既存タスクを確認
+8. **Issue起票**: `mcp__github__issue_write`（method: create）で各タスクをIssue化。タイトル `[TASK-XXX] タイトル`、ラベル `sdd:task` / `sdd:phase-N` / `sdd:status/todo` を付与
+9. **依存関係整理**: 各Issue本文の「依存関係」に依存Issue番号（例: `依存: #12`）を記載。必要に応じてラベル `sdd:group-X`
 10. **逆順レビュー**: タスク → 設計 → 要件の整合性確認
-11. **ユーザー確認**: 承認を得て完了
+11. **TodoWrite同期**: 起票したIssueをTodoWriteに登録（`sdd-documentation/references/task_sync_guide_ja.md` 参照）
+12. **ユーザー確認**: 起票したIssue番号一覧を提示し、承認を得て完了
+
+> **注**: 目次（index.md）は作成しない。タスク一覧は `label:sdd:task` のGitHub Issue検索で参照する。
 
 ### タスク追加フロー
 
-1. **新規ファイル作成**: `[phase]/TASK-XXX.md` を作成
-2. **タスクテンプレートに従う**: 情報の明確性・受入基準・TDD手順を記述
-3. **index.md更新**: タスク一覧テーブルにリンクを追加
-4. **依存関係更新**: 関連タスクの依存関係を更新
+1. **本文構築**: `task_issue_template_ja.md` に従い、情報の明確性・受入基準・TDD手順を記述
+2. **重複確認**: `mcp__github__search_issues` で既存タスクを確認
+3. **Issue起票**: `mcp__github__issue_write`（method: create）でラベル付きIssueを作成
+4. **依存関係更新**: 関連タスクとの依存をIssue本文（Issue番号）で相互参照
+
+## ワークフロー（ファイルモード＝オプション）
+
+ユーザーが「ファイルで管理」を明示した場合のみ、従来フローを使用する：
+
+1. **ディレクトリ作成**: `docs/sdd/tasks/` 以下にフェーズ別ディレクトリを作成
+2. **index.md作成**: 目次と進捗サマリを記述（`assets/templates/tasks_index_template_ja.md`）
+3. **タスク分解**: 各タスクを `[phase]/TASK-XXX.md` として作成（`assets/templates/task_detail_template_ja.md`）
+4. **index.md更新**: 作成したタスクへのリンクを追加
+5. **依存関係整理・逆順レビュー・TodoWrite同期・ユーザー確認**
 
 ## 逆順レビュープロセス
 
@@ -149,7 +205,9 @@ docs/sdd/tasks/
 ### 設計原則
 
 1. **ファイル独立性（最重要）**: 各タスクが異なるファイルセットを対象とするよう分割する。同一ファイルを複数タスクが編集する設計は禁止。
-2. **並列実行グループの明示**: index.mdに並列実行可能なタスクグループを明記する（必須）
+2. **並列実行グループの明示**: 並列実行可能なタスクグループを明記する（必須）。
+   - **Issueモード**: ラベル `sdd:group-A` を付与し、各Issue本文の「依存関係」にグループと依存Issue番号を記載
+   - **ファイルモード**: index.mdに並列実行グループ表を記載
 3. **依存関係の最小化**: 可能な限り並列実行可能なタスク数を最大化する
 4. **コンテキストの完全性**: 各タスクがスポーンプロンプトだけで実行できるよう、以下を必ず記載:
    - 対象ファイルの絶対パス
@@ -157,7 +215,17 @@ docs/sdd/tasks/
    - 使用する技術スタック・ライブラリ
    - テスト要件
 
-### index.mdでの並列実行グループ記載例
+### 並列実行グループの記載例
+
+**Issueモード（デフォルト）**: 各Issueにラベル `sdd:group-X` を付け、本文に依存を明記。
+
+```markdown
+<!-- #12 [TASK-001] の本文「依存関係」 -->
+- 並列実行: グループA（#13, #14 と並行実行可能）
+- 前提Issue: なし
+```
+
+**ファイルモード（オプション）**: index.mdに並列実行グループ表を記載。
 
 ```markdown
 ## 並列実行グループ
@@ -227,13 +295,24 @@ docs/sdd/tasks/
 ## リソース
 
 ### テンプレート
-- 目次テンプレート: `assets/templates/tasks_index_template_ja.md`
-- タスク詳細テンプレート: `assets/templates/task_detail_template_ja.md`
+- **タスクIssueテンプレート（デフォルト）**: `assets/templates/task_issue_template_ja.md`
+- 目次テンプレート（ファイルモード）: `assets/templates/tasks_index_template_ja.md`
+- タスク詳細テンプレート（ファイルモード）: `assets/templates/task_detail_template_ja.md`
 
 ### リファレンス
 - タスクガイドライン: `references/task_guidelines_ja.md`
 
 ### 命名規則
+
+**Issueモード（デフォルト）**:
+
+| 種別 | 命名規則 | 例 |
+|------|---------|-----|
+| Issueタイトル | `[TASK-XXX] タイトル` | `[TASK-001] ユーザー認証API` |
+| フェーズラベル | `sdd:phase-N` | `sdd:phase-1` |
+| ステータスラベル | `sdd:status/{todo\|in-progress\|review\|blocked}` | `sdd:status/todo` |
+
+**ファイルモード（オプション）**:
 
 | ファイル種別 | 命名規則 | 例 |
 |-------------|---------|-----|

@@ -9,10 +9,12 @@ docs/sdd/requirements/ (何を作るか)
     ↓ 参照
 docs/sdd/design/ (どのように作るか)
     ↓ 参照
-docs/sdd/tasks/ (どのように実装するか)
+GitHub Issue（label:sdd:task） (どのように実装するか) ※デフォルト
     ↓ 参照
 実装コード
 ```
+
+> **タスクの出力先**: タスクは**デフォルトでGitHub Issueとして起票**されます（1タスク＝1 Issue、詳細はIssue本文に集約、`label:sdd:task` の一覧が目次代わり、ステータスはラベル `sdd:status/*`、DONEはIssue close）。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成します。
 
 ## 出力ドキュメント構成
 
@@ -32,8 +34,8 @@ docs/sdd/
 │   ├── api/               # API設計詳細
 │   ├── database/          # データベーススキーマ
 │   └── decisions/         # 技術的決定事項
-├── tasks/                 # タスク管理
-│   ├── index.md           # 目次・進捗サマリ
+├── tasks/                 # タスク管理（ファイルモード＝オプション時のみ）
+│   ├── index.md           # 目次・進捗サマリ  ※デフォルトはGitHub Issue起票
 │   └── phase-N/           # フェーズ別タスク
 │       └── TASK-XXX.md
 ├── troubleshooting/       # トラブルシューティング
@@ -86,33 +88,33 @@ docs/sdd/
 
 ### Phase 3: タスク計画
 
-`task-planning`スキルで設計を基にタスクを分解します。
+`task-planning`スキルで設計を基にタスクを分解します。**デフォルトでは各タスクをGitHub Issueとして起票**します（タイトル `[TASK-XXX]`、ラベル `sdd:task` / `sdd:phase-N` / `sdd:status/todo`、詳細はIssue本文に集約）。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成します。
 
 **チェックポイント:**
 
 - タスクが適切な粒度に分解されている（20-40分程度）
 - 各タスクに受入基準がある
-- 依存関係が明確
+- 依存関係が明確（Issueモードは依存Issue番号で表現）
 - 推測に基づく実装指示が含まれていない
 
 ### Phase 4: タスク同期
 
 TodoWriteにタスク一覧を同期し、進捗を可視化します。
 
-| SDDステータス | TodoWriteステータス |
-|-------------|-------------------|
-| TODO | pending |
-| IN_PROGRESS | in_progress |
-| DONE | completed |
-| BLOCKED | pending（[BLOCKED]付記） |
-| REVIEW | in_progress（[REVIEW]付記） |
+| SDDステータス | Issueモード（デフォルト） | TodoWriteステータス |
+|-------------|--------------------------|-------------------|
+| TODO | open + `sdd:status/todo` | pending |
+| IN_PROGRESS | open + `sdd:status/in-progress` | in_progress |
+| DONE | Issueをclose（completed） | completed |
+| BLOCKED | open + `sdd:status/blocked` | pending（[BLOCKED]付記） |
+| REVIEW | open + `sdd:status/review` | in_progress（[REVIEW]付記） |
 
 ### Phase 5: ドキュメント逆順レビュー
 
 タスク→設計→要件の順に整合性をチェックします。
 
 ```text
-docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
+タスク（GitHub Issue / docs/sdd/tasks/） → docs/sdd/design/ → docs/sdd/requirements/
 ```
 
 **確認項目:**
@@ -181,7 +183,7 @@ sdd-troubleshootingスキルを使用
 2. **ファイル競合回避**: 各メンバーが異なるファイルセットを所有
 3. **プラン承認**: リスクの高いタスクではプラン承認を要求
 4. **完了待機**: メンバーの完了を待ってから次のフェーズに進む
-5. **タスク同期**: 完了時に`docs/sdd/tasks/`とTodoWriteの両方を更新
+5. **タスク同期**: 完了時にタスク状態（Issueモード: Issueをclose / ファイルモード: `docs/sdd/tasks/`）とTodoWriteの両方を更新
 
 ## 情報の明確性（重要原則）
 
