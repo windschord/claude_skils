@@ -16,13 +16,15 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 - [x] 基準2
 
 ## 関連ドキュメント
-- docs/sdd/tasks/[phase]/TASK-XXX.md: タスク詳細
+- タスク: #<Issue番号>（Issueモード）または docs/sdd/tasks/[phase]/TASK-XXX.md（ファイルモード）
 - docs/sdd/design/components/[name].md: 関連コンポーネント
 - docs/sdd/requirements/stories/US-XXX.md: 関連要件
 
 ## テスト
 - テスト実行結果（npm test等）
 ```
+
+> **Issueとの紐付け（Issueモード）**: コミットメッセージのタイトルや本文に `(#Issue番号)` を含めると、GitHub上でIssueと自動的に相互参照される（例: `feat(auth): implement login endpoint (#12)`）。
 
 ### 実装コミットの例
 
@@ -51,7 +53,11 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 npm test: 15 passed, 0 failed
 ```
 
-## ステータス更新コミット
+## ステータス更新（DONE）
+
+**Issueモード（デフォルト）**: 専用のステータス更新コミットは不要。`mcp__github__issue_write`（update）で対応Issueをclose（state_reason: completed）し、完了サマリーをIssueコメントとして残す。
+
+**ファイルモード（オプション）**: ステータス更新コミットを作成する。
 
 ```text
 Update docs/sdd/tasks/index.md: タスクID completed
@@ -60,7 +66,7 @@ Update docs/sdd/tasks/index.md: タスクID completed
 完了サマリー: [1行の要約]
 ```
 
-### ステータス更新コミットの例
+### ステータス更新コミットの例（ファイルモード）
 
 ```text
 Update docs/sdd/tasks/index.md: Task 1.1 completed

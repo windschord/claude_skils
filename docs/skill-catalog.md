@@ -22,9 +22,9 @@ docsディレクトリを初期化してください
 |-----------|------|--------|
 | requirements-defining | EARS記法による要件定義 | `docs/sdd/requirements/` |
 | software-designing | 技術アーキテクチャ設計 | `docs/sdd/design/` |
-| task-planning | AIエージェント向けタスク分解 | `docs/sdd/tasks/` |
+| task-planning | AIエージェント向けタスク分解 | **GitHub Issue（デフォルト）** / `docs/sdd/tasks/`（オプション） |
 | task-executing | タスク実行・逆順レビュー | 実装コード |
-| sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, `docs/sdd/tasks/` |
+| sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, **GitHub Issue（修正タスク）** |
 | sdd-document-management | ドキュメント管理・メンテナンス | `docs/sdd/archive/`, `docs/sdd/reports/` |
 
 **主な機能:**
@@ -94,9 +94,10 @@ AIエージェント向け実装タスクを作成・管理するスキルです
 
 **タスクの特徴:**
 
+- **デフォルトで各タスクをGitHub Issueとして起票**（1タスク＝1 Issue、詳細はIssue本文に集約、`label:sdd:task` の一覧が目次代わり）。ファイル管理を希望した場合のみ `docs/sdd/tasks/` に生成
 - AIエージェント作業時間で20-40分程度の粒度に分解
 - 各タスクに受入基準・依存関係・見積もり時間を記載
-- ステータス管理: `TODO` → `IN_PROGRESS` → `DONE`
+- ステータス管理: `TODO` → `IN_PROGRESS` → `DONE`（Issueモードはラベル `sdd:status/*`、DONEはIssue close）
 - 情報の明確性セクション（推測を排除）
 
 ---
@@ -114,12 +115,12 @@ AIエージェント向け実装タスクを作成・管理するスキルです
 または
 
 ```text
-docs/sdd/tasks/のタスクを進めてください
+SDDタスク（GitHub Issue）を進めてください
 ```
 
 **主な機能:**
 
-- `docs/sdd/tasks/`からのタスク自動読み取り
+- タスクの自動読み取り（デフォルト: GitHub Issue `label:sdd:task` / オプション: `docs/sdd/tasks/`）
 - サブエージェントを使用した自動実装
 - 並列実行可能なタスクの並列処理（3つ以上でエージェントチーム使用）
 - タスクごとの自動コミット作成
@@ -145,7 +146,7 @@ docs/sdd/tasks/のタスクを進めてください
 3. 仕様との照合（要件定義・設計との乖離を確認）
 4. 修正方針の策定（どう直すか、影響範囲は）
 5. **ユーザー承認（必須ゲート）**
-6. タスク分割して`docs/sdd/tasks/`に追加
+6. タスク分割してGitHub Issue起票（デフォルト、ラベル `sdd:task`+`sdd:bugfix`）／ `docs/sdd/tasks/`（オプション）
 
 ---
 
@@ -302,7 +303,7 @@ Webサービス/SaaS、EC/マーケットプレイス、金融サービス、メ
 
 ### jules-api
 
-Jules REST APIを使用して、`docs/sdd/tasks/`に記載されたタスクをGoogleの非同期コーディングエージェントJulesに対話的に依頼・管理するスキルです。
+Jules REST APIを使用して、SDDタスク（デフォルト: GitHub Issue `label:sdd:task` / オプション: `docs/sdd/tasks/`）をGoogleの非同期コーディングエージェントJulesに対話的に依頼・管理するスキルです。
 
 **使用開始:**
 
@@ -312,7 +313,7 @@ Jules REST APIを使用して、`docs/sdd/tasks/`に記載されたタスクをG
 
 **主な機能:**
 
-- `docs/sdd/tasks/`からタスクを読み取り、選択したタスクをJules APIで依頼
+- SDDタスク（GitHub Issue `label:sdd:task` / `docs/sdd/tasks/`）からタスクを読み取り、選択したタスクをJules APIで依頼
 - ベースブランチの指定によるPR自動作成
 - プラン承認ワークフロー（Claudeがプランを評価し、ユーザーと協議して承認）
 - セッションへのメッセージ送信による対話的な指示追加
@@ -367,7 +368,7 @@ PR #123 を再レビューしてください
 
 ### things-url
 
-Things URLスキームを使ってClaude Codeのタスク（TodoWrite/docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有するスキルです。
+Things URLスキームを使ってClaude Codeのタスク（TodoWrite / GitHub Issue `label:sdd:task` / docs/sdd/tasks/）をThings 3に送信し、人間とタスク管理を共有するスキルです。
 
 **使用開始:**
 
@@ -383,7 +384,7 @@ SDDのタスクをThingsと共有してください
 
 **主な機能:**
 
-- docs/sdd/tasks/のタスクをThings 3のプロジェクト・To-Doとして送信
+- SDDタスク（GitHub Issue / docs/sdd/tasks/）をThings 3のプロジェクト・To-Doとして送信
 - TodoWriteの現在のタスクリストをThings 3に送信
 - 個別のTo-Do・プロジェクトを作成するURLを生成
 - `add-json`コマンドによる一括インポートURL生成

@@ -21,14 +21,19 @@ docs/sdd/archive/
 
 ## 実行手順
 
+> **Issueモード（デフォルト）**: DONEタスクはcloseされたIssue（`label:sdd:task state:closed`）で表現されるため、close自体がアーカイブに相当する。ファイル移動（手順5-7）は不要。CLAUDE.md反映（手順3・8）はIssueモードでも必須。
+
+**ファイルモード（オプション）の手順**:
+
 ```text
 1. docs/sdd/tasks/からステータスDONEのタスクを検出
+   （Issueモード: mcp__github__list_issues で state:closed かつ label:sdd:task を検出）
 2. アーカイブ対象リストを作成
 3. CLAUDE.mdへの反映対象を抽出（★ 新規ステップ ★）
 4. ★ ユーザーに提示し承認を得る ★
-5. 承認されたファイルをdocs/sdd/archive/に移動
-6. 移動元のindex.mdを更新
-7. アーカイブのindex.mdを更新
+5. 承認されたファイルをdocs/sdd/archive/に移動（ファイルモードのみ）
+6. 移動元のindex.mdを更新（ファイルモードのみ）
+7. アーカイブのindex.mdを更新（ファイルモードのみ）
 8. CLAUDE.mdの各仕様セクション（API Endpoints, DB Schema, Services等）を更新（★ 必須 ★）
 ```
 

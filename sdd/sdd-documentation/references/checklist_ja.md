@@ -22,7 +22,8 @@ SDDドキュメントをレビューする際の詳細な確認項目です。
 ## 全体チェック
 
 - [ ] docs/ディレクトリ構造が存在する
-- [ ] requirements/index.md、design/index.md、tasks/index.mdが存在する
+- [ ] requirements/index.md、design/index.mdが存在する
+- [ ] タスクが起票されている（Issueモード: `label:sdd:task` のIssueが存在 / ファイルモード: tasks/index.md が存在）
 - [ ] 3ドキュメント間の整合性が取れている
 - [ ] 逆順レビューが完了している
 
@@ -47,7 +48,7 @@ SDDドキュメントをレビューする際の詳細な確認項目です。
 - [ ] CI/CD設計が含まれている（品質ゲート、GitHub Actions）
 - [ ] 品質基準が定義されている（カバレッジ80%、ミューテーションスコア85%、Linter、複雑性）
 
-## タスク管理書（docs/sdd/tasks/）
+## タスク管理（GitHub Issue＝デフォルト / docs/sdd/tasks/＝ファイルモード）
 
 - [ ] タスクが適切な粒度に分解されている（20-40分程度）
 - [ ] 各タスクに受入基準がある

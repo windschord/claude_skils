@@ -37,18 +37,27 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 
 ### ステップ1: タスクの読み取りと分析
 
+タスクの管理先はデフォルトで **GitHub Issue**（`label:sdd:task`）。ファイルモード時は `docs/sdd/tasks/`。
+
+**Issueモード（デフォルト）**:
+
+```text
+1. mcp__github__list_issues（labels: ["sdd:task"], state: open）でタスクIssue一覧を取得
+2. TODO状態（ラベル sdd:status/todo）のIssueをフィルタリング
+3. 各Issueの本文（body）を読み込む
+4. 各タスクの情報を抽出
+   - タスクID（タイトルの [TASK-XXX]）／ Issue番号
+   - タスクタイトル / 説明 / 受入基準 / 依存関係（依存Issue番号）/ ステータス（ラベル）/ 推定工数
+5. 依存関係（依存Issueがcloseされているか）を確認
+```
+
+**ファイルモード（オプション）**:
+
 ```text
 1. docs/sdd/tasks/index.mdを読み取る
 2. TODO状態のタスクをフィルタリング
 3. 各タスクの詳細ファイル（docs/sdd/tasks/[phase]/TASK-XXX.md）を読み込む
-4. 各タスクの情報を抽出
-   - タスクID
-   - タスクタイトル
-   - 説明
-   - 受入基準
-   - 依存関係
-   - ステータス
-   - 推定工数
+4. 各タスクの情報を抽出（タスクID/タイトル/説明/受入基準/依存関係/ステータス/推定工数）
 5. 依存関係を確認
 ```
 
@@ -77,7 +86,7 @@ task-executingスキルの詳細な実行手順とエラーハンドリングガ
 ### ステップ3: 実装実行
 
 サブエージェントに以下の情報を提供：
-- タスクファイル（TASK-XXX.md）の完全な内容
+- タスクの完全な内容（Issueモード: Issue本文全文＋Issue番号 / ファイルモード: TASK-XXX.mdの全文）
 - 受入基準
 - 技術的文脈
 - 参照すべき既存コード
@@ -162,28 +171,31 @@ Task 2.1: Dockerコンテナ起動スクリプトの実装
 
 #### 6.2 タスクステータスのDONE更新
 
-タスクファイルとindex.mdのステータスを更新：
+**Issueモード（デフォルト）**:
+
+```text
+1. mcp__github__issue_write（method: update）で該当Issueを更新
+   - ステータスラベル（sdd:status/*）を外す
+   - Issueをclose（state: closed, state_reason: completed）
+2. 完了サマリーをIssueコメントとして追加（mcp__github__add_issue_comment）
+   - 実装内容の要約、関連コミット/PRへのリンク
+3. コミットメッセージ・PRに `(#Issue番号)` を含めてIssueと紐付ける
+   - 例: "feat(auth): implement login endpoint (#12)"
+```
+
+**ファイルモード（オプション）**:
 
 ```text
 1. タスクファイル（docs/sdd/tasks/phase-N/TASK-XXX.md）を編集
-   - ステータスを `DONE` に変更
-   - 完了サマリーを追加（実装内容の要約）
-
+   - ステータスを `DONE` に変更、完了サマリーを追加
 2. index.md（docs/sdd/tasks/index.md）を編集
-   - 該当タスクのステータスを `DONE` に変更
-   - 進捗サマリーを更新
-
-3. ステータス更新をコミット
-   - コミットメッセージ例: "docs: Mark TASK-XXX as DONE"
+   - 該当タスクのステータスを `DONE` に変更、進捗サマリーを更新
+3. ステータス更新をコミット（例: "docs: Mark TASK-XXX as DONE"）
 ```
 
-#### 更新例
+#### 完了サマリーの例（Issueコメント / ファイルモードは本文）
 
 ```markdown
-<!-- TASK-XXX.md -->
-## ステータス
-DONE
-
 ## 完了サマリー
 - ユーザー認証APIエンドポイント（/login, /logout）を実装
 - JWTトークン生成・検証機能を追加
@@ -210,13 +222,15 @@ DONE
 
 ```text
 【並列実行の手順】
-1. docs/sdd/tasks/index.mdを分析し、並列実行可能なタスクを特定
-2. 各タスクの詳細ファイルを読み込む
+1. 並列実行可能なタスクを特定
+   - Issueモード: mcp__github__list_issues（labels: ["sdd:task"]）＋依存関係／sdd:group-* ラベルで判定
+   - ファイルモード: docs/sdd/tasks/index.mdを分析
+2. 各タスクの詳細を読み込む（Issue本文 or TASK-XXX.md）
 3. 1つのメッセージで複数のAgent toolを呼び出す（isolation: worktree指定）
 4. 各サブエージェントは独立したworktreeで実装
 5. すべてのサブエージェント完了後、worktreeの変更をマージ
 6. 統合テストを実行
-7. docs/sdd/tasks/index.md + TodoWriteを一括更新
+7. タスク状態 + TodoWriteを一括更新（Issueモード: 各Issueをclose / ファイルモード: 各TASK-XXX.md と index.md を一緒に更新）
 8. 逆順レビューを実施
 ```
 
@@ -234,7 +248,7 @@ DONE
     ## タスク情報
     タスクID: TASK-001
     タイトル: ユーザー認証APIの実装
-    [TASK-001.mdの完全な内容をここに展開]
+    [Issue本文（またはTASK-001.md）の完全な内容をここに展開]
 
     ## 参照ドキュメント
     設計: docs/sdd/design/components/auth-service.md
@@ -253,7 +267,7 @@ DONE
     ## タスク情報
     タスクID: TASK-002
     タイトル: ユーザー登録APIの実装
-    [TASK-002.mdの完全な内容をここに展開]
+    [Issue本文（またはTASK-002.md）の完全な内容をここに展開]
     ...（同様の構造）
 
 【Agent tool 呼び出し3】
@@ -263,7 +277,7 @@ DONE
     ## タスク情報
     タスクID: TASK-003
     タイトル: パスワードリセットAPIの実装
-    [TASK-003.mdの完全な内容をここに展開]
+    [Issue本文（またはTASK-003.md）の完全な内容をここに展開]
     ...（同様の構造）
 ```
 
@@ -291,7 +305,7 @@ DONE
 3. worktreeに変更がない場合:
    - worktreeは自動クリーンアップ済み
 4. 統合テストを実行（全タスクの変更が正しく連携するか確認）
-5. docs/sdd/tasks/index.mdを一括更新
+5. タスク状態を一括更新（Issueモード: 各Issueをclose / ファイルモード: 各TASK-XXX.md と index.md を一緒に更新）
 6. TodoWriteを同期
 7. 逆順レビューを実施
 ```
