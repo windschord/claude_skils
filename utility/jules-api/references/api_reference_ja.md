@@ -42,9 +42,19 @@ Jules REST APIは3つのコアコンセプトで構成されます:
 
 ### 環境変数への設定
 
+**推奨: 1Passwordシークレット参照**（`scripts/jules.sh`が実行時に`op read`で解決する。環境変数にシークレット本体を置かない）:
+
+```bash
+export JULES_API_KEY_OP_URI="op://<vault>/<item>/<field>"
+```
+
+直接指定（後方互換。生のcurlを使う場合はこちらが必要）:
+
 ```bash
 export JULES_API_KEY="your-api-key-here"
 ```
+
+`JULES_API_KEY_OP_URI`のみ設定されている環境で生のcurlを実行する場合は、`JULES_API_KEY=$(op read "$JULES_API_KEY_OP_URI")`で取得してから使用する。
 
 ### リクエストヘッダー
 
@@ -101,7 +111,7 @@ curl -s 'https://jules.googleapis.com/v1alpha/sources?pageSize=100' \
 }
 ```
 
-> **重要**: 接続済みリポジトリが多い場合、1回のリクエストでは全件が返らないことがある。`nextPageToken` が存在する限り `pageToken` を指定して全ページを取得しないと、対象リポジトリが後方のページにあった場合に見つけられない。`scripts/list-sources.sh` は全ページを自動的に取得して結合する。
+> **重要**: 接続済みリポジトリが多い場合、1回のリクエストでは全件が返らないことがある。`nextPageToken` が存在する限り `pageToken` を指定して全ページを取得しないと、対象リポジトリが後方のページにあった場合に見つけられない。`scripts/jules.sh list-sources` は全ページを自動的に取得して結合する。
 
 ソース名は `sources/github/{owner}/{repo}` 形式です。セッション作成時の `sourceContext.source` にこの値を使用します。
 
@@ -128,7 +138,7 @@ POST /v1alpha/sessions
 **推奨: スクリプト経由（特殊文字・日本語対応済み）**
 
 ```bash
-cat <<'EOF' | scripts/create-session.sh "sources/github/owner/repo" "develop" "TASK-001: セッションタイトル"
+cat <<'EOF' | scripts/jules.sh create-session "sources/github/owner/repo" "develop" "TASK-001: セッションタイトル"
 タスク: `config.yaml` の設定修正（TASK-001）
 
 O'Brien形式のキーが読み込まれない問題を修正する。
@@ -243,7 +253,7 @@ POST /v1alpha/sessions/{sessionId}:sendMessage
 
 ```bash
 # 推奨: スクリプト経由（特殊文字・日本語対応済み）
-cat <<'EOF' | scripts/send-message.sh "${SESSION_ID}"
+cat <<'EOF' | scripts/jules.sh send-message "${SESSION_ID}"
 追加の指示内容（特殊文字・日本語含む可能）
 EOF
 

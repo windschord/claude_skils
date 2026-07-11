@@ -196,16 +196,9 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
 ### utility/jules-api/
-- **SKILL.md** - Jules API統合スキル（スクリプト経由のタスク管理、ベースブランチ指定、プラン承認、Claude協調）
+- **SKILL.md** - Jules API統合スキル（スクリプト経由のタスク管理、ベースブランチ指定、プラン承認、Claude協調、1Password連携）
 - **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）
-- **scripts/list-sources.sh** - 接続済みリポジトリ一覧
-- **scripts/create-session.sh** - セッション作成（prompt: stdin）
-- **scripts/list-sessions.sh** - セッション一覧
-- **scripts/get-session.sh** - セッション詳細・状態確認
-- **scripts/approve-plan.sh** - プラン承認
-- **scripts/send-message.sh** - メッセージ送信（message: stdin）
-- **scripts/list-activities.sh** - アクティビティ一覧
-- **scripts/get-pr-branch.sh** - PRのheadブランチ名取得（GITHUB_TOKEN必須）
+- **scripts/jules.sh** - Jules API統合コマンド。サブコマンド: `list-sources`（接続済みリポジトリ一覧）/ `create-session`（セッション作成、prompt: stdin）/ `list-sessions` / `get-session` / `approve-plan` / `send-message`（message: stdin）/ `list-activities` / `get-pr-branch`（GitHubトークン必須）。認証情報は`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、`op read`で解決）優先、`JULES_API_KEY`直接指定にフォールバック
 
 ### saas/saas-spec-document/
 - **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）

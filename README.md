@@ -53,7 +53,28 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 
 | 環境変数 | 対象スキル | 説明 |
 |---------|-----------|------|
-| `JULES_API_KEY` | jules-api | Jules REST APIの認証キー。[Julesウェブアプリ](https://jules.google)のSettingsページで発行 |
+| `JULES_API_KEY_OP_URI` | jules-api | **推奨**。Jules APIキーの1Passwordシークレット参照（`op://<vault>/<item>/<field>`）。スクリプトが実行時に`op read`で解決するため、環境変数にシークレット本体が載らない |
+| `JULES_API_KEY` | jules-api | Jules REST APIの認証キーの直接指定（後方互換）。[Julesウェブアプリ](https://jules.google)のSettingsページで発行 |
+| `GITHUB_TOKEN_OP_URI` | jules-api | GitHubトークンの1Passwordシークレット参照（`get-pr-branch`使用時のみ必要） |
+| `GITHUB_TOKEN` | jules-api | GitHubトークンの直接指定（後方互換） |
+
+1Passwordシークレット参照を使う場合（推奨。[1Password CLI](https://developer.1password.com/docs/cli/)が必要）:
+
+```bash
+export JULES_API_KEY_OP_URI="op://Private/Jules/api-key"
+```
+
+またはClaude Codeの`settings.json`（`.claude/settings.json`）で設定:
+
+```json
+{
+  "env": {
+    "JULES_API_KEY_OP_URI": "op://Private/Jules/api-key"
+  }
+}
+```
+
+直接指定する場合（後方互換）:
 
 ```bash
 export JULES_API_KEY="your-api-key-here"
@@ -181,7 +202,8 @@ claude_skils/
 └── utility/                           # ユーティリティスキル群
     ├── jules-api/                     # Jules API統合スキル
     │   ├── SKILL.md
-    │   └── references/
+    │   ├── references/
+    │   └── scripts/                   # jules.sh（API統合コマンド）
     └── things-url/                    # Things URLタスク共有スキル
         ├── SKILL.md
         └── references/
