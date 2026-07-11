@@ -35,7 +35,7 @@ Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/setti
 }
 ```
 
-`JULES_API_KEY_OP_URI`が設定されているのに`op`が見つからない・`op read`が失敗する場合、スクリプトはエラーで停止する（直接指定へ黙ってフォールバックしない）。
+`JULES_API_KEY_OP_URI`の設定時に`op`コマンドの不在や`op read`の失敗を検知した場合、スクリプトはエラーで停止する（直接指定へ黙ってフォールバックしない）。
 
 ## スクリプト
 
