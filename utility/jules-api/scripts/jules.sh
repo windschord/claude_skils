@@ -24,7 +24,10 @@ API_BASE="https://jules.googleapis.com/v1alpha"
 
 usage() {
   # 先頭のヘッダーコメントブロック（shebang除く）をそのままヘルプとして表示する
-  awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0"
+  # PATH経由の起動でも読めるよう、スクリプトの実体パスを解決してから読む
+  local self
+  self="$(command -v -- "$0" 2>/dev/null || printf '%s' "$0")"
+  awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$self"
 }
 
 die() {
@@ -70,6 +73,7 @@ jules_curl() {
     "$@"
 }
 
+# stdinをPROMPTに読み込む。空（空白のみ含む）の場合はエラー
 read_stdin_prompt() {
   PROMPT=$(cat)
   if [[ -z "${PROMPT//[[:space:]]/}" ]]; then
@@ -77,44 +81,48 @@ read_stdin_prompt() {
   fi
 }
 
-cmd_list_sources() {
-  require_jules_key
-  # 全ページを取得して結合する（対象リポジトリがpage 2以降にある場合に見落とさないため）
-  local page_token="" all_sources="[]" url response
+# fetch_all_pages <endpoint> <items_key>
+# pageTokenを辿って全ページを取得し、結合したJSON配列を標準出力に返す
+# （対象がpage 2以降にある場合に見落とさないため）
+fetch_all_pages() {
+  local endpoint="$1" items_key="$2"
+  local page_token="" all_items="[]" url response
   while :; do
-    url="${API_BASE}/sources?pageSize=100"
+    url="${API_BASE}/${endpoint}?pageSize=100"
     [[ -n "$page_token" ]] && url="${url}&pageToken=${page_token}"
     response=$(jules_curl 60 "$url")
-    all_sources=$(jq -n --argjson acc "$all_sources" --argjson resp "$response" \
-      '$acc + ($resp.sources // [])')
+    all_items=$(jq -n --argjson acc "$all_items" --argjson resp "$response" --arg k "$items_key" \
+      '$acc + ($resp[$k] // [])')
     page_token=$(echo "$response" | jq -r '.nextPageToken // empty')
     [[ -z "$page_token" ]] && break
   done
-  echo "$all_sources" | jq '{sources: .}'
+  echo "$all_items"
+}
+
+# 接続済みリポジトリの一覧を全ページ結合して表示する
+cmd_list_sources() {
+  require_jules_key
+  fetch_all_pages "sources" "sources" | jq '{sources: .}'
 }
 
 cmd_create_session() {
   # 同名タイトルの既存セッションがあれば作成を中断する。承認待ちの間にリトライして
   # 同一タスクが重複登録されるのを防ぐためのガード。意図的に再作成する場合のみ
   # --force を指定する。
-  local source="${1:?Usage: $0 create-session <source> <branch> <title> [--force]}"
-  local branch="${2:?}" title="${3:?}" force="${4:-}"
+  local create_usage="Usage: $0 create-session <source> <branch> <title> [--force]"
+  local source="${1:?${create_usage}}"
+  local branch="${2:?${create_usage}}" title="${3:?${create_usage}}" force="${4:-}"
+
+  if [[ -n "$force" && "$force" != "--force" ]]; then
+    die "不明な引数です: $force（第4引数に指定できるのは --force のみです）"
+  fi
+
   require_jules_key
 
   if [[ "$force" != "--force" ]]; then
-    local page_token="" existing="" url response match
-    while :; do
-      url="${API_BASE}/sessions?pageSize=100"
-      [[ -n "$page_token" ]] && url="${url}&pageToken=${page_token}"
-      response=$(jules_curl 60 "$url")
-      match=$(echo "$response" | jq -r --arg t "$title" '.sessions[]? | select(.title == $t) | .name')
-      if [[ -n "$match" ]]; then
-        existing="$match"
-        break
-      fi
-      page_token=$(echo "$response" | jq -r '.nextPageToken // empty')
-      [[ -z "$page_token" ]] && break
-    done
+    local existing
+    existing=$(fetch_all_pages "sessions" "sessions" \
+      | jq -r --arg t "$title" '.[] | select(.title == $t) | .name' | head -n 1)
 
     if [[ -n "$existing" ]]; then
       echo "Error: title '$title' のセッションが既に存在します（重複作成を防止するため中断しました）" >&2
@@ -172,8 +180,9 @@ cmd_list_activities() {
 }
 
 cmd_get_pr_branch() {
-  local owner="${1:?Usage: $0 get-pr-branch <owner> <repo> <pr_number>}"
-  local repo="${2:?}" pr_number="${3:?}"
+  local pr_usage="Usage: $0 get-pr-branch <owner> <repo> <pr_number>"
+  local owner="${1:?${pr_usage}}"
+  local repo="${2:?${pr_usage}}" pr_number="${3:?${pr_usage}}"
   require_github_token
   curl -sf --connect-timeout 10 --max-time 60 \
     "https://api.github.com/repos/${owner}/${repo}/pulls/${pr_number}" \
