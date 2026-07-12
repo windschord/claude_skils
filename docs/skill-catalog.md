@@ -323,7 +323,7 @@ Jules REST APIを使用して、SDDタスク（デフォルト: GitHub Issue `la
 
 **前提条件:**
 
-- 環境変数`JULES_API_KEY`が設定されている必要がある
+- 環境変数`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、推奨）または`JULES_API_KEY`（直接指定）が設定されている必要がある
 - JulesウェブアプリからJules GitHubアプリがリポジトリにインストールされている必要がある
 
 ---
