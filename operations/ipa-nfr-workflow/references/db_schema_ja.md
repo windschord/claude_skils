@@ -34,7 +34,7 @@
 | level | TEXT | 選択レベル（L0-L5。レベル定義のない項目は空） |
 | value | TEXT | 選択値・具体値（例: 99.9%、24時間365日） |
 | note | TEXT | 備考・設計根拠。推奨値の仮設定時は「推奨値（要確認）」と明記 |
-| customer_judgement | TEXT | 顧客判定（未確認/承認/要修正/要協議）— import-feedbackで更新 |
+| customer_judgement | TEXT | 顧客判定（未確認/承認/要修正/要協議。CHECK制約で強制）— import-feedbackで更新 |
 | updated_at | TEXT | 更新日時 |
 
 ### feedback（顧客指摘）
@@ -95,10 +95,11 @@ feedback.status:
 ## よく使うクエリ（sqlite3 CLI）
 
 ```bash
-# 優先度「高」で顧客判定が承認以外の項目
+# 優先度「高」で顧客判定が承認以外の項目（未登録の項目も含める）
 sqlite3 -header nfr.db "SELECT i.item_id, i.item_name, s.customer_judgement
-  FROM nfr_items i JOIN selections s ON s.item_id = i.item_id
-  WHERE i.priority = '高' AND s.customer_judgement != '承認'"
+  FROM nfr_items i LEFT JOIN selections s ON s.item_id = i.item_id
+  WHERE i.priority = '高'
+    AND (s.customer_judgement IS NULL OR s.customer_judgement != '承認')"
 
 # 未対応の指摘件数
 sqlite3 nfr.db "SELECT COUNT(*) FROM feedback WHERE status = 'open'"

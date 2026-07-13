@@ -41,15 +41,18 @@ SHEET_GUIDE = "記入ガイド"
 
 
 def now() -> str:
+    """現在日時（JST）を YYYY-MM-DD HH:MM:SS 形式で返す。"""
     return datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def die(msg: str) -> None:
+    """エラーメッセージを標準エラーへ出力して終了コード1で終了する。"""
     print(f"エラー: {msg}", file=sys.stderr)
     sys.exit(1)
 
 
 def connect(db_path: str, must_exist: bool = True) -> sqlite3.Connection:
+    """SQLite DBへ接続する（外部キー制約有効・Row形式）。must_exist時は存在確認する。"""
     if must_exist and not Path(db_path).exists():
         die(f"DBファイルが見つかりません: {db_path}（先に init を実行してください）")
     conn = sqlite3.connect(db_path)
@@ -81,7 +84,8 @@ CREATE TABLE IF NOT EXISTS selections (
     level TEXT,
     value TEXT,
     note TEXT,
-    customer_judgement TEXT DEFAULT '未確認',
+    customer_judgement TEXT DEFAULT '未確認'
+        CHECK (customer_judgement IN ('未確認', '承認', '要修正', '要協議')),
     updated_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS feedback (
@@ -103,6 +107,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 
 # ---------------------------------------------------------------- init
 def cmd_init(args) -> None:
+    """DBを初期化し、プロジェクト情報と項目マスタCSVをロードする。"""
     master = Path(args.master) if args.master else DEFAULT_MASTER
     if not master.exists():
         die(f"項目マスタが見つかりません: {master}")
@@ -111,6 +116,9 @@ def cmd_init(args) -> None:
 
     conn = connect(args.db, must_exist=False)
     conn.executescript(SCHEMA)
+    # --force での再初期化時は外部キー参照元（feedback→selections）から先に削除する
+    conn.execute("DELETE FROM feedback")
+    conn.execute("DELETE FROM selections")
     conn.execute("DELETE FROM project")
     conn.execute(
         "INSERT INTO project (id, system_name, model_system, created_at, updated_at)"
@@ -148,12 +156,13 @@ def cmd_init(args) -> None:
 
 # ---------------------------------------------------------------- register
 def cmd_register(args) -> None:
+    """ヒアリング結果JSONを selections へ登録（UPSERT）する。"""
     conn = connect(args.db)
     if args.input == "-":
         data = json.load(sys.stdin)
     else:
         data = json.loads(Path(args.input).read_text(encoding="utf-8"))
-    selections = data.get("selections", data if isinstance(data, list) else [])
+    selections = data if isinstance(data, list) else data.get("selections", [])
     if not selections:
         die("selections が空です")
     known = {r["item_id"] for r in conn.execute("SELECT item_id FROM nfr_items")}
@@ -182,6 +191,7 @@ def cmd_register(args) -> None:
 
 
 def _print_missing_high(conn) -> None:
+    """未登録の優先度「高」項目の一覧を表示する。"""
     missing = conn.execute(
         "SELECT i.item_id, i.item_name FROM nfr_items i"
         " LEFT JOIN selections s ON s.item_id = i.item_id"
@@ -195,6 +205,7 @@ def _print_missing_high(conn) -> None:
 
 # ---------------------------------------------------------------- status
 def cmd_status(args) -> None:
+    """優先度別の登録状況と顧客指摘の対応状況サマリーを表示する。"""
     conn = connect(args.db)
     p = conn.execute("SELECT * FROM project").fetchone()
     if not p:
@@ -225,6 +236,7 @@ def cmd_status(args) -> None:
 
 # ---------------------------------------------------------------- export-excel
 def _select_rows(conn):
+    """項目マスタと選択結果を結合し、優先度（高→中→低）・項目ID順で返す。"""
     return conn.execute(
         "SELECT i.item_id, i.category, i.category_name, i.item_name, i.metric_hint,"
         " i.priority, i.duplicate_of, s.level, s.value, s.note, s.customer_judgement"
@@ -235,6 +247,7 @@ def _select_rows(conn):
 
 
 def cmd_export_excel(args) -> None:
+    """顧客レビュー用Excel（優先度色分け・顧客記入欄・記入ガイド付き）を出力する。"""
     try:
         from openpyxl import Workbook
         from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -394,6 +407,7 @@ def cmd_export_excel(args) -> None:
 
 # ---------------------------------------------------------------- import-feedback
 def _header_map(ws, header_row: int) -> dict:
+    """指定行のヘッダー文字列から列番号への対応表を作る。"""
     return {
         (c.value or "").strip(): c.column
         for c in ws[header_row] if isinstance(c.value, str)
@@ -401,6 +415,7 @@ def _header_map(ws, header_row: int) -> dict:
 
 
 def cmd_import_feedback(args) -> None:
+    """顧客記入済みExcelから顧客判定と指摘（グレード外要求含む）を取り込む。"""
     try:
         from openpyxl import load_workbook
     except ImportError:
@@ -428,6 +443,13 @@ def cmd_import_feedback(args) -> None:
         item_id = str(item_id).strip()
         judgement = str(row[hmap["顧客判定"] - 1].value or "").strip()
         comment = str(row[hmap["顧客コメント（指摘・要望）"] - 1].value or "").strip()
+        if judgement and judgement not in JUDGEMENTS:
+            print(
+                f"  警告: {item_id} の顧客判定「{judgement}」は許容値"
+                f"（{'/'.join(JUDGEMENTS)}）外のためスキップします",
+                file=sys.stderr,
+            )
+            judgement = ""
         if judgement and judgement != "未確認":
             conn.execute(
                 "UPDATE selections SET customer_judgement = ?, updated_at = ?"
@@ -456,6 +478,11 @@ def cmd_import_feedback(args) -> None:
         ws2 = wb[SHEET_EXTRA]
         hmap2 = _header_map(ws2, 3)
         col_content = hmap2.get("要求・指摘内容")
+        if not col_content:
+            die(
+                f"シート「{SHEET_EXTRA}」に列「要求・指摘内容」が見つかりません"
+                "（ヘッダー行が変更されていないか確認してください）"
+            )
         if col_content:
             for row in ws2.iter_rows(min_row=4):
                 content = str(row[col_content - 1].value or "").strip()
@@ -497,6 +524,7 @@ def cmd_import_feedback(args) -> None:
 
 # ---------------------------------------------------------------- list/update feedback
 def cmd_list_feedback(args) -> None:
+    """取り込んだ顧客指摘の一覧をJSONで出力する。"""
     conn = connect(args.db)
     sql = (
         "SELECT f.*, i.item_name, i.priority FROM feedback f"
@@ -513,6 +541,7 @@ def cmd_list_feedback(args) -> None:
 
 
 def cmd_update_feedback(args) -> None:
+    """顧客指摘の対応方針・状態・項目紐付けを更新する。"""
     conn = connect(args.db)
     row = conn.execute("SELECT * FROM feedback WHERE id = ?", (args.id,)).fetchone()
     if not row:
@@ -543,6 +572,7 @@ def cmd_update_feedback(args) -> None:
 
 # ---------------------------------------------------------------- dump
 def cmd_dump(args) -> None:
+    """DB内容（プロジェクト・選択結果・指摘）をJSONまたはMarkdownで出力する。"""
     conn = connect(args.db)
     p = dict(conn.execute("SELECT * FROM project").fetchone())
     items = [dict(r) for r in _select_rows(conn)]
@@ -593,6 +623,7 @@ INLINE_RE = re.compile(r"(\*\*.+?\*\*|`.+?`)")
 
 
 def _add_runs(paragraph, text: str) -> None:
+    """Markdownのインライン記法（太字・コード）をWordのrunに変換して追加する。"""
     for part in INLINE_RE.split(text):
         if not part:
             continue
@@ -606,6 +637,7 @@ def _add_runs(paragraph, text: str) -> None:
 
 
 def _set_ja_font(doc, font_name: str = "游ゴシック") -> None:
+    """ドキュメントの主要スタイルに日本語フォント（東アジア用含む）を設定する。"""
     from docx.oxml.ns import qn
     for style_name in (
         "Normal", "Title", "Heading 1", "Heading 2", "Heading 3", "Heading 4",
@@ -620,6 +652,7 @@ def _set_ja_font(doc, font_name: str = "游ゴシック") -> None:
 
 
 def _add_table(doc, rows: list) -> None:
+    """Markdownの表行をWordの表（Table Grid・ヘッダー太字）へ変換する。"""
     cells = [
         [c.strip() for c in line.strip().strip("|").split("|")]
         for line in rows
@@ -643,6 +676,7 @@ def _add_table(doc, rows: list) -> None:
 
 
 def _markdown_to_docx(doc, md_text: str) -> None:
+    """Markdownテキストを見出し・表・リスト・コードブロック対応でWordへ変換する。"""
     lines = md_text.splitlines()
     i, in_code = 0, False
     while i < len(lines):
@@ -698,6 +732,7 @@ def _markdown_to_docx(doc, md_text: str) -> None:
 
 
 def cmd_export_word(args) -> None:
+    """Markdown運用設計書をWordへ変換し、表紙と要件一覧・指摘対応表の付録を付与する。"""
     try:
         from docx import Document
         from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -796,6 +831,7 @@ def cmd_export_word(args) -> None:
 
 # ---------------------------------------------------------------- main
 def main() -> None:
+    """サブコマンドを解析して各処理へディスパッチする。"""
     with contextlib.suppress(AttributeError, ValueError):
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     parser = argparse.ArgumentParser(
