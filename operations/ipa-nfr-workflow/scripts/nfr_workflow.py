@@ -85,11 +85,11 @@ def cmd_init(args) -> None:
     if not SCHEMA_PATH.exists():
         die(f"スキーマ定義が見つかりません: {SCHEMA_PATH}")
     conn = connect(args.db, must_exist=False)
+    # --force での再初期化時は、スキーマ定義の変更を確実に反映するため
+    # 既存テーブルをDROPして作り直す（外部キー参照元から先に削除する順序）
+    for table in ("feedback", "selections", "nfr_items", "project"):
+        conn.execute(f"DROP TABLE IF EXISTS {table}")
     conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
-    # --force での再初期化時は外部キー参照元（feedback→selections）から先に削除する
-    conn.execute("DELETE FROM feedback")
-    conn.execute("DELETE FROM selections")
-    conn.execute("DELETE FROM project")
     conn.execute(
         "INSERT INTO project (id, system_name, model_system, created_at, updated_at)"
         " VALUES (1, ?, ?, ?, ?)",
@@ -97,7 +97,6 @@ def cmd_init(args) -> None:
     )
     with master.open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
-    conn.execute("DELETE FROM nfr_items")
     for r in rows:
         conn.execute(
             "INSERT INTO nfr_items (item_id, category, category_name, item_name,"
@@ -486,12 +485,19 @@ def cmd_import_feedback(args) -> None:
             )
             judgement = ""
         if judgement and judgement != "未確認":
-            conn.execute(
+            cur = conn.execute(
                 "UPDATE selections SET customer_judgement = ?, updated_at = ?"
                 " WHERE item_id = ?",
                 (judgement, now(), item_id),
             )
-            updated_judgements += 1
+            if cur.rowcount:
+                updated_judgements += 1
+            else:
+                print(
+                    f"  警告: {item_id} は選択結果が未登録のため顧客判定"
+                    f"「{judgement}」を反映できません（registerで登録後に再取込してください）",
+                    file=sys.stderr,
+                )
         if comment:
             exists = conn.execute(
                 "SELECT 1 FROM feedback WHERE kind = 'item' AND item_id = ?"
