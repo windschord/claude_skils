@@ -137,26 +137,8 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/result_template_ja.md** - 分析結果テンプレート
 - **sessions/** - セッションデータ
 
-### operations/operations-design/
-- **SKILL.md** - 運用設計スキル
-- **assets/templates/conversation_log_template_ja.md** - ヒアリングログテンプレート
-- **assets/templates/operations_design_template_ja.md** - 運用設計テンプレート（汎用）
-- **assets/templates/operations_design_template_cloud_instance_ja.md** - 運用設計テンプレート（クラウドインスタンス）
-- **assets/templates/operations_design_template_cloud_native_ja.md** - 運用設計テンプレート（クラウドネイティブ）
-- **assets/templates/operations_design_template_onpremise_ja.md** - 運用設計テンプレート（オンプレミス）
-- **assets/templates/operations_design_template_saas_ja.md** - 運用設計テンプレート（SaaS）
-- **hearing_items/2-9_security_compliance_ja.md** - セキュリティコンプライアンスヒアリング項目
-- **references/conversation_logging_ja.md** - ヒアリングログガイド
-- **references/industry_research_guide_ja.md** - 業界調査ガイド
-- **references/operations_design_guide_ja.md** - 運用設計ガイド
-
-### operations/ipa-nfr-operations-design/
-- **SKILL.md** - IPA非機能要求グレード準拠の運用設計書生成スキル
-- **assets/templates/operations_design_ipa_ja.md** - IPA非機能要求グレード準拠の運用設計書テンプレート
-- **references/ipa_nfr_mapping_ja.md** - IPA非機能要求グレード6カテゴリ→運用設計項目 詳細マッピング表
-
 ### operations/ipa-nfr-workflow/
-- **SKILL.md** - ヒアリング→IPAマッピング→DB登録→顧客レビュー用Excel出力→顧客指摘取込→運用設計書（Word）生成の一貫ワークフロースキル（operations-designとipa-nfr-operations-designの統合）。役割分担: AI=ヒアリング・対応方針の判断、スクリプト=ドキュメント生成・整合性チェック（機械処理でコスト削減と矛盾・記載漏れ排除）
+- **SKILL.md** - ヒアリング→IPAマッピング→DB登録→顧客レビュー用Excel出力→顧客指摘取込→運用設計書（Word）生成の一貫ワークフロースキル（旧operations-design・旧ipa-nfr-operations-designを置き換える後継）。役割分担: AI=ヒアリング・対応方針の判断、スクリプト=ドキュメント生成・整合性チェック（機械処理でコスト削減と矛盾・記載漏れ排除）
 - **scripts/nfr_workflow.py** - ワークフロー管理CLI（要 `pip install openpyxl python-docx`）。登録系サブコマンド: `init`（DB初期化＋項目マスタロード）/ `hearing-sheet`（未登録項目のヒアリング質問一覧を優先度順にMarkdown出力）/ `register`（ヒアリング結果JSON登録）/ `status`（登録・指摘対応状況サマリー）。Excel系サブコマンド: `export-excel`（優先度3段階色分け・顧客記入欄付きレビューシート）/ `import-feedback`（顧客記入済みExcelの指摘取込・重複排除）/ `list-feedback` / `update-feedback`。検証・出力系サブコマンド: `check`（重複項目一致・バックアップ間隔とRPO等の整合性を機械検証）/ `generate-design`（テンプレート代入による設計書Markdownの機械生成・全項目カバレッジ検証）/ `dump`（JSON/Markdown）/ `export-word`（Markdown設計書のWord変換＋要件一覧・指摘対応表の付録追加）
 - **scripts/nfr_schema.sql** - DBスキーマの正定義（SQL DDL・initが読み込む）
 - **assets/master/ipa_nfr_items_ja.csv** - IPA非機能要求グレード項目マスタ（88項目・後続作業への影響度による優先度 高/中/低 事前分類済み・全項目のヒアリング質問文つき）
@@ -164,6 +146,8 @@ sdd-documentation（オーケストレーター）
 - **references/db_schema_ja.md** - DBスキーマとregister用JSON形式の定義
 - **references/priority_classification_ja.md** - 優先度分類の基準と調整方法
 - **references/hearing_guide_ja.md** - 優先度順ヒアリングガイド（IPA 4階層IDマッピング対応の質問セット）
+- **references/ipa_levels_ja.md** - IPAモデルシステム分類・稼働率レベル・RTO/RPO推奨値の定義
+- **references/ipa_nfr_mapping_ja.md** - IPA非機能要求グレード6カテゴリ→運用設計項目 詳細マッピング表
 
 ### knowledge/report-summarizing/
 - **SKILL.md** - レポート要約スキル
