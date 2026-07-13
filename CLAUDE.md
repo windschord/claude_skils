@@ -157,7 +157,7 @@ sdd-documentation（オーケストレーター）
 
 ### operations/ipa-nfr-workflow/
 - **SKILL.md** - ヒアリング→IPAマッピング→DB登録→顧客レビュー用Excel出力→顧客指摘取込→運用設計書（Word）生成の一貫ワークフロースキル（operations-designとipa-nfr-operations-designの統合）
-- **scripts/nfr_workflow.py** - ワークフロー管理CLI（要 `pip install openpyxl python-docx`）。サブコマンド: `init`（DB初期化＋項目マスタロード）/ `register`（ヒアリング結果JSON登録）/ `status` / `export-excel`（優先度3段階色分け・顧客記入欄付きレビューシート）/ `import-feedback`（顧客記入済みExcelの指摘取込・重複排除）/ `list-feedback` / `update-feedback` / `dump` / `export-word`（Markdown設計書のWord変換＋要件一覧・指摘対応表の付録追加）
+- **scripts/nfr_workflow.py** - ワークフロー管理CLI（要 `pip install openpyxl python-docx`）。登録系サブコマンド: `init`（DB初期化＋項目マスタロード）/ `register`（ヒアリング結果JSON登録）/ `status`（登録・指摘対応状況サマリー）。Excel系サブコマンド: `export-excel`（優先度3段階色分け・顧客記入欄付きレビューシート）/ `import-feedback`（顧客記入済みExcelの指摘取込・重複排除）/ `list-feedback` / `update-feedback`。出力系サブコマンド: `dump`（JSON/Markdown）/ `export-word`（Markdown設計書のWord変換＋要件一覧・指摘対応表の付録追加）
 - **assets/master/ipa_nfr_items_ja.csv** - IPA非機能要求グレード項目マスタ（88項目・後続作業への影響度による優先度 高/中/低 事前分類済み）
 - **references/db_schema_ja.md** - DBスキーマとregister用JSON形式の定義
 - **references/priority_classification_ja.md** - 優先度分類の基準と調整方法
