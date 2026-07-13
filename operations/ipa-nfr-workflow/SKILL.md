@@ -111,7 +111,7 @@ python3 operations/ipa-nfr-workflow/scripts/nfr_workflow.py init \
   --db <出力先>/nfr.db --project "<システム名>" --model-system <1|2|3>
 ```
 
-2. **マッピング結果のJSON作成**: フェーズ1の結果を以下の形式でWriteツールで作成する（形式の詳細は `references/db_schema_ja.md` 参照）:
+2. **マッピング結果のJSON作成**: フェーズ1の結果をWriteツールを使い以下の形式で作成する（形式の詳細は `references/db_schema_ja.md` 参照）:
 
 ```json
 {"selections": [
@@ -187,7 +187,7 @@ statusの意味: `open`（未対応）/ `accepted`（受入・設計書へ反映
 python3 operations/ipa-nfr-workflow/scripts/nfr_workflow.py dump --db <path>/nfr.db --format markdown
 ```
 
-2. **運用設計書（Markdown）の生成**: `ipa-nfr-operations-design` スキルのテンプレート `operations/ipa-nfr-operations-design/assets/templates/operations_design_ipa_ja.md` とマッピング表 `operations/ipa-nfr-operations-design/references/ipa_nfr_mapping_ja.md` をReadツールで読み込み、dumpした要件値・顧客指摘（accepted/reflectedの対応方針を含む）を反映した運用設計書Markdownを作成する。
+2. **運用設計書（Markdown）の生成**: `ipa-nfr-operations-design` スキルのテンプレートとマッピング表をReadツールで読み込む（テンプレート: `operations/ipa-nfr-operations-design/assets/templates/operations_design_ipa_ja.md`、マッピング表: `operations/ipa-nfr-operations-design/references/ipa_nfr_mapping_ja.md`）。次に、dumpした要件値・顧客指摘（accepted/reflectedの対応方針を含む）を反映した運用設計書Markdownを作成する。
    - 生成ルール・整合性チェック（稼働率とRTO/RPO、バックアップ間隔とRPO等）は `ipa-nfr-operations-design` のSKILL.mdステップ4-5に従う
    - `accepted` の指摘は該当セクションに反映し、反映後に `update-feedback --status reflected` で状態を更新する
    - 未登録項目・未対応（open）の指摘は `[要確認]` として明記する
