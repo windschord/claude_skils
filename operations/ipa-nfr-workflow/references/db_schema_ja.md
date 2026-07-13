@@ -2,56 +2,75 @@
 
 `nfr_workflow.py` が管理するSQLite DBのスキーマと、各サブコマンドの入出力形式を定義する。
 
-## テーブル構成
+## スキーマ定義（SQL）
 
-### project（プロジェクト情報・1行のみ）
+**スキーマの正定義は `scripts/nfr_schema.sql`**。`init` 実行時にこのSQLファイルが読み込まれてDBが構築される。スキーマ変更はSQLファイルに対して行うこと（Pythonコード内にDDLを重複定義しない）。
 
-| 列 | 型 | 説明 |
-|----|-----|------|
-| id | INTEGER | 常に1（単一プロジェクトDB） |
-| system_name | TEXT | 対象システム名 |
-| model_system | INTEGER | モデルシステム分類（1/2/3） |
-| created_at / updated_at | TEXT | 作成・更新日時（JST） |
+```sql
+-- プロジェクト情報（1案件=1DB のため常に1行）
+CREATE TABLE IF NOT EXISTS project (
+    id           INTEGER PRIMARY KEY CHECK (id = 1),   -- 固定値1
+    system_name  TEXT    NOT NULL,                     -- 対象システム名
+    model_system INTEGER NOT NULL
+                 CHECK (model_system IN (1, 2, 3)),    -- IPAモデルシステム分類
+    created_at   TEXT    NOT NULL,                     -- 作成日時（JST）
+    updated_at   TEXT    NOT NULL                      -- 更新日時（JST）
+);
 
-### nfr_items（項目マスタ・initでCSVからロード）
+-- 項目マスタ（initで assets/master/ipa_nfr_items_ja.csv からロード。実行時は読み取り専用）
+CREATE TABLE IF NOT EXISTS nfr_items (
+    item_id         TEXT PRIMARY KEY,                  -- IPA 4階層ID（例: A.2.1.1）
+    category        TEXT NOT NULL,                     -- カテゴリ記号（A〜F）
+    category_name   TEXT NOT NULL,                     -- カテゴリ名（可用性 等）
+    item_name       TEXT NOT NULL,                     -- 項目名
+    question        TEXT,                              -- ヒアリング質問文（何を聞くか）
+    metric_hint     TEXT,                              -- メトリクス・記入例
+    priority        TEXT NOT NULL
+                    CHECK (priority IN ('高', '中', '低')),  -- 後続作業への影響度による優先度
+    priority_reason TEXT,                              -- 優先度の分類理由
+    duplicate_of    TEXT                               -- 重複項目（○マーク）の代表項目ID
+);
 
-| 列 | 型 | 説明 |
-|----|-----|------|
-| item_id | TEXT PK | IPA 4階層ID（例: A.2.1.1） |
-| category | TEXT | カテゴリ記号（A〜F） |
-| category_name | TEXT | カテゴリ名（可用性 等） |
-| item_name | TEXT | 項目名 |
-| metric_hint | TEXT | メトリクス・記入例 |
-| priority | TEXT | 優先度（高/中/低）— 後続作業への影響度による事前分類 |
-| priority_reason | TEXT | 分類理由 |
-| duplicate_of | TEXT | 重複項目（○マーク）の場合の代表項目ID（例: C.1.1.1 → A.1.1.1） |
+-- 対象システムの選択結果（ヒアリング結果の登録先。registerでUPSERT）
+CREATE TABLE IF NOT EXISTS selections (
+    item_id            TEXT PRIMARY KEY
+                       REFERENCES nfr_items(item_id),  -- 対象項目
+    level              TEXT,                           -- 選択レベル（L0-L5。無い項目は空）
+    value              TEXT,                           -- 選択値・具体値
+    note               TEXT,                           -- 備考・設計根拠
+    customer_judgement TEXT DEFAULT '未確認'
+                       CHECK (customer_judgement IN
+                              ('未確認', '承認', '要修正', '要協議')),  -- 顧客判定
+    updated_at         TEXT NOT NULL                   -- 更新日時（JST）
+);
 
-### selections（対象システムの選択結果）
+-- 顧客指摘（import-feedbackでExcelから取り込み。指摘本文の完全一致で重複排除）
+CREATE TABLE IF NOT EXISTS feedback (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,  -- 指摘番号
+    kind               TEXT NOT NULL
+                       CHECK (kind IN ('item', 'out_of_grade')),
+    item_id            TEXT REFERENCES nfr_items(item_id), -- 対象項目（out_of_gradeは原則NULL）
+    classification     TEXT,                               -- 顧客記入の分類（out_of_gradeのみ）
+    feedback           TEXT NOT NULL,                      -- 指摘・要求内容
+    background         TEXT,                               -- 背景・理由（out_of_gradeのみ）
+    requested_priority TEXT,                               -- 顧客の希望優先度（out_of_gradeのみ）
+    judgement          TEXT,                               -- 指摘時の顧客判定（itemのみ）
+    response           TEXT,                               -- 対応方針（ユーザー承認後に記録）
+    status             TEXT NOT NULL DEFAULT 'open'
+                       CHECK (status IN ('open', 'accepted', 'rejected', 'reflected')),
+    imported_at        TEXT NOT NULL                       -- 取り込み日時（JST）
+);
+```
 
-| 列 | 型 | 説明 |
-|----|-----|------|
-| item_id | TEXT PK | nfr_items への外部キー |
-| level | TEXT | 選択レベル（L0-L5。レベル定義のない項目は空） |
-| value | TEXT | 選択値・具体値（例: 99.9%、24時間365日） |
-| note | TEXT | 備考・設計根拠。推奨値の仮設定時は「推奨値（要確認）」と明記 |
-| customer_judgement | TEXT | 顧客判定（未確認/承認/要修正/要協議。CHECK制約で強制）— import-feedbackで更新 |
-| updated_at | TEXT | 更新日時 |
+## スキーマ設計の補足
 
-### feedback（顧客指摘）
-
-| 列 | 型 | 説明 |
-|----|-----|------|
-| id | INTEGER PK | 指摘番号（自動採番） |
-| kind | TEXT | `item`（グレード項目への指摘）/ `out_of_grade`（グレード外要求） |
-| item_id | TEXT | 対象項目ID（out_of_gradeは原則NULL。update-feedback --item-id で後から紐付け可能） |
-| classification | TEXT | 顧客記入の分類（out_of_gradeのみ） |
-| feedback | TEXT | 指摘・要求内容 |
-| background | TEXT | 背景・理由（out_of_gradeのみ） |
-| requested_priority | TEXT | 顧客の希望優先度（out_of_gradeのみ） |
-| judgement | TEXT | 指摘時の顧客判定（itemのみ） |
-| response | TEXT | 対応方針（ユーザー承認後に記録） |
-| status | TEXT | `open` / `accepted` / `rejected` / `reflected` |
-| imported_at | TEXT | 取り込み日時 |
+- **project**: 1案件=1DBの設計のため `CHECK (id = 1)` で1行に制限している
+- **nfr_items.question**: ヒアリングで「何を聞くか」の正定義。`hearing-sheet` サブコマンドがこの列から質問一覧を機械生成する
+- **nfr_items.duplicate_of**: IPAの重複項目（○マーク）の代表項目ID（例: C.1.1.1 → A.1.1.1）。`check` が両者の値一致を検証する
+- **selections.note**: 推奨値の仮設定時は「推奨値（要確認）」と明記するルール
+- **selections.customer_judgement**: Excel取込（import-feedback）で更新。CHECK制約の許容値外はスクリプトが取込時に警告してスキップする
+- **feedback.kind**: `item`（グレード項目への指摘）/ `out_of_grade`（グレードでは表現できない要求）。out_of_gradeは `update-feedback --item-id` で後から項目へ紐付け可能
+- **feedback.status**: `open`（未対応）→ `accepted`（受入・設計書へ反映予定）→ `reflected`（反映済み）、または `rejected`（見送り。理由をresponseに記録）
 
 ## register用JSON形式
 
@@ -78,6 +97,7 @@
 - `level`: L0-L5のレベル値がある項目のみ。ない場合は空文字またはnull
 - `value`: 具体値。未定の場合でも登録する場合は「[要確認]」等を記載
 - `note`: 設計根拠・補足。省略可
+- トップレベルが配列のJSON（`[{...}, ...]`）も受け付ける
 - 同一item_idを再登録すると上書き（UPSERT）される。顧客判定（customer_judgement）は上書きされない
 
 ## statusのライフサイクル

@@ -1,6 +1,20 @@
 # ヒアリングガイド（優先度順・IPAマッピング対応）
 
-フェーズ1で実施するヒアリングの質問セット。**すべての質問はAskUserQuestionツールを使用**し、回答を4階層ID（A.X.X.X）にマッピングして記録する。
+フェーズ1で実施するヒアリングの進め方。**すべての質問はAskUserQuestionツールを使用**し、回答を4階層ID（A.X.X.X）にマッピングして記録する。
+
+## 質問の正定義はマスタ（question列）
+
+**全88項目の「何を聞くか」は項目マスタ（`assets/master/ipa_nfr_items_ja.csv` の `question` 列 → DB `nfr_items.question`）に定義されている**。ヒアリング時は `hearing-sheet` サブコマンドで未登録項目の質問一覧を機械取得し、それに沿って質問する:
+
+```bash
+# 未登録の優先度「高」項目の質問一覧（項目ID・質問・記入例・重複項目の注記つき）
+python3 operations/ipa-nfr-workflow/scripts/nfr_workflow.py hearing-sheet --db nfr.db --priority 高
+
+# 全項目を現在値つきで確認（レビュー・再ヒアリング用）
+python3 operations/ipa-nfr-workflow/scripts/nfr_workflow.py hearing-sheet --db nfr.db --all
+```
+
+本ガイドの以降のセクションは、質問を**どの順序・グルーピングで聞くか**と、選択肢・推奨値の提示方法を定める（質問文そのものはマスタが正。ガイドと差異がある場合はマスタに従う）。
 
 ## 基本方針
 

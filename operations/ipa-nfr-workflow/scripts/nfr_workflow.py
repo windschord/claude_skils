@@ -9,6 +9,7 @@
 
 サブコマンド:
     init             DBを初期化し、項目マスタ（優先度分類済み）をロードする
+    hearing-sheet    ヒアリング質問一覧（未登録項目・優先度順）をMarkdownで出力する
     register         ヒアリング結果（選択レベル・値）をJSONから登録する
     status           登録状況・指摘対応状況のサマリーを表示する
     export-excel     顧客レビュー用Excel（優先度色分け・記入欄付き）を出力する
@@ -44,6 +45,7 @@ DEFAULT_TEMPLATE = (
     Path(__file__).resolve().parent.parent
     / "assets" / "templates" / "design_template_ja.md"
 )
+SCHEMA_PATH = Path(__file__).resolve().parent / "nfr_schema.sql"
 
 SHEET_GRADE = "非機能要求グレード"
 SHEET_EXTRA = "グレード外要求"
@@ -71,50 +73,6 @@ def connect(db_path: str, must_exist: bool = True) -> sqlite3.Connection:
     return conn
 
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS project (
-    id INTEGER PRIMARY KEY CHECK (id = 1),
-    system_name TEXT NOT NULL,
-    model_system INTEGER NOT NULL CHECK (model_system IN (1, 2, 3)),
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS nfr_items (
-    item_id TEXT PRIMARY KEY,
-    category TEXT NOT NULL,
-    category_name TEXT NOT NULL,
-    item_name TEXT NOT NULL,
-    metric_hint TEXT,
-    priority TEXT NOT NULL CHECK (priority IN ('高', '中', '低')),
-    priority_reason TEXT,
-    duplicate_of TEXT
-);
-CREATE TABLE IF NOT EXISTS selections (
-    item_id TEXT PRIMARY KEY REFERENCES nfr_items(item_id),
-    level TEXT,
-    value TEXT,
-    note TEXT,
-    customer_judgement TEXT DEFAULT '未確認'
-        CHECK (customer_judgement IN ('未確認', '承認', '要修正', '要協議')),
-    updated_at TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS feedback (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    kind TEXT NOT NULL CHECK (kind IN ('item', 'out_of_grade')),
-    item_id TEXT REFERENCES nfr_items(item_id),
-    classification TEXT,
-    feedback TEXT NOT NULL,
-    background TEXT,
-    requested_priority TEXT,
-    judgement TEXT,
-    response TEXT,
-    status TEXT NOT NULL DEFAULT 'open'
-        CHECK (status IN ('open', 'accepted', 'rejected', 'reflected')),
-    imported_at TEXT NOT NULL
-);
-"""
-
-
 # ---------------------------------------------------------------- init
 def cmd_init(args) -> None:
     """DBを初期化し、プロジェクト情報と項目マスタCSVをロードする。"""
@@ -124,8 +82,10 @@ def cmd_init(args) -> None:
     if Path(args.db).exists() and not args.force:
         die(f"DBが既に存在します: {args.db}（上書きする場合は --force を指定）")
 
+    if not SCHEMA_PATH.exists():
+        die(f"スキーマ定義が見つかりません: {SCHEMA_PATH}")
     conn = connect(args.db, must_exist=False)
-    conn.executescript(SCHEMA)
+    conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
     # --force での再初期化時は外部キー参照元（feedback→selections）から先に削除する
     conn.execute("DELETE FROM feedback")
     conn.execute("DELETE FROM selections")
@@ -141,12 +101,12 @@ def cmd_init(args) -> None:
     for r in rows:
         conn.execute(
             "INSERT INTO nfr_items (item_id, category, category_name, item_name,"
-            " metric_hint, priority, priority_reason, duplicate_of)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            " question, metric_hint, priority, priority_reason, duplicate_of)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 r["item_id"], r["category"], r["category_name"], r["item_name"],
-                r.get("metric_hint", ""), r["priority"], r.get("priority_reason", ""),
-                r.get("duplicate_of") or None,
+                r.get("question", ""), r.get("metric_hint", ""), r["priority"],
+                r.get("priority_reason", ""), r.get("duplicate_of") or None,
             ),
         )
     conn.commit()
@@ -161,6 +121,71 @@ def cmd_init(args) -> None:
         f"  項目マスタ: {total}項目"
         f"（高: {summary.get('高', 0)} / 中: {summary.get('中', 0)} / 低: {summary.get('低', 0)}）"
     )
+    conn.close()
+
+
+
+# ---------------------------------------------------------------- hearing-sheet
+def cmd_hearing_sheet(args) -> None:
+    """ヒアリング質問一覧（デフォルトは未登録項目のみ・優先度順）をMarkdownで出力する。"""
+    conn = connect(args.db)
+    p = conn.execute("SELECT * FROM project").fetchone()
+    sql = (
+        "SELECT i.item_id, i.item_name, i.question, i.metric_hint, i.priority,"
+        " i.duplicate_of, s.level, s.value"
+        " FROM nfr_items i LEFT JOIN selections s ON s.item_id = i.item_id"
+    )
+    conds, params = [], []
+    if not args.all:
+        conds.append("s.item_id IS NULL")
+    if args.priority:
+        conds.append("i.priority = ?")
+        params.append(args.priority)
+    if conds:
+        sql += " WHERE " + " AND ".join(conds)
+    sql += (
+        " ORDER BY CASE i.priority WHEN '高' THEN 0 WHEN '中' THEN 1 ELSE 2 END,"
+        " i.item_id"
+    )
+    rows = conn.execute(sql, params).fetchall()
+
+    lines = [
+        f"# ヒアリングシート: {p['system_name']}（モデルシステム{p['model_system']}）",
+        "",
+        f"対象: {'全項目' if args.all else '未登録項目のみ'}"
+        f"{f'（優先度: {args.priority}）' if args.priority else ''} / {len(rows)}項目",
+        "",
+    ]
+    for pr in ("高", "中", "低"):
+        subset = [r for r in rows if r["priority"] == pr]
+        if not subset:
+            continue
+        lines.append(f"## 優先度: {pr}（{len(subset)}項目）")
+        lines.append("")
+        header = "| 項目ID | 項目名 | ヒアリング質問 | 記入例 | 備考 |"
+        sep = "|--------|--------|---------------|--------|------|"
+        if args.all:
+            header += " 現在値 |"
+            sep += "--------|"
+        lines.append(header)
+        lines.append(sep)
+        for r in subset:
+            dup = f"{r['duplicate_of']}と重複（同値を登録）" if r["duplicate_of"] else "—"
+            row = (
+                f"| {r['item_id']} | {r['item_name']} | {r['question'] or '—'} |"
+                f" {r['metric_hint'] or '—'} | {dup} |"
+            )
+            if args.all:
+                current = r["value"] or r["level"] or "未登録"
+                row += f" {current} |"
+            lines.append(row)
+        lines.append("")
+    output = "\n".join(lines)
+    if args.output:
+        Path(args.output).write_text(output, encoding="utf-8")
+        print(f"ヒアリングシートを出力しました: {args.output}（{len(rows)}項目）")
+    else:
+        print(output)
     conn.close()
 
 
@@ -1070,6 +1095,13 @@ def main() -> None:
     p.add_argument("--master", help="項目マスタCSV（省略時は同梱マスタ）")
     p.add_argument("--force", action="store_true", help="既存DBを上書き")
     p.set_defaults(func=cmd_init)
+
+    p = sub.add_parser("hearing-sheet", help="ヒアリング質問一覧のMarkdown出力")
+    p.add_argument("--db", required=True)
+    p.add_argument("--priority", choices=["高", "中", "低"], help="優先度で絞り込み")
+    p.add_argument("--all", action="store_true", help="登録済み項目も含める（現在値つき）")
+    p.add_argument("--output", help="出力先ファイル（省略時は標準出力）")
+    p.set_defaults(func=cmd_hearing_sheet)
 
     p = sub.add_parser("register", help="ヒアリング結果のJSON登録")
     p.add_argument("--db", required=True)
