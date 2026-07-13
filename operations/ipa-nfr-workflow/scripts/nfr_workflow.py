@@ -15,8 +15,14 @@
     import-feedback  顧客が記入したExcelから指摘を取り込む
     list-feedback    取り込んだ指摘を一覧表示する（JSON）
     update-feedback  指摘への対応方針・状態を更新する
-    dump             DB内容をJSON/Markdownで出力する（運用設計書生成の入力）
+    check            DB内の要件値の整合性を機械的に検証する
+    generate-design  テンプレートへDB値を機械代入して運用設計書Markdownを生成する
+    dump             DB内容をJSON/Markdownで出力する
     export-word      Markdownの運用設計書をWord（.docx）に変換し付録を追加する
+
+設計方針: ドキュメント生成と整合性チェックは本スクリプトが機械的に行い、
+DBを単一の情報源とすることでドキュメント間の矛盾・記載漏れを排除する。
+AI（ヒアリング・顧客指摘への対応方針の判断）とは役割を分離している。
 """
 
 import argparse
@@ -34,6 +40,10 @@ JST = timezone(timedelta(hours=9))
 PRIORITY_ORDER = {"高": 0, "中": 1, "低": 2}
 JUDGEMENTS = ["未確認", "承認", "要修正", "要協議"]
 DEFAULT_MASTER = Path(__file__).resolve().parent.parent / "assets" / "master" / "ipa_nfr_items_ja.csv"
+DEFAULT_TEMPLATE = (
+    Path(__file__).resolve().parent.parent
+    / "assets" / "templates" / "design_template_ja.md"
+)
 
 SHEET_GRADE = "非機能要求グレード"
 SHEET_EXTRA = "グレード外要求"
@@ -618,6 +628,219 @@ def cmd_dump(args) -> None:
     conn.close()
 
 
+# ---------------------------------------------------------------- check
+DURATION_RE = re.compile(r"(\d+(?:\.\d+)?)\s*(分|時間|日|週間|ヶ月|か月|カ月)")
+DURATION_KEYWORDS = {
+    "リアルタイム": 0.0, "常時": 0.0, "時間毎": 1.0, "毎時": 1.0,
+    "日次": 24.0, "毎日": 24.0, "週次": 168.0, "毎週": 168.0,
+    "月次": 720.0, "毎月": 720.0, "年次": 8760.0,
+}
+UNIT_HOURS = {"分": 1 / 60, "時間": 1.0, "日": 24.0, "週間": 168.0, "ヶ月": 720.0, "か月": 720.0, "カ月": 720.0}
+RPO_LEVEL_HOURS = {"L1": 24.0, "L2": 8.0, "L3": 1.0, "L4": 0.25, "L5": 5 / 60}
+FULLTIME_RE = re.compile(r"24\s*(時間|h|H)|24/7|365")
+
+
+def _parse_duration_hours(text: str):
+    """自由記述の期間表現から最小の間隔（時間単位）を抽出する。解釈不能ならNone。"""
+    if not text:
+        return None
+    candidates = [
+        v for k, v in DURATION_KEYWORDS.items() if k in text
+    ] + [
+        float(m.group(1)) * UNIT_HOURS[m.group(2)] for m in DURATION_RE.finditer(text)
+    ]
+    return min(candidates) if candidates else None
+
+
+def _get_selection(conn, item_id: str):
+    """指定項目の選択結果（level/value/note）を返す。未登録ならNone。"""
+    return conn.execute(
+        "SELECT level, value, note FROM selections WHERE item_id = ?", (item_id,)
+    ).fetchone()
+
+
+def cmd_check(args) -> None:
+    """DB内の要件値の整合性を機械的に検証し、ERROR/WARN/UNVERIFIEDを報告する。"""
+    conn = connect(args.db)
+    errors, warns, infos = [], [], []
+
+    # 1. 重複項目（○マーク）の値一致
+    dup_rows = conn.execute(
+        "SELECT i.item_id, i.duplicate_of, s1.value AS v1, s1.level AS l1,"
+        " s2.value AS v2, s2.level AS l2"
+        " FROM nfr_items i"
+        " JOIN selections s1 ON s1.item_id = i.item_id"
+        " JOIN selections s2 ON s2.item_id = i.duplicate_of"
+        " WHERE i.duplicate_of IS NOT NULL"
+    ).fetchall()
+    for r in dup_rows:
+        v1, v2 = (r["v1"] or "").strip(), (r["v2"] or "").strip()
+        l1, l2 = (r["l1"] or "").strip(), (r["l2"] or "").strip()
+        if v1 != v2 or (l1 and l2 and l1 != l2):
+            errors.append(
+                f"重複項目の不一致: {r['item_id']}（{v1 or l1}）と"
+                f" {r['duplicate_of']}（{v2 or l2}）の値が異なります"
+            )
+
+    # 2. バックアップ取得間隔（C.1.2.5） ≦ RPO（A.1.3.1）
+    backup = _get_selection(conn, "C.1.2.5")
+    rpo = _get_selection(conn, "A.1.3.1")
+    if backup and rpo:
+        backup_h = _parse_duration_hours(backup["value"] or "")
+        rpo_h = _parse_duration_hours(rpo["value"] or "")
+        if rpo_h is None and (rpo["level"] or "") in RPO_LEVEL_HOURS:
+            rpo_h = RPO_LEVEL_HOURS[rpo["level"]]
+        if backup_h is not None and rpo_h is not None:
+            if backup_h > rpo_h:
+                errors.append(
+                    f"バックアップ間隔（C.1.2.5: {backup['value']} ≒ {backup_h:g}時間）が"
+                    f" RPO（A.1.3.1: ≒ {rpo_h:g}時間）を超えています"
+                )
+        else:
+            infos.append(
+                "UNVERIFIED: バックアップ間隔とRPOの大小関係を機械判定できません"
+                f"（C.1.2.5「{backup['value']}」/ A.1.3.1「{rpo['value']}」）。目視確認してください"
+            )
+
+    # 3. 稼働率レベル（A.2.1.1）とRTO/RPOレベルの対応（IPA推奨は同一レベル）
+    avail = _get_selection(conn, "A.2.1.1")
+    if avail and (avail["level"] or "").startswith("L"):
+        for target in ("A.1.3.2", "A.1.3.1"):
+            sel = _get_selection(conn, target)
+            if sel and (sel["level"] or "").startswith("L") and sel["level"] != avail["level"]:
+                warns.append(
+                    f"稼働率レベル（A.2.1.1: {avail['level']}）と {target}"
+                    f"（{sel['level']}）のレベルが一致していません（IPA推奨は同一レベル）"
+                )
+
+    # 4. 24時間365日稼働と運用・監視時間帯（C.1.1.2）の整合
+    service = _get_selection(conn, "A.1.2.1") or _get_selection(conn, "C.1.1.1")
+    monitoring = _get_selection(conn, "C.1.1.2")
+    if service and monitoring and FULLTIME_RE.search(service["value"] or ""):
+        if not FULLTIME_RE.search(monitoring["value"] or ""):
+            warns.append(
+                f"サービスは24時間稼働（{service['value']}）ですが、運用・監視時間帯"
+                f"（C.1.1.2: {monitoring['value']}）が24時間をカバーしていない可能性があります"
+            )
+
+    # 5. 優先度「高」の未登録項目
+    missing_high = conn.execute(
+        "SELECT COUNT(*) AS n FROM nfr_items i"
+        " LEFT JOIN selections s ON s.item_id = i.item_id"
+        " WHERE i.priority = '高' AND s.item_id IS NULL"
+    ).fetchone()["n"]
+    if missing_high:
+        warns.append(f"優先度「高」の未登録項目が {missing_high}件あります（status で一覧確認）")
+
+    # 6. 未対応（open）の顧客指摘
+    open_fb = conn.execute(
+        "SELECT COUNT(*) AS n FROM feedback WHERE status = 'open'"
+    ).fetchone()["n"]
+    if open_fb:
+        warns.append(f"未対応（open）の顧客指摘が {open_fb}件あります（list-feedback --status open で確認）")
+
+    for msg in errors:
+        print(f"[ERROR] {msg}")
+    for msg in warns:
+        print(f"[WARN]  {msg}")
+    for msg in infos:
+        print(f"[INFO]  {msg}")
+    print(
+        f"整合性チェック完了: ERROR {len(errors)}件 / WARN {len(warns)}件"
+        f" / INFO {len(infos)}件"
+    )
+    conn.close()
+    if errors:
+        sys.exit(1)
+
+
+# ---------------------------------------------------------------- generate-design
+PLACEHOLDER_RE = re.compile(r"\{\{(value|level|note|vl):([A-F]\.\d+\.\d+\.\d+)\}\}")
+
+
+def cmd_generate_design(args) -> None:
+    """テンプレートへDB値を機械代入して運用設計書Markdownを生成する。"""
+    template_path = Path(args.template) if args.template else DEFAULT_TEMPLATE
+    if not template_path.exists():
+        die(f"テンプレートが見つかりません: {template_path}")
+    conn = connect(args.db)
+    p = conn.execute("SELECT * FROM project").fetchone()
+    items = {
+        r["item_id"]: r
+        for r in conn.execute(
+            "SELECT i.item_id, i.duplicate_of, s.level, s.value, s.note"
+            " FROM nfr_items i LEFT JOIN selections s ON s.item_id = i.item_id"
+        )
+    }
+
+    text = template_path.read_text(encoding="utf-8")
+    text = text.replace("{{system_name}}", p["system_name"])
+    text = text.replace("{{model_system}}", str(p["model_system"]))
+    text = text.replace("{{date}}", datetime.now(JST).strftime("%Y年%m月%d日"))
+
+    unresolved = []
+
+    def _resolve(m: re.Match) -> str:
+        """プレースホルダをDB値に置換する。未登録は[要確認]を返す。"""
+        kind, item_id = m.group(1), m.group(2)
+        if item_id not in items:
+            die(f"テンプレートの項目ID {item_id} がマスタに存在しません")
+        row = items[item_id]
+        value = (row["value"] or "").strip()
+        level = (row["level"] or "").strip()
+        note = (row["note"] or "").strip()
+        if kind == "note":
+            return note or "—"
+        if kind == "level":
+            return level or "—"
+        if not value and not level:
+            unresolved.append(item_id)
+            return f"`[要確認: {item_id} 未登録]`"
+        if kind == "vl":
+            return f"{value}（{level}）" if value and level else (value or level)
+        return value or level
+
+    referenced = {m.group(2) for m in PLACEHOLDER_RE.finditer(text)}
+    text = PLACEHOLDER_RE.sub(_resolve, text)
+
+    # グレード外要求の対応表を機械生成
+    fb = conn.execute(
+        "SELECT * FROM feedback WHERE kind = 'out_of_grade' ORDER BY id"
+    ).fetchall()
+    if fb:
+        lines = [
+            "| # | 分類 | 要求内容 | 背景・理由 | 希望優先度 | 対応方針 | 状態 |",
+            "|---|------|---------|-----------|-----------|---------|------|",
+        ]
+        for f in fb:
+            lines.append(
+                f"| {f['id']} | {f['classification'] or '—'} | {f['feedback']} |"
+                f" {f['background'] or '—'} | {f['requested_priority'] or '—'} |"
+                f" {f['response'] or '`[要確認: 対応方針未定]`'} | {f['status']} |"
+            )
+        table = "\n".join(lines)
+    else:
+        table = "（グレード外要求はありません）"
+    text = text.replace("{{out_of_grade_table}}", table)
+
+    # カバレッジ検証: 全項目が本文（または重複代表項目）で参照されていること
+    uncovered = [
+        item_id for item_id, row in sorted(items.items())
+        if item_id not in referenced and (row["duplicate_of"] or "") not in referenced
+    ]
+
+    Path(args.output).write_text(text, encoding="utf-8")
+    registered = sum(1 for r in items.values() if (r["value"] or r["level"]))
+    print(f"運用設計書を生成しました: {args.output}")
+    print(f"  参照項目: {len(referenced)}項目 / 登録済み: {registered}/{len(items)}項目")
+    print(f"  [要確認]（未登録）: {len(set(unresolved))}箇所")
+    if uncovered:
+        print(f"  警告: テンプレートで参照されていない項目: {', '.join(uncovered)}")
+    else:
+        print("  カバレッジ: 全項目が本文で参照されています（記載漏れなし）")
+    conn.close()
+
+
 # ---------------------------------------------------------------- export-word
 INLINE_RE = re.compile(r"(\*\*.+?\*\*|`.+?`)")
 
@@ -879,6 +1102,16 @@ def main() -> None:
     p.add_argument("--status", choices=["open", "accepted", "rejected", "reflected"])
     p.add_argument("--item-id", help="グレード外要求を項目に紐付ける場合の項目ID")
     p.set_defaults(func=cmd_update_feedback)
+
+    p = sub.add_parser("check", help="要件値の整合性を機械検証（ERRORで終了コード1）")
+    p.add_argument("--db", required=True)
+    p.set_defaults(func=cmd_check)
+
+    p = sub.add_parser("generate-design", help="運用設計書Markdownの機械生成")
+    p.add_argument("--db", required=True)
+    p.add_argument("--output", required=True, help="出力先 .md パス")
+    p.add_argument("--template", help="テンプレート（省略時は同梱テンプレート）")
+    p.set_defaults(func=cmd_generate_design)
 
     p = sub.add_parser("dump", help="DB内容の出力（設計書生成の入力）")
     p.add_argument("--db", required=True)
