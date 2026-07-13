@@ -40,6 +40,10 @@ from pathlib import Path
 JST = timezone(timedelta(hours=9))
 PRIORITY_ORDER = {"高": 0, "中": 1, "低": 2}
 JUDGEMENTS = ["未確認", "承認", "要修正", "要協議"]
+# 顧客提示物（Excel/設計書/Word）で使うfeedback.statusの日本語表記
+STATUS_LABELS = {
+    "open": "協議中", "accepted": "対応予定", "rejected": "見送り", "reflected": "反映済み",
+}
 DEFAULT_MASTER = Path(__file__).resolve().parent.parent / "assets" / "master" / "ipa_nfr_items_ja.csv"
 DEFAULT_TEMPLATE = (
     Path(__file__).resolve().parent.parent
@@ -220,8 +224,28 @@ def cmd_register(args) -> None:
     print(f"登録完了: {registered}項目")
     if skipped:
         print(f"  マスタに存在しないためスキップ: {', '.join(map(str, skipped))}")
+    for d in _one_sided_dups(conn):
+        registered_side = d["item_id"] if d["self_reg"] else d["duplicate_of"]
+        missing_side = d["duplicate_of"] if d["self_reg"] else d["item_id"]
+        print(
+            f"  注意: {registered_side} は {missing_side} と重複項目です。"
+            f"{missing_side} にも同じ値を登録してください"
+        )
     _print_missing_high(conn)
     conn.close()
+
+
+def _one_sided_dups(conn) -> list:
+    """重複項目（○マーク）ペアのうち片側だけ登録されているものを返す。"""
+    return conn.execute(
+        "SELECT i.item_id, i.duplicate_of,"
+        " (s1.item_id IS NOT NULL) AS self_reg, (s2.item_id IS NOT NULL) AS rep_reg"
+        " FROM nfr_items i"
+        " LEFT JOIN selections s1 ON s1.item_id = i.item_id"
+        " LEFT JOIN selections s2 ON s2.item_id = i.duplicate_of"
+        " WHERE i.duplicate_of IS NOT NULL"
+        " AND (s1.item_id IS NULL) != (s2.item_id IS NULL)"
+    ).fetchall()
 
 
 def _print_missing_high(conn) -> None:
@@ -307,6 +331,7 @@ def cmd_export_excel(args) -> None:
     header_fill = PatternFill("solid", fgColor="2F5496")
     header_font = Font(color="FFFFFF", bold=True)
     customer_fill = PatternFill("solid", fgColor="E7F0E7")
+    info_fill = PatternFill("solid", fgColor="EAEFF7")
     thin = Side(style="thin", color="BFBFBF")
     border = Border(left=thin, right=thin, top=thin, bottom=thin)
     wrap = Alignment(wrap_text=True, vertical="top")
@@ -321,13 +346,26 @@ def cmd_export_excel(args) -> None:
     ws.cell(
         row=2, column=1,
         value="優先度「高」は後続の設計作業への影響が大きい項目です。高→中→低の順にご確認ください。"
-        "「顧客判定」「顧客コメント」列（緑色）にご記入ください。",
+        "「顧客判定」「顧客コメント」列（緑色）にご記入ください。"
+        "再提示の場合、前回いただいた指摘への対応方針を「前回指摘と対応方針」列に掲載しています。",
     ).font = Font(color="808080")
+
+    # 前回レビューの指摘と対応方針（再提示時に顧客が確認できるよう掲載する）
+    fb_by_item = {}
+    for f in conn.execute(
+        "SELECT item_id, feedback, response, status FROM feedback"
+        " WHERE kind = 'item' AND item_id IS NOT NULL ORDER BY id"
+    ):
+        label = STATUS_LABELS.get(f["status"], f["status"])
+        fb_by_item.setdefault(f["item_id"], []).append(
+            f"指摘: {f['feedback']}\n→ 対応: {f['response'] or '検討中'}（{label}）"
+        )
 
     headers = [
         ("No", 5), ("優先度", 8), ("カテゴリ", 16), ("項目ID", 10), ("項目名", 30),
         ("メトリクス（記入例）", 24), ("選択レベル", 10), ("選択値・具体値", 24),
-        ("備考（設計根拠）", 30), ("顧客判定", 12), ("顧客コメント（指摘・要望）", 40),
+        ("備考（設計根拠）", 30), ("前回指摘と対応方針", 40), ("顧客判定", 12),
+        ("顧客コメント（指摘・要望）", 40),
     ]
     header_row = 4
     for col, (name, width) in enumerate(headers, start=1):
@@ -352,22 +390,25 @@ def cmd_export_excel(args) -> None:
             i, r["priority"], f"{r['category']}: {r['category_name']}", r["item_id"],
             r["item_name"] + dup, r["metric_hint"], r["level"] or "",
             r["value"] or "", r["note"] or "",
+            "\n".join(fb_by_item.get(r["item_id"], [])),
             r["customer_judgement"] or "未確認", "",
         ]
         for col, v in enumerate(values, start=1):
             c = ws.cell(row=row, column=col, value=v)
             c.border = border
             c.alignment = wrap
-            if col in (10, 11):
+            if col in (11, 12):
                 c.fill = customer_fill
+            elif col == 10:
+                c.fill = info_fill
         pc = ws.cell(row=row, column=2)
         pc.fill = priority_fill[r["priority"]]
         pc.font = priority_font[r["priority"]]
         pc.alignment = Alignment(horizontal="center", vertical="top")
-        dv.add(ws.cell(row=row, column=10))
+        dv.add(ws.cell(row=row, column=11))
 
     ws.freeze_panes = ws.cell(row=header_row + 1, column=6)
-    ws.auto_filter.ref = f"A{header_row}:K{header_row + len(rows)}"
+    ws.auto_filter.ref = f"A{header_row}:L{header_row + len(rows)}"
 
     # --- シート2: グレード外要求 ---
     ws2 = wb.create_sheet(SHEET_EXTRA)
@@ -388,9 +429,27 @@ def cmd_export_excel(args) -> None:
         ws2.column_dimensions[get_column_letter(col)].width = width
     dv2 = DataValidation(type="list", formula1='"高,中,低"', allow_blank=True)
     ws2.add_data_validation(dv2)
-    for i in range(1, 21):
+    # 取込済みのグレード外要求は対応方針つきで再掲する（再提示時の確認用。編集不要）
+    existing_extra = conn.execute(
+        "SELECT * FROM feedback WHERE kind = 'out_of_grade' ORDER BY id"
+    ).fetchall()
+    row = 3
+    for i, f in enumerate(existing_extra, start=1):
         row = 3 + i
-        ws2.cell(row=row, column=1, value=i).border = border
+        label = STATUS_LABELS.get(f["status"], f["status"])
+        values2 = [
+            i, f["classification"] or "", f["feedback"], f["background"] or "",
+            f["requested_priority"] or "",
+            f"対応方針: {f['response'] or '検討中'}（{label}）",
+        ]
+        for col, v in enumerate(values2, start=1):
+            c = ws2.cell(row=row, column=col, value=v)
+            c.border = border
+            c.alignment = wrap
+            c.fill = info_fill
+    for i in range(1, 21):
+        row = 3 + len(existing_extra) + i
+        ws2.cell(row=row, column=1, value=len(existing_extra) + i).border = border
         for col in range(2, 7):
             c = ws2.cell(row=row, column=col)
             c.border = border
@@ -417,6 +476,12 @@ def cmd_export_excel(args) -> None:
         ("", ""),
         ("グレード外要求シートについて", ""),
         ("", "非機能要求グレードの項目体系では表現できないご要望（例: 特定の運用レポート、独自の承認フロー、組織固有の制約など）は「グレード外要求」シートに自由記述でご記入ください。運用設計書に反映します。"),
+        ("", ""),
+        ("未記入項目への値のご提案", ""),
+        ("", "「選択レベル」「選択値・具体値」が空欄の項目に値をご提案いただく場合は、「顧客コメント（指摘・要望）」欄にご記入ください。「選択値・具体値」列へ直接ご記入いただいても取り込まれませんのでご注意ください。"),
+        ("", ""),
+        ("再提示時の見方", ""),
+        ("", "「前回指摘と対応方針」列（薄青色）には、前回のレビューでいただいた指摘と当社の対応方針を掲載しています。グレード外要求シートの薄青色の行も同様に、取込済みのご要望と対応方針の再掲です（編集不要）。"),
     ]
     ws3.column_dimensions["A"].width = 14
     ws3.column_dimensions["B"].width = 100
@@ -713,6 +778,15 @@ def cmd_check(args) -> None:
                 f" {r['duplicate_of']}（{v2 or l2}）の値が異なります"
             )
 
+    # 1b. 重複項目の片側のみ登録（登録漏れ）
+    for d in _one_sided_dups(conn):
+        registered_side = d["item_id"] if d["self_reg"] else d["duplicate_of"]
+        missing_side = d["duplicate_of"] if d["self_reg"] else d["item_id"]
+        warns.append(
+            f"重複項目の片側未登録: {registered_side} は登録済みですが、重複項目の"
+            f" {missing_side} が未登録です（同じ値を登録してください）"
+        )
+
     # 2. バックアップ取得間隔（C.1.2.5） ≦ RPO（A.1.3.1）
     backup = _get_selection(conn, "C.1.2.5")
     rpo = _get_selection(conn, "A.1.3.1")
@@ -748,7 +822,11 @@ def cmd_check(args) -> None:
     service = _get_selection(conn, "A.1.2.1") or _get_selection(conn, "C.1.1.1")
     monitoring = _get_selection(conn, "C.1.1.2")
     if service and monitoring and FULLTIME_RE.search(service["value"] or ""):
-        if not FULLTIME_RE.search(monitoring["value"] or ""):
+        mon_value = monitoring["value"] or ""
+        covered = FULLTIME_RE.search(mon_value) or re.search(
+            r"オンコール|自動通報|自動検知", mon_value
+        )
+        if not covered:
             warns.append(
                 f"サービスは24時間稼働（{service['value']}）ですが、運用・監視時間帯"
                 f"（C.1.1.2: {monitoring['value']}）が24時間をカバーしていない可能性があります"
@@ -847,7 +925,8 @@ def cmd_generate_design(args) -> None:
             lines.append(
                 f"| {f['id']} | {f['classification'] or '—'} | {f['feedback']} |"
                 f" {f['background'] or '—'} | {f['requested_priority'] or '—'} |"
-                f" {f['response'] or '`[要確認: 対応方針未定]`'} | {f['status']} |"
+                f" {f['response'] or '`[要確認: 対応方針未定]`'} |"
+                f" {STATUS_LABELS.get(f['status'], f['status'])} |"
             )
         table = "\n".join(lines)
     else:
@@ -930,11 +1009,27 @@ def _add_table(doc, rows: list) -> None:
 
 
 def _markdown_to_docx(doc, md_text: str) -> None:
-    """Markdownテキストを見出し・表・リスト・コードブロック対応でWordへ変換する。"""
+    """Markdownテキストを見出し・表・リスト・コードブロック対応でWordへ変換する。
+
+    文書タイトル（先頭の唯一の ``#`` 見出し）は表紙と重複するためスキップし、
+    以降の見出しを1段繰り上げる（``##`` の章 → Word Heading 1）。
+    """
     lines = md_text.splitlines()
+    heads = []
+    for idx, raw in enumerate(lines):
+        m = re.match(r"^(#{1,6})\s", raw.strip())
+        if m:
+            heads.append((idx, len(m.group(1))))
+    skip_title_idx, level_offset = None, 0
+    if heads and heads[0][1] == 1 and sum(1 for _, lv in heads if lv == 1) == 1:
+        skip_title_idx = heads[0][0]
+        level_offset = 1
     i, in_code = 0, False
     while i < len(lines):
         line = lines[i]
+        if i == skip_title_idx:
+            i += 1
+            continue
         if line.strip().startswith("```"):
             in_code = not in_code
             i += 1
@@ -951,7 +1046,7 @@ def _markdown_to_docx(doc, md_text: str) -> None:
             continue
         m = re.match(r"^(#{1,6})\s+(.*)$", stripped)
         if m:
-            level = min(len(m.group(1)), 4)
+            level = min(max(len(m.group(1)) - level_offset, 1), 4)
             doc.add_heading(re.sub(r"[*`]", "", m.group(2)), level=level)
             i += 1
             continue
@@ -1071,7 +1166,7 @@ def cmd_export_word(args) -> None:
                 str(f["id"]),
                 "項目指摘" if f["kind"] == "item" else "グレード外要求",
                 target, f["feedback"], f["response"] or "[要確認: 対応方針未定]",
-                f["status"],
+                STATUS_LABELS.get(f["status"], f["status"]),
             ]
             for ci, v in enumerate(vals):
                 table.cell(ri, ci).text = v
