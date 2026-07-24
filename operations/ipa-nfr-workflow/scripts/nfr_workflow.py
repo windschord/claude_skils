@@ -153,6 +153,12 @@ def load_data(data_path: str) -> sqlite3.Connection:
         die(f"YAMLの読み込みに失敗しました（{data_path}）: {e}")
     if not isinstance(doc, dict) or "project" not in doc:
         die(f"データ形式が不正です（projectセクションがありません）: {data_path}")
+    fmt = doc.get("format_version")
+    if fmt != 1:
+        die(
+            f"未対応のformat_versionです: {fmt!r}（本スクリプトは format_version: 1 のみ対応。"
+            "欠落している場合は追記してください）"
+        )
 
     project = doc.get("project") or {}
     conn = _build_conn(project.get("master_file"))
