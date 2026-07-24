@@ -8,10 +8,10 @@
 
 ```bash
 # 未登録の優先度「高」項目の質問一覧（項目ID・質問・記入例・重複項目の注記つき）
-python3 <スキルディレクトリ>/scripts/nfr_workflow.py hearing-sheet --db nfr.db --priority 高
+python3 <スキルディレクトリ>/scripts/nfr_workflow.py hearing-sheet --data nfr.yaml --priority 高
 
 # 全項目を現在値つきで確認（レビュー・再ヒアリング用）
-python3 <スキルディレクトリ>/scripts/nfr_workflow.py hearing-sheet --db nfr.db --all
+python3 <スキルディレクトリ>/scripts/nfr_workflow.py hearing-sheet --data nfr.yaml --all
 ```
 
 本ガイドの以降のセクションは、質問を**どの順序・グルーピングで聞くか**と、選択肢・推奨値の提示方法を定める（質問文そのものはマスタが正。ガイドと差異がある場合はマスタに従う）。

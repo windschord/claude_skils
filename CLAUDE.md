@@ -138,12 +138,12 @@ sdd-documentation（オーケストレーター）
 - **sessions/** - セッションデータ
 
 ### operations/ipa-nfr-workflow/
-- **SKILL.md** - ヒアリング→IPAマッピング→DB登録→顧客レビュー用Excel出力→顧客指摘取込→運用設計書（Word）生成の一貫ワークフロースキル（旧operations-design・旧ipa-nfr-operations-designを置き換える後継）。役割分担: AI=ヒアリング・対応方針の判断、スクリプト=ドキュメント生成・整合性チェック（機械処理でコスト削減と矛盾・記載漏れ排除）
-- **scripts/nfr_workflow.py** - ワークフロー管理CLI（要 `pip install openpyxl python-docx`）。登録系サブコマンド: `init`（DB初期化＋項目マスタロード）/ `hearing-sheet`（未登録項目のヒアリング質問一覧を優先度順にMarkdown出力）/ `register`（ヒアリング結果JSON登録）/ `status`（登録・指摘対応状況サマリー）。Excel系サブコマンド: `export-excel`（優先度3段階色分け・顧客記入欄付きレビューシート）/ `import-feedback`（顧客記入済みExcelの指摘取込・重複排除）/ `list-feedback` / `update-feedback`。検証・出力系サブコマンド: `check`（重複項目一致・バックアップ間隔とRPO等の整合性を機械検証）/ `generate-design`（テンプレート代入による設計書Markdownの機械生成・全項目カバレッジ検証）/ `dump`（JSON/Markdown）/ `export-word`（Markdown設計書のWord変換＋要件一覧・指摘対応表の付録追加）
-- **scripts/nfr_schema.sql** - DBスキーマの正定義（SQL DDL・initが読み込む）
+- **SKILL.md** - ヒアリング→IPAマッピング→データ登録→顧客レビュー用Excel出力→顧客指摘取込→運用設計書（Word）生成の一貫ワークフロースキル（旧operations-design・旧ipa-nfr-operations-designを置き換える後継）。役割分担: AI=ヒアリング・対応方針の判断、スクリプト=ドキュメント生成・整合性チェック（機械処理でコスト削減と矛盾・記載漏れ排除）。正データは人間可読なYAML（nfr.yaml）ただ1つで、全コマンドが実行時にインメモリSQLiteを再構築してSQL制約（CHECK/FK/PK）で検証する
+- **scripts/nfr_workflow.py** - ワークフロー管理CLI（要 `pip install pyyaml openpyxl python-docx`）。登録系サブコマンド: `init`（データファイル初期化）/ `validate`（手編集後の全制約検証）/ `hearing-sheet`（未登録項目のヒアリング質問一覧を優先度順にMarkdown出力）/ `register`（ヒアリング結果JSON登録）/ `status`（登録・指摘対応状況サマリー）。Excel系サブコマンド: `export-excel`（優先度3段階色分け・顧客記入欄付きレビューシート）/ `import-feedback`（顧客記入済みExcelの指摘取込・重複排除）/ `list-feedback` / `update-feedback`。検証・出力系サブコマンド: `check`（重複項目一致・バックアップ間隔とRPO等の整合性を機械検証）/ `generate-design`（テンプレート代入による設計書Markdownの機械生成・全項目カバレッジ検証）/ `dump`（JSON/Markdown）/ `export-word`（Markdown設計書のWord変換＋要件一覧・指摘対応表の付録追加）
+- **scripts/nfr_schema.sql** - 制約スキーマの正定義（SQL DDL・全コマンドがインメモリSQLite構築時に読み込みYAML全行を検証）
 - **assets/master/ipa_nfr_items_ja.csv** - IPA非機能要求グレード項目マスタ（88項目・後続作業への影響度による優先度 高/中/低 事前分類済み・全項目のヒアリング質問文つき）
 - **assets/templates/design_template_ja.md** - 運用設計書の機械生成用テンプレート（`{{value:A.2.1.1}}` 形式プレースホルダ・全88項目カバー）
-- **references/db_schema_ja.md** - DBスキーマとregister用JSON形式の定義
+- **references/db_schema_ja.md** - データ形式（YAML）・制約スキーマ・register用JSON形式の定義
 - **references/priority_classification_ja.md** - 優先度分類の基準と調整方法
 - **references/hearing_guide_ja.md** - 優先度順ヒアリングガイド（IPA 4階層IDマッピング対応の質問セット）
 - **references/ipa_levels_ja.md** - IPAモデルシステム分類・稼働率レベル・RTO/RPO推奨値の定義

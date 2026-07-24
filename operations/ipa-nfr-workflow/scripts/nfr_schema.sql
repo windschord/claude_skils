@@ -1,16 +1,19 @@
 -- =============================================================
--- IPA非機能要求グレード ワークフロー DBスキーマ（正定義）
--- nfr_workflow.py init がこのファイルを読み込んでDBを構築する。
--- スキーマ変更は本ファイルに対して行うこと（Pythonコード内に
--- DDLを重複定義しない）。
+-- IPA非機能要求グレード ワークフロー 制約スキーマ（正定義）
+-- 永続データは人間可読なYAML（nfr.yaml）であり、本ファイルは
+-- 全コマンド実行時に構築されるインメモリSQLite（検証エンジン）の
+-- 定義。YAMLの全行がここで定義されたCHECK/FK/PK/NOT NULL制約の
+-- 検証を受ける。スキーマ変更は本ファイルに対して行うこと
+-- （Pythonコード内にDDLを重複定義しない）。
 -- =============================================================
 
--- プロジェクト情報（1案件=1DB のため常に1行）
+-- プロジェクト情報（1案件=1データファイル のため常に1行）
 CREATE TABLE IF NOT EXISTS project (
     id           INTEGER PRIMARY KEY CHECK (id = 1),   -- 固定値1
     system_name  TEXT    NOT NULL,                     -- 対象システム名
     model_system INTEGER NOT NULL
                  CHECK (model_system IN (1, 2, 3)),    -- IPAモデルシステム分類
+    master_file  TEXT,                                 -- カスタム項目マスタCSVのパス（既定マスタ使用時はNULL）
     created_at   TEXT    NOT NULL,                     -- 作成日時（JST）
     updated_at   TEXT    NOT NULL                      -- 更新日時（JST）
 );

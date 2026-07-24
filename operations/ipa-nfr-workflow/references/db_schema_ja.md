@@ -1,23 +1,65 @@
-# DBスキーマ・データ形式リファレンス
+# データ形式・制約スキーマリファレンス
 
-`nfr_workflow.py` が管理するSQLite DBのスキーマと、各サブコマンドの入出力形式を定義する。
+`nfr_workflow.py` が管理するデータの保存形式（YAML）、制約スキーマ（SQL DDL）、各サブコマンドの入出力形式を定義する。
 
-## スキーマ定義（SQL）
+## データ保持の仕組み（YAML単一正＋インメモリSQLite検証）
 
-**スキーマの正定義は `scripts/nfr_schema.sql`**。`init` 実行時にこのSQLファイルが読み込まれてDBが構築される。スキーマ変更はSQLファイルに対して行うこと（Pythonコード内にDDLを重複定義しない）。
+- **永続化される正データは人間可読なYAMLファイル（`nfr.yaml`）ただ1つ**。Git diffで変更をレビューできる
+- **SQLiteはディスクに保存されない**。全サブコマンドが起動時に「YAMLロード → `:memory:` SQLiteを制約スキーマから再構築 → 全行INSERT」を行い、この時点でCHECK/FK/PK/NOT NULLの全制約が検証される。YAMLの変更（手編集含む）は次のコマンド実行時に必ず最新内容で検証される
+- **保存はラウンドトリップ検証つき**: 「検証済みインメモリDBの直列化 → 再ロードによる再検証 → 内容一致確認 → 原子的rename」の順で行われ、制約違反の内容や壊れたファイルがYAMLに残ることはない
+- 手編集後の明示的な確認には `validate` サブコマンドを使う
+
+## 保存形式（nfr.yaml）
+
+```yaml
+format_version: 1
+project:
+  system_name: B2B受発注管理SaaS
+  model_system: 2          # 1〜3のみ許容
+  master_file: null        # カスタム項目マスタ使用時のみパス
+  created_at: '2026-07-24 11:41:00'
+  updated_at: '2026-07-24 11:41:00'
+selections:                # 項目IDをキーとするマッピング（重複キーはロード時にエラー）
+  A.2.1.1:
+    item_name: 稼働率       # 参考表示（保存のたびにマスタから自動付記。編集しても無視される）
+    priority: 高            # 同上
+    level: L3
+    value: 99.9%
+    note: 推奨値で合意
+    customer_judgement: 未確認   # 未確認/承認/要修正/要協議のみ許容
+    updated_at: '2026-07-24 11:41:00'
+feedback:                  # 指摘のリスト
+- id: 1
+  kind: item               # item / out_of_grade のみ許容
+  item_id: A.2.1.1         # マスタに存在するIDのみ許容（FK相当）
+  item_name: 稼働率         # 参考表示
+  classification: null
+  feedback: 稼働率は99.95%にしてほしい
+  background: null
+  requested_priority: null
+  judgement: 要修正
+  response: null
+  status: open             # open/accepted/rejected/reflected のみ許容
+  imported_at: '2026-07-24 11:45:00'
+```
+
+## 制約スキーマ定義（SQL）
+
+**制約の正定義は `scripts/nfr_schema.sql`**。全コマンドがインメモリSQLite構築時にこのSQLファイルを読み込み、YAMLの全行が以下の制約検証を受ける。スキーマ変更はSQLファイルに対して行うこと（Pythonコード内にDDLを重複定義しない）。
 
 ```sql
--- プロジェクト情報（1案件=1DB のため常に1行）
+-- プロジェクト情報（1案件=1データファイル のため常に1行）
 CREATE TABLE IF NOT EXISTS project (
     id           INTEGER PRIMARY KEY CHECK (id = 1),   -- 固定値1
     system_name  TEXT    NOT NULL,                     -- 対象システム名
     model_system INTEGER NOT NULL
                  CHECK (model_system IN (1, 2, 3)),    -- IPAモデルシステム分類
+    master_file  TEXT,                                 -- カスタム項目マスタCSVのパス（既定時はNULL）
     created_at   TEXT    NOT NULL,                     -- 作成日時（JST）
     updated_at   TEXT    NOT NULL                      -- 更新日時（JST）
 );
 
--- 項目マスタ（initで assets/master/ipa_nfr_items_ja.csv からロード。実行時は読み取り専用）
+-- 項目マスタ（全コマンドが assets/master/ipa_nfr_items_ja.csv から毎回ロード。YAMLには保存されない）
 CREATE TABLE IF NOT EXISTS nfr_items (
     item_id         TEXT PRIMARY KEY,                  -- IPA 4階層ID（例: A.2.1.1）
     category        TEXT NOT NULL,                     -- カテゴリ記号（A〜F）
@@ -64,7 +106,7 @@ CREATE TABLE IF NOT EXISTS feedback (
 
 ## スキーマ設計の補足
 
-- **project**: 1案件=1DBの設計のため `CHECK (id = 1)` で1行に制限している
+- **project**: 1案件=1データファイルの設計のため `CHECK (id = 1)` で1行に制限している
 - **nfr_items.question**: ヒアリングで「何を聞くか」の正定義。`hearing-sheet` サブコマンドがこの列から質問一覧を機械生成する
 - **nfr_items.duplicate_of**: IPAの重複項目（○マーク）の代表項目ID（例: C.1.1.1 → A.1.1.1）。`check` が両者の値一致を検証する
 - **selections.note**: 推奨値の仮設定時は「推奨値（要確認）」と明記するルール
@@ -112,15 +154,20 @@ feedback.status:
     → rejected（見送り。responseに理由を記録）
 ```
 
-## よく使うクエリ（sqlite3 CLI）
+## データの確認方法
+
+正データはYAMLなのでエディタ・Git diffでそのまま確認できる。集計・横断確認にはサブコマンドを使う:
 
 ```bash
-# 優先度「高」で顧客判定が承認以外の項目（未登録の項目も含める）
-sqlite3 -header nfr.db "SELECT i.item_id, i.item_name, s.customer_judgement
-  FROM nfr_items i LEFT JOIN selections s ON s.item_id = i.item_id
-  WHERE i.priority = '高'
-    AND (s.customer_judgement IS NULL OR s.customer_judgement != '承認')"
+# 登録状況・指摘対応状況のサマリー
+python3 <スキルディレクトリ>/scripts/nfr_workflow.py status --data nfr.yaml
 
-# 未対応の指摘件数
-sqlite3 nfr.db "SELECT COUNT(*) FROM feedback WHERE status = 'open'"
+# 全項目の現在値一覧（未登録含む）
+python3 <スキルディレクトリ>/scripts/nfr_workflow.py hearing-sheet --data nfr.yaml --all
+
+# 未対応の指摘一覧（JSON）
+python3 <スキルディレクトリ>/scripts/nfr_workflow.py list-feedback --data nfr.yaml --status open
+
+# 手編集後の制約検証
+python3 <スキルディレクトリ>/scripts/nfr_workflow.py validate --data nfr.yaml
 ```

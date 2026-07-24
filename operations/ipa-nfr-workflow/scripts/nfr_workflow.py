@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """IPA非機能要求グレード ワークフロー管理CLI。
 
-ヒアリング結果のDB登録、顧客レビュー用Excelの出力、顧客指摘の取り込み、
+ヒアリング結果の登録、顧客レビュー用Excelの出力、顧客指摘の取り込み、
 運用設計書（Word）の生成を行う。
 
-依存ライブラリ: openpyxl（Excel）、python-docx（Word）
-    pip install openpyxl python-docx
+依存ライブラリ: pyyaml（データ保存）、openpyxl（Excel）、python-docx（Word）
+    pip install pyyaml openpyxl python-docx
 
 サブコマンド:
-    init             DBを初期化し、項目マスタ（優先度分類済み）をロードする
+    init             データファイル（YAML）を初期化する
+    validate         データファイルをロードして全制約を検証する（手編集後の確認用）
     hearing-sheet    ヒアリング質問一覧（未登録項目・優先度順）をMarkdownで出力する
     register         ヒアリング結果（選択レベル・値）をJSONから登録する
     status           登録状況・指摘対応状況のサマリーを表示する
@@ -16,13 +17,22 @@
     import-feedback  顧客が記入したExcelから指摘を取り込む
     list-feedback    取り込んだ指摘を一覧表示する（JSON）
     update-feedback  指摘への対応方針・状態を更新する
-    check            DB内の要件値の整合性を機械的に検証する
-    generate-design  テンプレートへDB値を機械代入して運用設計書Markdownを生成する
-    dump             DB内容をJSON/Markdownで出力する
+    check            要件値の整合性を機械的に検証する
+    generate-design  テンプレートへ登録値を機械代入して運用設計書Markdownを生成する
+    dump             データ内容をJSON/Markdownで出力する
     export-word      Markdownの運用設計書をWord（.docx）に変換し付録を追加する
 
+== データ整合性の担保機構（重要） ==
+永続化される正データは人間可読なYAMLファイル（nfr.yaml）ただ1つ。
+SQLiteはディスクに一切保存せず、全サブコマンドが起動時に必ず
+「YAMLロード → :memory: SQLiteを nfr_schema.sql から構築 → 全行INSERT」
+を行う（load_data関数が唯一の入口）。このINSERT時にCHECK/FK/PK/NOT NULL
+の全制約が検証されるため、YAMLの変更（手編集含む）は次のコマンド実行時に
+必ず最新のSQLite上で検証される。書き込みは検証済みインメモリDBの直列化
+＋ラウンドトリップ検証＋原子的renameで行う（save_dataが唯一の出口）。
+
 設計方針: ドキュメント生成と整合性チェックは本スクリプトが機械的に行い、
-DBを単一の情報源とすることでドキュメント間の矛盾・記載漏れを排除する。
+YAMLを単一の情報源とすることでドキュメント間の矛盾・記載漏れを排除する。
 AI（ヒアリング・顧客指摘への対応方針の判断）とは役割を分離している。
 """
 
@@ -30,6 +40,7 @@ import argparse
 import contextlib
 import csv
 import json
+import os
 import re
 import signal
 import sqlite3
@@ -67,57 +78,259 @@ def die(msg: str) -> None:
     sys.exit(1)
 
 
-def connect(db_path: str, must_exist: bool = True) -> sqlite3.Connection:
-    """SQLite DBへ接続する（外部キー制約有効・Row形式）。must_exist時は存在確認する。"""
-    if must_exist and not Path(db_path).exists():
-        die(f"DBファイルが見つかりません: {db_path}（先に init を実行してください）")
-    conn = sqlite3.connect(db_path)
+def _import_yaml():
+    """pyyamlを読み込む（未導入時は導入方法を案内して終了する）。"""
+    try:
+        import yaml
+    except ImportError:
+        die("pyyaml がインストールされていません: pip install pyyaml")
+    return yaml
+
+
+def _strict_yaml_load(text: str):
+    """重複キーをエラーとして検出するYAMLロード。"""
+    yaml = _import_yaml()
+
+    class _StrictLoader(yaml.SafeLoader):
+        """重複キー検出用のSafeLoader派生クラス。"""
+
+    def _construct_mapping(loader, node, deep=False):
+        """マッピング構築時に重複キー（同一項目IDの二重定義等）を検出する。"""
+        mapping = {}
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            if key in mapping:
+                raise yaml.YAMLError(f"重複キーがあります: {key}")
+            mapping[key] = loader.construct_object(value_node, deep=deep)
+        return mapping
+
+    _StrictLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_mapping
+    )
+    return yaml.load(text, Loader=_StrictLoader)
+
+
+def _build_conn(master_path=None) -> sqlite3.Connection:
+    """制約スキーマ（nfr_schema.sql）からインメモリSQLiteを構築し項目マスタをロードする。"""
+    if not SCHEMA_PATH.exists():
+        die(f"スキーマ定義が見つかりません: {SCHEMA_PATH}")
+    master = Path(master_path) if master_path else DEFAULT_MASTER
+    if not master.exists():
+        die(f"項目マスタが見つかりません: {master}")
+    conn = sqlite3.connect(":memory:")
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+    with master.open(encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            conn.execute(
+                "INSERT INTO nfr_items (item_id, category, category_name, item_name,"
+                " question, metric_hint, priority, priority_reason, duplicate_of)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    r["item_id"], r["category"], r["category_name"], r["item_name"],
+                    r.get("question", ""), r.get("metric_hint", ""), r["priority"],
+                    r.get("priority_reason", ""), r.get("duplicate_of") or None,
+                ),
+            )
     return conn
+
+
+def load_data(data_path: str) -> sqlite3.Connection:
+    """唯一のデータ入口: YAMLをロードし、インメモリSQLiteを構築して全制約を検証する。
+
+    YAMLの変更（手編集を含む）は必ずここを通り、その時点の最新内容で
+    再構築されたSQLite上でCHECK/FK/PK/NOT NULL制約の検証を受ける。
+    違反があればYAMLを一切変更せずエラー終了する。
+    """
+    yaml = _import_yaml()
+    path = Path(data_path)
+    if not path.exists():
+        die(f"データファイルが見つかりません: {data_path}（先に init を実行してください）")
+    try:
+        doc = _strict_yaml_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as e:
+        die(f"YAMLの読み込みに失敗しました（{data_path}）: {e}")
+    if not isinstance(doc, dict) or "project" not in doc:
+        die(f"データ形式が不正です（projectセクションがありません）: {data_path}")
+
+    project = doc.get("project") or {}
+    conn = _build_conn(project.get("master_file"))
+    try:
+        conn.execute(
+            "INSERT INTO project (id, system_name, model_system, master_file,"
+            " created_at, updated_at) VALUES (1, ?, ?, ?, ?, ?)",
+            (
+                project.get("system_name"), project.get("model_system"),
+                project.get("master_file"),
+                project.get("created_at") or now(), project.get("updated_at") or now(),
+            ),
+        )
+    except sqlite3.IntegrityError as e:
+        die(f"データ制約違反（project）: {e}")
+
+    selections = doc.get("selections") or {}
+    if not isinstance(selections, dict):
+        die("データ形式が不正です（selectionsはマッピングで記述してください）")
+    for item_id, s in selections.items():
+        s = s or {}
+        try:
+            conn.execute(
+                "INSERT INTO selections (item_id, level, value, note,"
+                " customer_judgement, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    item_id, s.get("level"), s.get("value"), s.get("note"),
+                    s.get("customer_judgement") or "未確認",
+                    s.get("updated_at") or now(),
+                ),
+            )
+        except sqlite3.IntegrityError as e:
+            die(f"データ制約違反（selections {item_id}）: {e}")
+
+    feedback = doc.get("feedback") or []
+    if not isinstance(feedback, list):
+        die("データ形式が不正です（feedbackはリストで記述してください）")
+    for f in feedback:
+        f = f or {}
+        try:
+            conn.execute(
+                "INSERT INTO feedback (id, kind, item_id, classification, feedback,"
+                " background, requested_priority, judgement, response, status,"
+                " imported_at)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    f.get("id"), f.get("kind"), f.get("item_id"),
+                    f.get("classification"), f.get("feedback"), f.get("background"),
+                    f.get("requested_priority"), f.get("judgement"),
+                    f.get("response"), f.get("status") or "open",
+                    f.get("imported_at") or now(),
+                ),
+            )
+        except sqlite3.IntegrityError as e:
+            die(f"データ制約違反（feedback #{f.get('id')}）: {e}")
+    conn.commit()
+    return conn
+
+
+def _serialize(conn) -> dict:
+    """インメモリDBの内容を保存用のYAML構造（辞書）へ直列化する。
+
+    item_name / priority は人間の可読性のための参考表示で、保存のたびに
+    項目マスタから自動付記される（ロード時は無視される）。
+    """
+    p = conn.execute("SELECT * FROM project").fetchone()
+    items = {
+        r["item_id"]: r
+        for r in conn.execute("SELECT item_id, item_name, priority FROM nfr_items")
+    }
+    doc = {
+        "format_version": 1,
+        "project": {
+            "system_name": p["system_name"],
+            "model_system": p["model_system"],
+            "master_file": p["master_file"],
+            "created_at": p["created_at"],
+            "updated_at": p["updated_at"],
+        },
+        "selections": {},
+        "feedback": [],
+    }
+    for r in conn.execute("SELECT * FROM selections ORDER BY item_id"):
+        info = items.get(r["item_id"])
+        doc["selections"][r["item_id"]] = {
+            "item_name": info["item_name"] if info else None,
+            "priority": info["priority"] if info else None,
+            "level": r["level"],
+            "value": r["value"],
+            "note": r["note"],
+            "customer_judgement": r["customer_judgement"],
+            "updated_at": r["updated_at"],
+        }
+    for r in conn.execute("SELECT * FROM feedback ORDER BY id"):
+        info = items.get(r["item_id"]) if r["item_id"] else None
+        doc["feedback"].append({
+            "id": r["id"],
+            "kind": r["kind"],
+            "item_id": r["item_id"],
+            "item_name": info["item_name"] if info else None,
+            "classification": r["classification"],
+            "feedback": r["feedback"],
+            "background": r["background"],
+            "requested_priority": r["requested_priority"],
+            "judgement": r["judgement"],
+            "response": r["response"],
+            "status": r["status"],
+            "imported_at": r["imported_at"],
+        })
+    return doc
+
+
+def _core_state(conn) -> tuple:
+    """ラウンドトリップ検証用にDBの中核データを正規化して返す。"""
+    p = tuple(conn.execute(
+        "SELECT system_name, model_system, master_file FROM project"
+    ).fetchone())
+    sel = [tuple(r) for r in conn.execute(
+        "SELECT item_id, level, value, note, customer_judgement, updated_at"
+        " FROM selections ORDER BY item_id"
+    )]
+    fb = [tuple(r) for r in conn.execute(
+        "SELECT id, kind, item_id, classification, feedback, background,"
+        " requested_priority, judgement, response, status, imported_at"
+        " FROM feedback ORDER BY id"
+    )]
+    return (p, sel, fb)
+
+
+def save_data(conn, data_path: str) -> None:
+    """唯一のデータ出口: 検証済みインメモリDBをYAMLへ直列化して原子的に保存する。
+
+    書き込み前に「直列化 → 再ロード（＝全制約の再検証） → 内容一致」の
+    ラウンドトリップ検証を行い、一致しない場合は元ファイルを変更せず終了する。
+    """
+    yaml = _import_yaml()
+    conn.execute("UPDATE project SET updated_at = ?", (now(),))
+    conn.commit()
+    doc = _serialize(conn)
+    text = yaml.safe_dump(
+        doc, allow_unicode=True, sort_keys=False, width=10**6,
+        default_flow_style=False,
+    )
+    path = Path(data_path)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    try:
+        conn2 = load_data(str(tmp))
+        if _core_state(conn) != _core_state(conn2):
+            die(
+                "ラウンドトリップ検証に失敗しました（直列化前後で内容が一致しません）。"
+                "元のデータファイルは変更していません"
+            )
+        conn2.close()
+    except SystemExit:
+        tmp.unlink(missing_ok=True)
+        raise
+    os.replace(tmp, path)
 
 
 # ---------------------------------------------------------------- init
 def cmd_init(args) -> None:
-    """DBを初期化し、プロジェクト情報と項目マスタCSVをロードする。"""
-    master = Path(args.master) if args.master else DEFAULT_MASTER
-    if not master.exists():
-        die(f"項目マスタが見つかりません: {master}")
-    if Path(args.db).exists() and not args.force:
-        die(f"DBが既に存在します: {args.db}（上書きする場合は --force を指定）")
-
-    if not SCHEMA_PATH.exists():
-        die(f"スキーマ定義が見つかりません: {SCHEMA_PATH}")
-    conn = connect(args.db, must_exist=False)
-    # --force での再初期化時は、スキーマ定義の変更を確実に反映するため
-    # 既存テーブルをDROPして作り直す（外部キー参照元から先に削除する順序）
-    for table in ("feedback", "selections", "nfr_items", "project"):
-        conn.execute(f"DROP TABLE IF EXISTS {table}")
-    conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+    """データファイル（YAML）を初期化し、プロジェクト情報を登録する。"""
+    if Path(args.data).exists() and not args.force:
+        die(f"データファイルが既に存在します: {args.data}（上書きする場合は --force を指定）")
+    conn = _build_conn(args.master)
     conn.execute(
-        "INSERT INTO project (id, system_name, model_system, created_at, updated_at)"
-        " VALUES (1, ?, ?, ?, ?)",
-        (args.project, args.model_system, now(), now()),
+        "INSERT INTO project (id, system_name, model_system, master_file,"
+        " created_at, updated_at) VALUES (1, ?, ?, ?, ?, ?)",
+        (args.project, args.model_system, args.master or None, now(), now()),
     )
-    with master.open(encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-    for r in rows:
-        conn.execute(
-            "INSERT INTO nfr_items (item_id, category, category_name, item_name,"
-            " question, metric_hint, priority, priority_reason, duplicate_of)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (
-                r["item_id"], r["category"], r["category_name"], r["item_name"],
-                r.get("question", ""), r.get("metric_hint", ""), r["priority"],
-                r.get("priority_reason", ""), r.get("duplicate_of") or None,
-            ),
-        )
     conn.commit()
     counts = conn.execute(
         "SELECT priority, COUNT(*) AS n FROM nfr_items GROUP BY priority"
     ).fetchall()
     summary = {r["priority"]: r["n"] for r in counts}
-    print(f"DB初期化完了: {args.db}")
+    save_data(conn, args.data)
+    print(f"データファイルを初期化しました: {args.data}")
     print(f"  システム名: {args.project} / モデルシステム{args.model_system}")
     total = sum(summary.values())
     print(
@@ -127,11 +340,22 @@ def cmd_init(args) -> None:
     conn.close()
 
 
+# ---------------------------------------------------------------- validate
+def cmd_validate(args) -> None:
+    """データファイルをロードして全制約を検証する（手編集後の確認用）。"""
+    conn = load_data(args.data)
+    n_sel = conn.execute("SELECT COUNT(*) AS n FROM selections").fetchone()["n"]
+    n_fb = conn.execute("SELECT COUNT(*) AS n FROM feedback").fetchone()["n"]
+    p = conn.execute("SELECT * FROM project").fetchone()
+    print(f"検証OK: {args.data}（全制約を通過）")
+    print(f"  システム名: {p['system_name']} / 選択結果: {n_sel}項目 / 顧客指摘: {n_fb}件")
+    conn.close()
+
 
 # ---------------------------------------------------------------- hearing-sheet
 def cmd_hearing_sheet(args) -> None:
     """ヒアリング質問一覧（デフォルトは未登録項目のみ・優先度順）をMarkdownで出力する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     p = conn.execute("SELECT * FROM project").fetchone()
     sql = (
         "SELECT i.item_id, i.item_name, i.question, i.metric_hint, i.priority,"
@@ -195,7 +419,7 @@ def cmd_hearing_sheet(args) -> None:
 # ---------------------------------------------------------------- register
 def cmd_register(args) -> None:
     """ヒアリング結果JSONを selections へ登録（UPSERT）する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     if args.input == "-":
         data = json.load(sys.stdin)
     else:
@@ -219,8 +443,8 @@ def cmd_register(args) -> None:
             (item_id, s.get("level"), s.get("value"), s.get("note"), now()),
         )
         registered += 1
-    conn.execute("UPDATE project SET updated_at = ?", (now(),))
     conn.commit()
+    save_data(conn, args.data)
     print(f"登録完了: {registered}項目")
     if skipped:
         print(f"  マスタに存在しないためスキップ: {', '.join(map(str, skipped))}")
@@ -264,7 +488,7 @@ def _print_missing_high(conn) -> None:
 # ---------------------------------------------------------------- status
 def cmd_status(args) -> None:
     """優先度別の登録状況と顧客指摘の対応状況サマリーを表示する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     p = conn.execute("SELECT * FROM project").fetchone()
     if not p:
         die("プロジェクト情報がありません")
@@ -314,7 +538,7 @@ def cmd_export_excel(args) -> None:
     except ImportError:
         die("openpyxl がインストールされていません: pip install openpyxl")
 
-    conn = connect(args.db)
+    conn = load_data(args.data)
     p = conn.execute("SELECT * FROM project").fetchone()
     rows = _select_rows(conn)
 
@@ -522,7 +746,7 @@ def cmd_import_feedback(args) -> None:
     if not Path(args.input).exists():
         die(f"Excelファイルが見つかりません: {args.input}")
 
-    conn = connect(args.db)
+    conn = load_data(args.data)
     wb = load_workbook(args.input, data_only=True)
     imported, updated_judgements, skipped_dup = [], 0, 0
 
@@ -619,6 +843,7 @@ def cmd_import_feedback(args) -> None:
                 imported.append((cur.lastrowid, "out_of_grade", classification, content))
 
     conn.commit()
+    save_data(conn, args.data)
     print(f"取り込み完了: {args.input}")
     print(f"  顧客判定の更新: {updated_judgements}項目")
     print(f"  新規指摘: {len(imported)}件（重複スキップ: {skipped_dup}件）")
@@ -631,7 +856,7 @@ def cmd_import_feedback(args) -> None:
 # ---------------------------------------------------------------- list/update feedback
 def cmd_list_feedback(args) -> None:
     """取り込んだ顧客指摘の一覧をJSONで出力する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     sql = (
         "SELECT f.*, i.item_name, i.priority FROM feedback f"
         " LEFT JOIN nfr_items i ON i.item_id = f.item_id"
@@ -648,7 +873,7 @@ def cmd_list_feedback(args) -> None:
 
 def cmd_update_feedback(args) -> None:
     """顧客指摘の対応方針・状態・項目紐付けを更新する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     row = conn.execute("SELECT * FROM feedback WHERE id = ?", (args.id,)).fetchone()
     if not row:
         die(f"指摘 #{args.id} が見つかりません")
@@ -672,6 +897,7 @@ def cmd_update_feedback(args) -> None:
     params.append(args.id)
     conn.execute(f"UPDATE feedback SET {', '.join(sets)} WHERE id = ?", params)
     conn.commit()
+    save_data(conn, args.data)
     print(f"指摘 #{args.id} を更新しました")
     conn.close()
 
@@ -679,7 +905,7 @@ def cmd_update_feedback(args) -> None:
 # ---------------------------------------------------------------- dump
 def cmd_dump(args) -> None:
     """DB内容（プロジェクト・選択結果・指摘）をJSONまたはMarkdownで出力する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     p = dict(conn.execute("SELECT * FROM project").fetchone())
     items = [dict(r) for r in _select_rows(conn)]
     feedback = [
@@ -757,7 +983,7 @@ def _get_selection(conn, item_id: str):
 
 def cmd_check(args) -> None:
     """DB内の要件値の整合性を機械的に検証し、ERROR/WARN/UNVERIFIEDを報告する。"""
-    conn = connect(args.db)
+    conn = load_data(args.data)
     errors, warns, infos = [], [], []
 
     # 1. 重複項目（○マーク）の値一致
@@ -872,7 +1098,7 @@ def cmd_generate_design(args) -> None:
     template_path = Path(args.template) if args.template else DEFAULT_TEMPLATE
     if not template_path.exists():
         die(f"テンプレートが見つかりません: {template_path}")
-    conn = connect(args.db)
+    conn = load_data(args.data)
     p = conn.execute("SELECT * FROM project").fetchone()
     items = {
         r["item_id"]: r
@@ -1091,7 +1317,7 @@ def cmd_export_word(args) -> None:
     if not Path(args.design).exists():
         die(f"運用設計書（Markdown）が見つかりません: {args.design}")
 
-    conn = connect(args.db)
+    conn = load_data(args.data)
     p = conn.execute("SELECT * FROM project").fetchone()
     items = _select_rows(conn)
     feedback = conn.execute(
@@ -1189,47 +1415,51 @@ def main() -> None:
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("init", help="DB初期化＋項目マスタロード")
-    p.add_argument("--db", required=True)
+    p = sub.add_parser("init", help="データファイル（YAML）の初期化")
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--project", required=True, help="対象システム名")
     p.add_argument("--model-system", type=int, required=True, choices=[1, 2, 3])
-    p.add_argument("--master", help="項目マスタCSV（省略時は同梱マスタ）")
-    p.add_argument("--force", action="store_true", help="既存DBを上書き")
+    p.add_argument("--master", help="項目マスタCSV（省略時は同梱マスタ。指定時はデータファイルに記録される）")
+    p.add_argument("--force", action="store_true", help="既存データファイルを上書き")
     p.set_defaults(func=cmd_init)
 
+    p = sub.add_parser("validate", help="データファイルの全制約検証（手編集後の確認用）")
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
+    p.set_defaults(func=cmd_validate)
+
     p = sub.add_parser("hearing-sheet", help="ヒアリング質問一覧のMarkdown出力")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--priority", choices=["高", "中", "低"], help="優先度で絞り込み")
     p.add_argument("--all", action="store_true", help="登録済み項目も含める（現在値つき）")
     p.add_argument("--output", help="出力先ファイル（省略時は標準出力）")
     p.set_defaults(func=cmd_hearing_sheet)
 
     p = sub.add_parser("register", help="ヒアリング結果のJSON登録")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--input", required=True, help="JSONファイルパス（- で標準入力）")
     p.set_defaults(func=cmd_register)
 
     p = sub.add_parser("status", help="登録・指摘対応状況サマリー")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.set_defaults(func=cmd_status)
 
     p = sub.add_parser("export-excel", help="顧客レビュー用Excel出力")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--output", required=True, help="出力先 .xlsx パス")
     p.set_defaults(func=cmd_export_excel)
 
     p = sub.add_parser("import-feedback", help="顧客記入済みExcelの取り込み")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--input", required=True, help="顧客記入済み .xlsx パス")
     p.set_defaults(func=cmd_import_feedback)
 
     p = sub.add_parser("list-feedback", help="指摘一覧（JSON）")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--status", choices=["open", "accepted", "rejected", "reflected"])
     p.set_defaults(func=cmd_list_feedback)
 
     p = sub.add_parser("update-feedback", help="指摘の対応方針・状態更新")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--id", type=int, required=True)
     p.add_argument("--response", help="対応方針")
     p.add_argument("--status", choices=["open", "accepted", "rejected", "reflected"])
@@ -1237,22 +1467,22 @@ def main() -> None:
     p.set_defaults(func=cmd_update_feedback)
 
     p = sub.add_parser("check", help="要件値の整合性を機械検証（ERRORで終了コード1）")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.set_defaults(func=cmd_check)
 
     p = sub.add_parser("generate-design", help="運用設計書Markdownの機械生成")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--output", required=True, help="出力先 .md パス")
     p.add_argument("--template", help="テンプレート（省略時は同梱テンプレート）")
     p.set_defaults(func=cmd_generate_design)
 
     p = sub.add_parser("dump", help="DB内容の出力（設計書生成の入力）")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--format", choices=["json", "markdown"], default="markdown")
     p.set_defaults(func=cmd_dump)
 
     p = sub.add_parser("export-word", help="Markdown運用設計書のWord変換＋付録追加")
-    p.add_argument("--db", required=True)
+    p.add_argument("--data", required=True, help="データファイル（nfr.yaml）のパス")
     p.add_argument("--design", required=True, help="運用設計書Markdownファイル")
     p.add_argument("--output", required=True, help="出力先 .docx パス")
     p.set_defaults(func=cmd_export_word)
