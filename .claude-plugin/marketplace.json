@@ -65,12 +65,12 @@
       ]
     },
     {
-      "name": "operations-design",
-      "description": "運用設計コンサルタントとして、対象業界の最新トレンドを調査し、サービス仕様をヒアリングした上で、ITIL 4・SRE・DevOpsのベストプラクティスに基づいた運用設計書を作成します。推論を避け、不明点は必ず質問し、一貫性を保つよう客観的にレビューします。",
+      "name": "ipa-nfr-workflow",
+      "description": "ヒアリングからIPA非機能要求グレード2018へのマッピング、SQLite DBでの管理、顧客レビュー用Excel（優先度3段階提示）の出力、顧客指摘の取り込み、運用設計書（Word）の生成までを一貫して行います。AIはヒアリングと対応方針の判断を担い、ドキュメント生成・整合性チェックはスクリプトが機械的に実行します（旧operations-design・ipa-nfr-operations-designの後継）。",
       "source": "./",
       "strict": false,
       "skills": [
-        "./operations/operations-design"
+        "./operations/ipa-nfr-workflow"
       ]
     },
     {
