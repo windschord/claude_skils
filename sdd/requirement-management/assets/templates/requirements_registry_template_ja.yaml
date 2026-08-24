@@ -1,7 +1,13 @@
 # 要求レジストリ
 # 配置: docs/requirements/<ドメイン名>.yaml
-# 検査: python3 scripts/reqctl.py validate --strict
+# 検査: プロジェクトルートで python3 scripts/reqctl.py validate --strict
+#       （reqctl.py を scripts/ にコピーしていない場合は、スキル内の実体パスを指定する）
 # 仕様: sdd/requirement-management/references/data_model_ja.md
+#
+# 確認ゲート:
+#   <...> は「不明な情報」を表す。1つでも残っている間は validate を通さず、
+#   実装にも進まない。ユーザーに確認して実際の値へ置き換えてから検査すること。
+#   推測で埋めない（埋めた場合、その要求は理由のない要求になる）。
 
 stories:
   - id: US-001

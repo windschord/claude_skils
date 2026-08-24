@@ -63,14 +63,16 @@ python3 scripts/reqctl.py stats                        # 件数サマリ
 
 ## ワークフロー
 
+> **読み込みの原則**: テンプレートとリファレンスは、使用する直前に必要なものを1つだけ読み込む。手順の冒頭で一括して読み込まない。
+
 ### 0. 初期化（レジストリが存在しない場合）
 
 1. `docs/requirements/` を作成する。
-2. `assets/templates/glossary_template_ja.yaml` を `glossary.yaml` としてコピーし、用語を埋める。
-3. `assets/templates/requirements_registry_template_ja.yaml` を `<ドメイン>.yaml` としてコピーする。
+2. `assets/templates/glossary_template_ja.yaml` を読み込み、`glossary.yaml` としてコピーして用語を埋める。
+3. `assets/templates/requirements_registry_template_ja.yaml` を読み込み、`<ドメイン>.yaml` としてコピーする。
 4. `scripts/reqctl.py` をプロジェクトの `scripts/` にコピーするか、スキルのパスを直接実行する。
 5. `validate` → `generate` を実行して初期状態を確定する。
-6. CI設定を導入する（`assets/templates/ci_req_lint_template.yml` を参照）。
+6. `assets/templates/ci_req_lint_template.yml` を読み込み、CI設定を導入する。
 
 ### 1. 要求の追加
 
@@ -89,7 +91,7 @@ python3 scripts/reqctl.py stats                        # 件数サマリ
 
 ```text
 ステップ 1/6: impact <ID> で影響範囲（被依存要求・ストーリー・テスト・同一subject）を取得
-ステップ 2/6: 変更提案レポートを作成（assets/templates/change_proposal_template_ja.md）
+ステップ 2/6: change_proposal_template_ja.md を読み込み、変更提案レポートを作成
 ステップ 3/6: ★ ユーザー承認 ★（必須ゲート）
 ステップ 4/6: YAMLを変更し、rationale.why を更新（理由が変わったなら理由も書き換える）
 ステップ 5/6: validate --strict を実行し、波及した矛盾をすべて解消
@@ -115,7 +117,7 @@ python3 scripts/reqctl.py stats                        # 件数サマリ
 
 1. 実装対象の要求IDを確定する（`generated/traceability.md` から選ぶ）。
 2. 設計を検討する。**設計内容はレジストリに書かない。**
-3. PR本文に設計ノートを書く（`assets/templates/pr_design_note_template_ja.md`）。
+3. `assets/templates/pr_design_note_template_ja.md` を読み込み、PR本文に設計ノートを書く。
 4. 実装とテストを書き、テスト名を要求の `verification` に登録する。
 5. `validate --check-tests` でテストの存在を確認する。
 6. PRのURLを `design_refs` に追加する（URLのみ。設計内容は書かない）。設計判断が要求の理由そのものを変えた場合は、あわせて `rationale` を更新する。

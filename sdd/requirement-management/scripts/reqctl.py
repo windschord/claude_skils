@@ -67,6 +67,11 @@ REQ_LIST_FIELDS = (
     "stories", "depends_on", "refines", "supersedes", "conflicts_with",
     "verification", "measures", "asserts", "forbids", "terms", "tags", "design_refs",
 )
+# 要素が文字列でなければならないフィールド（辞書・集合の検索キーに使うため）
+STR_ELEMENT_FIELDS = (
+    "stories", "depends_on", "refines", "supersedes", "conflicts_with",
+    "terms", "tags", "design_refs",
+)
 REQ_MAP_FIELDS = ("rationale",)
 REQ_STR_FIELDS = ("id", "title", "statement", "type", "status", "priority")
 STORY_LIST_FIELDS = ("acceptance",)
@@ -208,6 +213,16 @@ def _normalize(item: dict, target: str, list_fields, map_fields, str_fields) -> 
             out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
                                f"{field} は文字列である必要があります（実際: {type(value).__name__}）"))
             item[field] = ""
+    for field in list_fields:
+        if field not in STR_ELEMENT_FIELDS:
+            continue
+        values = item.get(field) or []
+        kept = [v for v in values if isinstance(v, str)]
+        if len(kept) != len(values):
+            out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
+                               f"{field} の要素は文字列である必要があります",
+                               "ID・用語・タグ・URLはすべて文字列で記述してください"))
+            item[field] = kept
     return out
 
 
@@ -253,15 +268,20 @@ def check_schema(reg: Registry) -> list[dict]:
             if not isinstance(m, dict):
                 out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, "measures の要素はマッピングである必要があります"))
                 continue
-            if not m.get("subject") or m.get("op") not in OPS or not isinstance(m.get("value"), (int, float)):
+            if (not isinstance(m.get("subject"), str) or not m["subject"]
+                    or m.get("op") not in OPS
+                    or not isinstance(m.get("value"), (int, float))
+                    or isinstance(m.get("value"), bool)):
                 out.append(finding(
                     LEVEL_ERROR, "E-SCHEMA", rid,
-                    "measures には subject / op（比較演算子）/ value（数値）が必要です"))
+                    "measures には subject（文字列）/ op（比較演算子）/ value（数値）が必要です"))
 
         for key in ("asserts", "forbids"):
             for a in r.get(key) or []:
-                if not isinstance(a, dict) or not a.get("key") or "value" not in a:
-                    out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, f"{key} の要素には key と value が必要です"))
+                if (not isinstance(a, dict) or not isinstance(a.get("key"), str)
+                        or not a["key"] or "value" not in a):
+                    out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid,
+                                       f"{key} の要素には key（文字列）と value が必要です"))
 
     for sid, s in reg.stories.items():
         if not US_ID_RE.match(sid):
@@ -330,7 +350,7 @@ def check_references(reg: Registry) -> list[dict]:
             if ref not in reg.stories:
                 out.append(finding(LEVEL_ERROR, "E-REF", rid, f"stories の参照先が存在しません: {ref}"))
         for term in r.get("terms") or []:
-            if reg.terms and term not in reg.terms:
+            if reg.terms and isinstance(term, str) and term not in reg.terms:
                 out.append(finding(LEVEL_WARN, "W-TERM-UNDEF", rid, f"用語集に未定義の用語です: {term}"))
 
     return out
@@ -487,7 +507,11 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
         for m in r.get("measures") or []:
             if not isinstance(m, dict) or m.get("op") not in OPS:
                 continue
-            if not isinstance(m.get("value"), (int, float)):
+            if not isinstance(m.get("value"), (int, float)) or isinstance(m.get("value"), bool):
+                continue
+            # subject が欠落・非文字列の場合は check_schema が E-SCHEMA を出すため、
+            # ここでは意味検査の対象から外す（辞書キーにできない値で落とさない）。
+            if not isinstance(m.get("subject"), str) or not m["subject"]:
                 continue
             by_subject.setdefault(m["subject"], []).append((rid, m))
 
@@ -546,6 +570,13 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
     return out
 
 
+def _hashable(value):
+    """比較・表示に使える値へ落とす（リスト等はそのまま比較できるよう文字列化する）."""
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return repr(value)
+
+
 def check_fact_conflicts(reg: Registry) -> list[dict]:
     """asserts（こうであること）/ forbids（こうでないこと）の衝突を検出する."""
     out = []
@@ -558,11 +589,11 @@ def check_fact_conflicts(reg: Registry) -> list[dict]:
         if r.get("status") not in LIVE_STATUS:
             continue
         for a in r.get("asserts") or []:
-            if isinstance(a, dict) and a.get("key"):
-                asserts.setdefault(a["key"], []).append((rid, a.get("value")))
+            if isinstance(a, dict) and isinstance(a.get("key"), str) and a["key"]:
+                asserts.setdefault(a["key"], []).append((rid, _hashable(a.get("value"))))
         for a in r.get("forbids") or []:
-            if isinstance(a, dict) and a.get("key"):
-                forbids.setdefault(a["key"], []).append((rid, a.get("value")))
+            if isinstance(a, dict) and isinstance(a.get("key"), str) and a["key"]:
+                forbids.setdefault(a["key"], []).append((rid, _hashable(a.get("value"))))
 
     for key, entries in sorted(asserts.items()):
         if key in multi:
@@ -613,7 +644,7 @@ def check_quality(reg: Registry) -> list[dict]:
                                "EARS記法に沿っていない可能性があります（「システムは〜しなければならない」を含む形へ）"))
         for name, term in reg.terms.items():
             for alias in term.get("aliases") or []:
-                if alias and alias in stmt and name not in stmt:
+                if alias and alias in stmt:
                     out.append(finding(LEVEL_WARN, "W-TERM-ALIAS", rid,
                                        f"用語ゆれです: 「{alias}」ではなく正規語「{name}」を使用してください"))
     return out

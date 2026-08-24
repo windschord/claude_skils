@@ -27,7 +27,7 @@ docsディレクトリを初期化してください
 | sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, **GitHub Issue（修正タスク）** |
 | sdd-document-management | ドキュメント管理・メンテナンス | `docs/sdd/archive/`, `docs/sdd/reports/` |
 
-> **代替系**: `requirement-management` は上記サブスキル群とは独立したスキルです。要求と理由だけを管理し設計書を持たない運用を選ぶ場合に、`requirements-defining` の代わりに使用します。
+> **代替系**: `requirement-management` は上記サブスキル群とは独立したスキルです。要求とその理由を軸に管理し設計書を持たない運用を選ぶ場合に、`requirements-defining` の代わりに使用します。
 
 **主な機能:**
 
@@ -171,7 +171,7 @@ SDDタスク（GitHub Issue）を進めてください
 
 ### requirement-management
 
-要求とその理由だけをYAMLレジストリで管理し、要求どうしの矛盾を機械的に検証するスキルです。`requirements-defining` の代替として使い、併用はしません。
+要求とその理由を軸に、ユーザーストーリー・用語・要求間の関係までをYAMLレジストリで管理し、要求どうしの矛盾を機械的に検証するスキルです。設計書は作りません。`requirements-defining` の代替として使い、併用はしません。
 
 **使用開始:**
 

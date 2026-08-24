@@ -29,7 +29,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | task-executing | タスク実行・逆順レビュー |
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
 | | sdd-document-management | ドキュメント管理・メンテナンス |
-| | requirement-management | 要求と理由のみをYAMLレジストリで管理し、矛盾を機械検証（設計は永続化しない） |
+| | requirement-management | 要求・ストーリー・理由をYAMLレジストリで管理し、矛盾を機械検証（設計は永続化しない） |
 | **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
 | | self-review | サブエージェント並列によるローカル変更の6観点セルフレビュー |
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |

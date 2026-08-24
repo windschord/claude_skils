@@ -40,7 +40,8 @@ sdd-documentation（オーケストレーター）
     └── sdd-document-management  → ドキュメント管理・メンテナンス（承認フロー付き）
 
 requirement-management（独立・requirements-definingの代替）
-    → docs/requirements/*.yaml（要求＋理由のみ）＋ generated/（自動生成の一覧・追跡表・関係グラフ）
+    → docs/requirements/*.yaml（要求・ユーザーストーリー・理由・用語・要求間の関係）
+      ＋ generated/（自動生成の一覧・追跡表・関係グラフ）
 ```
 
 > **タスクの出力先**: SDDスキルはタスクを**デフォルトでGitHub Issueとして起票**する（1タスク＝1 Issue、詳細はIssue本文に集約、ラベル `sdd:task` で一覧＝目次）。ステータスはラベル `sdd:status/*`、DONEはIssueのcloseで表現。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成する。
@@ -107,8 +108,8 @@ requirement-management（独立・requirements-definingの代替）
 - **references/claude_md_sync_ja.md** - CLAUDE.md同期ガイド
 
 ### sdd/requirement-management/
-- **SKILL.md** - スキル定義ファイル（要求と理由のみを管理・矛盾の機械検証・承認フロー）
-- **scripts/reqctl.py** - 要求レジストリの検証・生成・影響分析ツール。サブコマンド: `validate`（構造/参照/矛盾/カバレッジ検査、`--strict`で警告もエラー扱い、`--check-tests`でテスト実在確認、`--json`で機械可読出力）/ `generate`（index.md・traceability.md・graph.mdを生成）/ `impact`（変更前の影響範囲）/ `next-id` / `stats`。依存はPyYAMLのみ
+- **SKILL.md** - スキル定義ファイル（要求・ストーリー・理由・用語・関係の管理／矛盾の機械検証／承認フロー）
+- **scripts/reqctl.py** - 要求レジストリの検証・生成・影響分析ツール（利用側リポジトリの `scripts/` にコピーし、プロジェクトルートから `python3 scripts/reqctl.py` で実行する。コピーしない場合はスキル内の実体パスを指定する）。サブコマンド: `validate`（構造/参照/矛盾/カバレッジ検査、`--strict`で警告もエラー扱い、`--check-tests`でテスト実在確認、`--json`で機械可読出力）/ `generate`（index.md・traceability.md・graph.mdを生成）/ `impact`（変更前の影響範囲）/ `next-id` / `stats`。依存はPyYAMLのみ
 - **assets/templates/requirements_registry_template_ja.yaml** - 要求レジストリ雛形
 - **assets/templates/glossary_template_ja.yaml** - 用語集・検査ポリシー雛形
 - **assets/templates/change_proposal_template_ja.md** - 変更提案レポート（承認ゲート用）
@@ -120,7 +121,7 @@ requirement-management（独立・requirements-definingの代替）
 - **references/design_in_pr_ja.md** - 設計をPRに閉じる運用
 - **references/management_options_ja.md** - 管理方式の比較検討と採用理由
 
-> **注**: このスキルは `requirements-defining`（Markdownによる要件定義）の代替であり、併用しない。要求と理由のみを永続化し、設計書は作らない（設計はPR本文・GitHubコメントに記載）。要求の追加・変更・廃止のたびに `reqctl.py validate` で矛盾・欠落を機械検出する。
+> **注**: このスキルは `requirements-defining`（Markdownによる要件定義）の代替であり、併用しない。永続化するのは要求・ユーザーストーリー・理由・用語・要求間の関係で、設計書は作らない（設計はPR本文・GitHubコメントに記載）。要求の追加・変更・廃止のたびに `reqctl.py validate` で矛盾・欠落を機械検出する。
 
 ### code-quality/pr-comment-fixer/
 - **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）

@@ -12,7 +12,7 @@
 
 ## 基本原則
 
-要求は**単調に増えるログではなく、常に無矛盾な現在の合意**である。したがって、
+要求は**単調に増えるログではなく、常に無矛盾な現在の合意**である。したがって、次の原則を適用する。
 
 - 変更のたびに全体を検査する（差分だけを見ない）
 - 消した要求も理由とともに残す（なぜ消えたかが後で最も効く情報になる）
@@ -28,9 +28,12 @@
 
 ### 手順
 
+コマンドはすべて**プロジェクトルート**で実行する。`docs/requirements/` と `scripts/reqctl.py` はいずれもルートからの相対パスで解決される（CI設定例も同じ前提）。スキルから直接実行する場合は `scripts/reqctl.py` を `<スキルのパス>/sdd/requirement-management/scripts/reqctl.py` に読み替える。
+
 ```bash
+cd <プロジェクトルート>
 python3 scripts/reqctl.py next-id req              # 採番
-# YAMLに追記
+# docs/requirements/<ドメイン>.yaml に追記
 python3 scripts/reqctl.py validate --strict        # 検査
 python3 scripts/reqctl.py generate                 # 生成物更新
 ```
@@ -109,7 +112,7 @@ python3 scripts/reqctl.py generate                 # 生成物更新
 | 優先度の変更 | **必須** | 変更理由 |
 | 警告の解消（表現修正のみ） | 不要 | 差分 |
 
-承認を得ずに変更してはならない。承認待ちの間に他の作業を進めてよいが、YAMLは書き換えない。
+承認が必須とされている操作を、承認なしに適用してはならない（追加と表現修正はこの限りではない）。承認待ちの間に他の作業を進めてよいが、YAMLは書き換えない。
 
 ## レジストリの分割
 
