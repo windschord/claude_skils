@@ -40,11 +40,13 @@ docs/requirements/
 3. **検証不能な要求を残さない**: `status: active` の要求には `verification` が必須。
 4. **削除せず廃止する**: 削除時は `status` を `deprecated` / `superseded` にし、`rationale.retired_why` を書く。
 5. **矛盾は宣言するか解消する**: 数値・事実の衝突は、要求を直すか、双方に `conflicts_with` と `rationale.tradeoff` を書いて許容を明示する。
-6. **生成物は手で書かない**: `generated/` は必ず `reqctl.py generate` で再生成する。
+6. **生成物は手で書かない**: `generated/` は必ず `reqctl.py generate` で再生成する。生成結果は入力が同じなら常に同一になるため、CIで再生成して差分がないことを確認できる。
 
 ## コマンド
 
-すべて `scripts/reqctl.py`（Python 3.9+ / PyYAML のみ）で実行します。
+すべて `reqctl.py`（Python 3.9+ / PyYAML のみ）で実行します。
+
+実行パスは導入方法によって変わります。初期化時にプロジェクトへコピーした場合は `scripts/reqctl.py`、スキルから直接実行する場合は `<スキルのパス>/sdd/requirement-management/scripts/reqctl.py` を指定します。以下はコピーした場合の例です（CI設定例も同じ前提）。
 
 ```bash
 python3 scripts/reqctl.py validate                     # 検査（エラーがあれば exit 1）
@@ -116,7 +118,7 @@ python3 scripts/reqctl.py stats                        # 件数サマリ
 3. PR本文に設計ノートを書く（`assets/templates/pr_design_note_template_ja.md`）。
 4. 実装とテストを書き、テスト名を要求の `verification` に登録する。
 5. `validate --check-tests` でテストの存在を確認する。
-6. 設計判断が要求の理由を変えた場合のみ、`rationale` を更新し、PRのURLを `design_refs` に追加する（URLのみ。設計内容は書かない）。
+6. PRのURLを `design_refs` に追加する（URLのみ。設計内容は書かない）。設計判断が要求の理由そのものを変えた場合は、あわせて `rationale` を更新する。
 
 詳細は `references/design_in_pr_ja.md` を参照。
 

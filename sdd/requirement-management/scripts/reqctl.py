@@ -63,16 +63,28 @@ LEVEL_INFO = "INFO"
 # 読み込み
 # --------------------------------------------------------------------------
 
+REQ_LIST_FIELDS = (
+    "stories", "depends_on", "refines", "supersedes", "conflicts_with",
+    "verification", "measures", "asserts", "forbids", "terms", "tags", "design_refs",
+)
+REQ_MAP_FIELDS = ("rationale",)
+REQ_STR_FIELDS = ("id", "title", "statement", "type", "status", "priority")
+STORY_LIST_FIELDS = ("acceptance",)
+STORY_STR_FIELDS = ("id", "as_a", "i_want", "so_that", "status")
+
+
 class Registry:
     """レジストリ全体（要求・ストーリー・用語・ポリシー）を保持する."""
 
     def __init__(self):
+        """レジストリを空の状態で初期化する."""
         self.requirements: dict[str, dict] = {}
         self.stories: dict[str, dict] = {}
         self.terms: dict[str, dict] = {}
         self.policy: dict = {}
         self.sources: dict[str, str] = {}  # ID -> 定義元ファイル
         self.load_errors: list[tuple[str, str]] = []
+        self.type_errors: list[dict] = []  # 型不正（正規化時に検出）
 
     def story_reqs(self, sid: str, live_only: bool = True) -> list[str]:
         """ストーリーに紐付く要求IDを要求側の stories から導出する（唯一の正）."""
@@ -84,14 +96,17 @@ class Registry:
 
     @property
     def ambiguous_words(self) -> list[str]:
+        """要求文に含めてはならない曖昧語のリストを返す."""
         return self.policy.get("ambiguous_words", DEFAULT_AMBIGUOUS)
 
     @property
     def multi_value_keys(self) -> set[str]:
+        """複数値を許す asserts のキー集合を返す."""
         return set(self.policy.get("multi_value_keys", []))
 
     @property
     def stale_days(self) -> int:
+        """理由の鮮度警告を出すまでの日数を返す."""
         return int(self.policy.get("stale_days", DEFAULT_STALE_DAYS))
 
 
@@ -124,24 +139,28 @@ def load_registry(root: Path) -> Registry:
                 reg.load_errors.append((rel, "requirements の要素がマッピングではありません"))
                 continue
             rid = item.get("id")
+            if not isinstance(rid, str) or not rid:
+                reg.load_errors.append((rel, f"要求の id が文字列ではありません: {rid!r}"))
+                continue
             if rid in reg.requirements:
                 reg.load_errors.append((rel, f"要求IDが重複しています: {rid} (既出: {reg.sources.get(rid)})"))
                 continue
-            if rid:
-                reg.requirements[rid] = item
-                reg.sources[rid] = rel
+            reg.requirements[rid] = item
+            reg.sources[rid] = rel
 
         for item in data.get("stories") or []:
             if not isinstance(item, dict):
                 reg.load_errors.append((rel, "stories の要素がマッピングではありません"))
                 continue
             sid = item.get("id")
+            if not isinstance(sid, str) or not sid:
+                reg.load_errors.append((rel, f"ストーリーの id が文字列ではありません: {sid!r}"))
+                continue
             if sid in reg.stories:
                 reg.load_errors.append((rel, f"ストーリーIDが重複しています: {sid} (既出: {reg.sources.get(sid)})"))
                 continue
-            if sid:
-                reg.stories[sid] = item
-                reg.sources[sid] = rel
+            reg.stories[sid] = item
+            reg.sources[sid] = rel
 
         for item in data.get("terms") or []:
             if isinstance(item, dict) and item.get("name"):
@@ -150,6 +169,7 @@ def load_registry(root: Path) -> Registry:
         if isinstance(data.get("policy"), dict):
             reg.policy.update(data["policy"])
 
+    normalize_registry(reg)
     return reg
 
 
@@ -158,7 +178,47 @@ def load_registry(root: Path) -> Registry:
 # --------------------------------------------------------------------------
 
 def finding(level: str, code: str, target: str, message: str, hint: str = "") -> dict:
+    """検査結果1件を表す辞書を組み立てる."""
     return {"level": level, "code": code, "target": target, "message": message, "hint": hint}
+
+
+def _normalize(item: dict, target: str, list_fields, map_fields, str_fields) -> list[dict]:
+    """型が不正なフィールドを安全な既定値へ落とし、エラーを返す.
+
+    以降の検査・生成処理が例外で止まらないようにするための前処理。
+    利用者の入力ミス（リストであるべき箇所に文字列を書く等）は、
+    クラッシュではなく E-SCHEMA として報告する。
+    """
+    out = []
+    for field in list_fields:
+        value = item.get(field)
+        if value is not None and not isinstance(value, list):
+            out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
+                               f"{field} はリストである必要があります（実際: {type(value).__name__}）"))
+            item[field] = []
+    for field in map_fields:
+        value = item.get(field)
+        if value is not None and not isinstance(value, dict):
+            out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
+                               f"{field} はマッピングである必要があります（実際: {type(value).__name__}）"))
+            item[field] = {}
+    for field in str_fields:
+        value = item.get(field)
+        if value is not None and not isinstance(value, str):
+            out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
+                               f"{field} は文字列である必要があります（実際: {type(value).__name__}）"))
+            item[field] = ""
+    return out
+
+
+def normalize_registry(reg: "Registry") -> None:
+    """読み込み直後に全項目の型を正規化し、`reg.type_errors` に記録する."""
+    for rid, r in reg.requirements.items():
+        reg.type_errors += _normalize(r, rid, REQ_LIST_FIELDS, REQ_MAP_FIELDS, REQ_STR_FIELDS)
+    for sid, story in reg.stories.items():
+        reg.type_errors += _normalize(story, sid, STORY_LIST_FIELDS, (), STORY_STR_FIELDS)
+    for name, term in reg.terms.items():
+        reg.type_errors += _normalize(term, name, ("aliases",), (), ("name", "definition"))
 
 
 # --------------------------------------------------------------------------
@@ -166,6 +226,7 @@ def finding(level: str, code: str, target: str, message: str, hint: str = "") ->
 # --------------------------------------------------------------------------
 
 def check_schema(reg: Registry) -> list[dict]:
+    """必須フィールド・enum値・ID書式を検査する."""
     out = []
     for rid, r in reg.requirements.items():
         if not REQ_ID_RE.match(rid):
@@ -251,12 +312,14 @@ def check_rationale(reg: Registry) -> list[dict]:
 
 
 def _parse_date(value) -> datetime.date:
+    """YAMLの日付値を date に変換する（不正なら ValueError）."""
     if isinstance(value, datetime.date):
         return value
     return datetime.datetime.strptime(str(value), "%Y-%m-%d").date()
 
 
 def check_references(reg: Registry) -> list[dict]:
+    """要求・ストーリー・用語への参照が実在するか検査する."""
     out = []
     for rid, r in reg.requirements.items():
         for field in ("depends_on", "conflicts_with", "supersedes", "refines"):
@@ -285,6 +348,7 @@ def check_cycles(reg: Registry) -> list[dict]:
     reported: set[tuple[str, ...]] = set()
 
     def dfs(node: str):
+        """深さ優先探索で後退辺（＝循環）を検出する."""
         state[node] = 1
         stack.append(node)
         for nxt in graph.get(node, []):
@@ -362,6 +426,7 @@ def _accepted_conflicts(reg: Registry) -> set[frozenset[str]]:
 
 
 def check_declared_conflicts(reg: Registry) -> list[dict]:
+    """conflicts_with の相互宣言と許容理由の有無を検査する."""
     out = []
     for rid, r in reg.requirements.items():
         for other in r.get("conflicts_with") or []:
@@ -393,6 +458,7 @@ def _interval(op: str, value: float):
 
 
 def _intersect(a, b):
+    """2つの区間の積集合を返す."""
     lo, lo_s, hi, hi_s = a
     lo2, lo_s2, hi2, hi_s2 = b
     if lo2 > lo or (lo2 == lo and lo_s2):
@@ -403,6 +469,7 @@ def _intersect(a, b):
 
 
 def _empty(iv) -> bool:
+    """区間が空（充足不能）かどうかを判定する."""
     lo, lo_s, hi, hi_s = iv
     if lo > hi:
         return True
@@ -454,25 +521,25 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
                         f"{rid_a}({ma['op']}{ma['value']}{unit}) と {rid_b}({mb['op']}{mb['value']}{unit})",
                         "いずれかを変更するか、両者に conflicts_with と rationale.tradeoff を宣言してください"))
 
-        # 全体としての充足不能（ペアでは検出できないケース）
-        if not pair_reported and len(ranged) > 2:
-            iv = (-math.inf, False, math.inf, False)
-            for _, m in ranged:
-                iv = _intersect(iv, _interval(m["op"], m["value"]))
-            if _empty(iv):
-                ids = ", ".join(sorted({rid for rid, _ in ranged}))
-                out.append(finding(LEVEL_ERROR, "E-CONFLICT-NUM", subject,
-                                   f"'{subject}' の制約群が全体として充足不能です: {ids}"))
+        # 区間制約の充足不能は必ず「下限 > 上限」を作るペアが存在するため、
+        # 上のペア判定で網羅できる。許容済みペアを二重に報告しないよう、
+        # 全体判定は行わない。
 
-        # != と 1点確定の衝突
-        point = None
+        # != と 1点確定の衝突（許容済み衝突を含む要求は判定から外す）
+        in_accepted = {
+            rid for rid, _ in entries
+            if any(frozenset((rid, other)) in accepted for other, _ in entries if other != rid)
+        }
         iv = (-math.inf, False, math.inf, False)
-        for _, m in ranged:
+        for rid, m in ranged:
+            if rid in in_accepted:
+                continue
             iv = _intersect(iv, _interval(m["op"], m["value"]))
         if not _empty(iv) and iv[0] == iv[2]:
             point = iv[0]
-        if point is not None:
             for rid, m in entries:
+                if rid in in_accepted:
+                    continue
                 if m["op"] == "!=" and m["value"] == point:
                     out.append(finding(LEVEL_ERROR, "E-CONFLICT-NUM", rid,
                                        f"'{subject}' は他の制約により {point} に確定しますが、{rid} が != {point} を要求しています"))
@@ -530,6 +597,7 @@ def check_fact_conflicts(reg: Registry) -> list[dict]:
 # --------------------------------------------------------------------------
 
 def check_quality(reg: Registry) -> list[dict]:
+    """曖昧語・EARS記法・用語ゆれを検査する."""
     out = []
     for rid, r in reg.requirements.items():
         stmt = r.get("statement") or ""
@@ -552,6 +620,7 @@ def check_quality(reg: Registry) -> list[dict]:
 
 
 def check_duplicates(reg: Registry) -> list[dict]:
+    """要求文の類似度から重複の疑いを検出する."""
     out = []
     live = [(rid, re.sub(r"[\s、。,.「」（）()]", "", r.get("statement") or ""))
             for rid, r in reg.requirements.items() if r.get("status") in LIVE_STATUS]
@@ -606,7 +675,9 @@ def check_coverage(reg: Registry, check_tests: bool, repo_root: Path) -> list[di
 # --------------------------------------------------------------------------
 
 def run_validate(reg: Registry, check_tests: bool, repo_root: Path) -> list[dict]:
+    """全検査を実行し、重大度順に並べた結果を返す."""
     findings = [finding(LEVEL_ERROR, "E-LOAD", src, msg) for src, msg in reg.load_errors]
+    findings += reg.type_errors
     findings += check_schema(reg)
     findings += check_rationale(reg)
     findings += check_references(reg)
@@ -624,6 +695,7 @@ def run_validate(reg: Registry, check_tests: bool, repo_root: Path) -> list[dict
 
 
 def print_findings(findings: list[dict], reg: Registry) -> None:
+    """検査結果を人間向けのテキストとして出力する."""
     errors = [f for f in findings if f["level"] == LEVEL_ERROR]
     warns = [f for f in findings if f["level"] == LEVEL_WARN]
     if not findings:
@@ -649,12 +721,13 @@ STATUS_LABEL = {
 
 
 def _link_list(ids) -> str:
+    """ID列をカンマ区切りにする（空なら '-'）."""
     return ", ".join(ids) if ids else "-"
 
 
 def gen_index(reg: Registry) -> str:
+    """全要求・ストーリー・墓標の一覧をMarkdownで生成する."""
     lines = ["# 要求一覧（自動生成 / 手で編集しないこと）", "",
-             f"生成日時: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}", "",
              "## ユーザーストーリー", "",
              "| ID | として | したい | なぜなら | 状態 | 受入要求 |",
              "|----|--------|--------|----------|------|----------|"]
@@ -695,6 +768,7 @@ def gen_index(reg: Registry) -> str:
 
 
 def gen_traceability(reg: Registry) -> str:
+    """ストーリー→要求→検証手段のトレーサビリティ表を生成する."""
     lines = ["# トレーサビリティマトリクス（自動生成 / 手で編集しないこと）", "",
              "ユーザーストーリー → 要求 → 検証手段。テストの合格条件はこの表がすべて埋まっていること。", "",
              "| ストーリー | 要求 | 要求文 | 検証手段 |",
@@ -725,6 +799,7 @@ def gen_traceability(reg: Registry) -> str:
 
 
 def gen_graph(reg: Registry) -> str:
+    """要求とストーリーの関係をMermaidグラフとして生成する."""
     lines = ["# 要求関係グラフ（自動生成 / 手で編集しないこと）", "", "```mermaid", "graph LR"]
     for sid in sorted(reg.stories):
         lines.append(f'  {sid.replace("-", "_")}(["{sid}"])')
@@ -752,6 +827,7 @@ def gen_graph(reg: Registry) -> str:
 
 
 def run_generate(reg: Registry, out_dir: Path) -> list[Path]:
+    """生成物3種を書き出し、書き込んだパスを返す."""
     out_dir.mkdir(parents=True, exist_ok=True)
     written = []
     for name, content in (("index.md", gen_index(reg)),
@@ -768,6 +844,7 @@ def run_generate(reg: Registry, out_dir: Path) -> list[Path]:
 # --------------------------------------------------------------------------
 
 def run_impact(reg: Registry, target: str) -> int:
+    """指定IDの影響範囲を出力する."""
     if target not in reg.requirements and target not in reg.stories:
         sys.stderr.write(f"ID が見つかりません: {target}\n")
         return 1
@@ -821,6 +898,7 @@ def run_impact(reg: Registry, target: str) -> int:
 # --------------------------------------------------------------------------
 
 def run_next_id(reg: Registry, kind: str) -> int:
+    """次に採番すべきIDを出力する."""
     if kind == "req":
         nums = [int(rid.split("-")[1]) for rid in reg.requirements if REQ_ID_RE.match(rid)]
         print(f"REQ-{max(nums, default=0) + 1:04d}")
@@ -831,6 +909,7 @@ def run_next_id(reg: Registry, kind: str) -> int:
 
 
 def run_stats(reg: Registry) -> int:
+    """要求・ストーリー・用語の件数サマリを出力する."""
     counts: dict[str, int] = {}
     for r in reg.requirements.values():
         counts[r.get("status", "?")] = counts.get(r.get("status", "?"), 0) + 1
@@ -847,6 +926,7 @@ def run_stats(reg: Registry) -> int:
 # --------------------------------------------------------------------------
 
 def main(argv=None) -> int:
+    """コマンドライン引数を解釈してサブコマンドを実行する."""
     parser = argparse.ArgumentParser(description="要求レジストリの検証・生成・影響分析")
     parser.add_argument("--dir", default="docs/requirements", help="レジストリのルート（既定: docs/requirements）")
     sub = parser.add_subparsers(dest="command", required=True)

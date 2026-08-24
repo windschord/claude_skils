@@ -21,7 +21,7 @@
 5. 実装する
 6. 要求の verification にテスト参照を登録する
 7. validate --check-tests を実行する
-8. design_refs にPRのURLを追加する（URLのみ）
+8. design_refs にPRのURLを追加する（URLのみ）。理由そのものが変わった場合は rationale も更新する
 ```
 
 ## PRに書くこと・書かないこと
