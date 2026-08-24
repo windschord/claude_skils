@@ -27,6 +27,8 @@ docsディレクトリを初期化してください
 | sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, **GitHub Issue（修正タスク）** |
 | sdd-document-management | ドキュメント管理・メンテナンス | `docs/sdd/archive/`, `docs/sdd/reports/` |
 
+> **代替系**: `requirement-management` は上記サブスキル群とは独立したスキルです。要求と理由だけを管理し設計書を持たない運用を選ぶ場合に、`requirements-defining` の代わりに使用します。
+
 **主な機能:**
 
 - EARS記法による構造化された要件定義
@@ -164,6 +166,50 @@ SDDタスク（GitHub Issue）を進めてください
 | ファイル最適化 | 肥大化ファイルの分割・重複統合 |
 
 すべての操作でユーザー承認が必須です。
+
+---
+
+### requirement-management
+
+要求とその理由だけをYAMLレジストリで管理し、要求どうしの矛盾を機械的に検証するスキルです。`requirements-defining` の代替として使い、併用はしません。
+
+**使用開始:**
+
+```text
+要求を追加したい
+要求の矛盾をチェックしたい
+```
+
+**特徴:**
+
+| 項目 | 方針 |
+|------|------|
+| 永続化するもの | 要求・ユーザーストーリー・理由・用語・要求間の関係のみ |
+| 永続化しないもの | 設計書（設計は実装時に行い、PR本文とGitHubコメントにのみ記載） |
+| テストの合格条件 | 全有効要求に検証手段があり、全ユーザーストーリーが要求で覆われていること |
+| 削除の扱い | 物理削除は禁止。理由付きの墓標（`deprecated` / `superseded`）として残す |
+
+**成果物:**
+
+```text
+docs/requirements/
+├── glossary.yaml            # 用語集＋検査ポリシー
+├── <ドメイン>.yaml           # 要求とユーザーストーリー
+└── generated/               # 自動生成（手で編集しない）
+    ├── index.md             # 全要求一覧＋墓標
+    ├── traceability.md      # ストーリー→要求→検証 マトリクス
+    └── graph.md             # Mermaid関係グラフ
+```
+
+**検証コマンド:**
+
+```bash
+python3 scripts/reqctl.py validate --strict --check-tests   # 矛盾・欠落の検出
+python3 scripts/reqctl.py impact REQ-0002                   # 変更前の影響範囲確認
+python3 scripts/reqctl.py generate                          # 生成物の更新
+```
+
+数値制約の充足不能（例: 同じ指標に「2秒以内」と「5秒以上」）、事実主張の食い違い、依存の循環、廃止済み要求への参照、検証手段の欠落などをCIで検出し、マージを阻止できます。
 
 ---
 

@@ -29,6 +29,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | task-executing | タスク実行・逆順レビュー |
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
 | | sdd-document-management | ドキュメント管理・メンテナンス |
+| | requirement-management | 要求と理由のみをYAMLレジストリで管理し、矛盾を機械検証（設計は永続化しない） |
 | **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
 | | self-review | サブエージェント並列によるローカル変更の6観点セルフレビュー |
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
@@ -135,8 +136,13 @@ claude_skils/
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
-│   └── sdd-document-management/       # ドキュメント管理スキル
+│   ├── sdd-document-management/       # ドキュメント管理スキル
+│   │   ├── SKILL.md
+│   │   ├── assets/templates/
+│   │   └── references/
+│   └── requirement-management/        # 要求管理スキル（YAMLレジストリ＋矛盾検証）
 │       ├── SKILL.md
+│       ├── scripts/                   # reqctl.py（検証・生成・影響分析）
 │       ├── assets/templates/
 │       └── references/
 │

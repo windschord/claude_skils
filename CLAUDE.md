@@ -38,6 +38,9 @@ sdd-documentation（オーケストレーター）
     ├── task-executing           → 実装コード（逆順レビュー付き）
     ├── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
     └── sdd-document-management  → ドキュメント管理・メンテナンス（承認フロー付き）
+
+requirement-management（独立・requirements-definingの代替）
+    → docs/requirements/*.yaml（要求＋理由のみ）＋ generated/（自動生成の一覧・追跡表・関係グラフ）
 ```
 
 > **タスクの出力先**: SDDスキルはタスクを**デフォルトでGitHub Issueとして起票**する（1タスク＝1 Issue、詳細はIssue本文に集約、ラベル `sdd:task` で一覧＝目次）。ステータスはラベル `sdd:status/*`、DONEはIssueのcloseで表現。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成する。
@@ -102,6 +105,22 @@ sdd-documentation（オーケストレーター）
 - **references/archive_ja.md** - アーカイブガイド
 - **references/optimize_ja.md** - 最適化ガイド
 - **references/claude_md_sync_ja.md** - CLAUDE.md同期ガイド
+
+### sdd/requirement-management/
+- **SKILL.md** - スキル定義ファイル（要求と理由のみを管理・矛盾の機械検証・承認フロー）
+- **scripts/reqctl.py** - 要求レジストリの検証・生成・影響分析ツール。サブコマンド: `validate`（構造/参照/矛盾/カバレッジ検査、`--strict`で警告もエラー扱い、`--check-tests`でテスト実在確認、`--json`で機械可読出力）/ `generate`（index.md・traceability.md・graph.mdを生成）/ `impact`（変更前の影響範囲）/ `next-id` / `stats`。依存はPyYAMLのみ
+- **assets/templates/requirements_registry_template_ja.yaml** - 要求レジストリ雛形
+- **assets/templates/glossary_template_ja.yaml** - 用語集・検査ポリシー雛形
+- **assets/templates/change_proposal_template_ja.md** - 変更提案レポート（承認ゲート用）
+- **assets/templates/pr_design_note_template_ja.md** - PR設計ノート（設計の唯一の記録先）
+- **assets/templates/ci_req_lint_template.yml** - CI設定例（矛盾があればマージ阻止）
+- **references/data_model_ja.md** - YAMLスキーマ全仕様
+- **references/consistency_rules_ja.md** - 検査コード一覧と対処法
+- **references/change_workflow_ja.md** - 追加・変更・廃止の判断基準と承認ゲート
+- **references/design_in_pr_ja.md** - 設計をPRに閉じる運用
+- **references/management_options_ja.md** - 管理方式の比較検討と採用理由
+
+> **注**: このスキルは `requirements-defining`（Markdownによる要件定義）の代替であり、併用しない。要求と理由のみを永続化し、設計書は作らない（設計はPR本文・GitHubコメントに記載）。要求の追加・変更・廃止のたびに `reqctl.py validate` で矛盾・欠落を機械検出する。
 
 ### code-quality/pr-comment-fixer/
 - **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）

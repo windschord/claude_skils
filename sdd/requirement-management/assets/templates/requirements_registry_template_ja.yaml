@@ -1,0 +1,92 @@
+# 要求レジストリ
+# 配置: docs/requirements/<ドメイン名>.yaml
+# 検査: python3 scripts/reqctl.py validate --strict
+# 仕様: sdd/requirement-management/references/data_model_ja.md
+
+stories:
+  - id: US-001
+    as_a: <ユーザーの種類>
+    i_want: <実現したいこと>
+    so_that: <それによって得られる価値>
+    status: draft            # draft / active / done / dropped
+    # acceptance は書かない（要求側の stories で紐付ける）
+
+requirements:
+  # --- 機能要求の例 -------------------------------------------------------
+  - id: REQ-0001
+    title: <短い名前>
+    statement: <トリガー>の時、システムは<振る舞い>しなければならない
+    type: functional         # functional / quality / constraint
+    status: draft            # draft / active / deprecated / superseded
+    priority: must           # must / should / could / wont
+    stories: [US-001]
+    rationale:
+      why: <なぜこの要求が必要か。実現方式ではなく必要性を書く>
+      source: <誰の要望か / どの決定・調査・監査指摘に由来するか>
+      decided_at: YYYY-MM-DD
+      # alternatives_rejected: [却下した代替案1, 却下した代替案2]
+    verification:
+      - kind: test           # test / manual / metric / review
+        ref: tests/test_xxx.py::test_yyy
+    # depends_on: [REQ-0000]
+    # terms: [用語集の正規語]
+    # tags: [ドメイン名]
+    # design_refs: [https://github.com/<org>/<repo>/pull/NN]   # URLのみ。設計内容は書かない
+
+  # --- 数値制約を持つ品質要求の例 -----------------------------------------
+  - id: REQ-0002
+    title: <短い名前>
+    statement: <トリガー>の時、システムは<N>秒以内に<振る舞い>しなければならない
+    type: quality
+    status: draft
+    priority: should
+    stories: [US-001]
+    rationale:
+      why: <その数値でなければならない理由。根拠となる計測や規約を示す>
+      source: <出所>
+      decided_at: YYYY-MM-DD
+    measures:
+      - subject: <ドメイン>.<対象>.<指標>    # 同じ対象は必ず同じ文字列にする
+        op: "<="                           # < <= > >= == !=
+        value: 2
+        unit: s
+    verification:
+      - kind: metric
+        ref: p95(<ドメイン>.<対象>.<指標>) <= 2s
+
+  # --- 事実を主張する制約の例 ---------------------------------------------
+  - id: REQ-0003
+    title: <短い名前>
+    statement: システムは<制約>しなければならない
+    type: constraint
+    status: draft
+    priority: must
+    rationale:
+      why: <制約の根拠。規約・監査・法令など>
+      source: <出所>
+      decided_at: YYYY-MM-DD
+    asserts:
+      - key: <ドメイン>.<決定事項>
+        value: <値>
+    # forbids:
+    #   - key: <ドメイン>.<決定事項>
+    #     value: <禁止する値>
+    verification:
+      - kind: review
+        ref: <確認手順名>
+
+  # --- 廃止された要求（墓標）の例 -----------------------------------------
+  # - id: REQ-0000
+  #   title: <旧要求の名前>
+  #   statement: <旧要求文をそのまま残す>
+  #   type: constraint
+  #   status: superseded
+  #   priority: must
+  #   rationale:
+  #     why: <当時この要求が必要だった理由>
+  #     source: <出所>
+  #     decided_at: YYYY-MM-DD
+  #     retired_why: <なぜ廃止・置換したか>
+  #   verification:
+  #     - kind: review
+  #       ref: 廃止済み
