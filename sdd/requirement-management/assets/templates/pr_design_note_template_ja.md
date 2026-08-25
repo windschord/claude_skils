@@ -35,7 +35,7 @@
 ## 要求充足の確認
 
 - [ ] 対象要求の `verification` に本PRのテストを登録した
-- [ ] `python3 scripts/reqctl.py validate --strict --check-tests` がエラー・警告ゼロ
+- [ ] 採用している実行パスの `reqctl.py` で `validate --strict --check-tests` を実行し、エラー・警告ゼロ
 - [ ] `generated/` を再生成し、手編集していない
 - [ ] 実装過程で要求の矛盾・不足を見つけた場合、要求側を先に直した
 - [ ] 設計内容をレジストリのYAMLに書いていない

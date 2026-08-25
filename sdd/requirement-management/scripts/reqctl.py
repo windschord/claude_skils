@@ -67,6 +67,8 @@ REQ_LIST_FIELDS = (
     "stories", "depends_on", "refines", "supersedes", "conflicts_with",
     "verification", "measures", "asserts", "forbids", "terms", "tags", "design_refs",
 )
+# 要素がマッピングでなければならないフィールド（.get() で参照するため）
+MAP_ELEMENT_FIELDS = ("verification", "measures", "asserts", "forbids")
 # 要素が文字列でなければならないフィールド（辞書・集合の検索キーに使うため）
 STR_ELEMENT_FIELDS = (
     "stories", "depends_on", "refines", "supersedes", "conflicts_with",
@@ -139,6 +141,11 @@ def load_registry(root: Path) -> Registry:
             continue
 
         rel = str(path)
+        for key in ("requirements", "stories", "terms"):
+            if key in data and data[key] is not None and not isinstance(data[key], list):
+                reg.load_errors.append((rel, f"{key} はリストである必要があります（実際: {type(data[key]).__name__}）"))
+                data[key] = []
+
         for item in data.get("requirements") or []:
             if not isinstance(item, dict):
                 reg.load_errors.append((rel, "requirements の要素がマッピングではありません"))
@@ -168,8 +175,14 @@ def load_registry(root: Path) -> Registry:
             reg.sources[sid] = rel
 
         for item in data.get("terms") or []:
-            if isinstance(item, dict) and item.get("name"):
-                reg.terms[item["name"]] = item
+            if not isinstance(item, dict):
+                reg.load_errors.append((rel, "terms の要素がマッピングではありません"))
+                continue
+            name = item.get("name")
+            if not isinstance(name, str) or not name:
+                reg.load_errors.append((rel, f"用語の name が文字列ではありません: {name!r}"))
+                continue
+            reg.terms[name] = item
 
         if isinstance(data.get("policy"), dict):
             reg.policy.update(data["policy"])
@@ -214,15 +227,20 @@ def _normalize(item: dict, target: str, list_fields, map_fields, str_fields) -> 
                                f"{field} は文字列である必要があります（実際: {type(value).__name__}）"))
             item[field] = ""
     for field in list_fields:
-        if field not in STR_ELEMENT_FIELDS:
-            continue
         values = item.get(field) or []
-        kept = [v for v in values if isinstance(v, str)]
-        if len(kept) != len(values):
-            out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
-                               f"{field} の要素は文字列である必要があります",
-                               "ID・用語・タグ・URLはすべて文字列で記述してください"))
-            item[field] = kept
+        if field in STR_ELEMENT_FIELDS:
+            kept = [v for v in values if isinstance(v, str)]
+            if len(kept) != len(values):
+                out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
+                                   f"{field} の要素は文字列である必要があります",
+                                   "ID・用語・タグ・URLはすべて文字列で記述してください"))
+                item[field] = kept
+        elif field in MAP_ELEMENT_FIELDS:
+            kept = [v for v in values if isinstance(v, dict)]
+            if len(kept) != len(values):
+                out.append(finding(LEVEL_ERROR, "E-SCHEMA", target,
+                                   f"{field} の要素はマッピングである必要があります"))
+                item[field] = kept
     return out
 
 
@@ -259,17 +277,15 @@ def check_schema(reg: Registry) -> list[dict]:
             out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, f"priority が不正です: {r['priority']}（許容: {sorted(REQ_PRIORITY)}）"))
 
         for v in r.get("verification") or []:
-            if not isinstance(v, dict) or not v.get("kind") or not v.get("ref"):
-                out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, "verification の要素には kind と ref が必要です"))
+            if not isinstance(v.get("kind"), str) or not v.get("ref"):
+                out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid,
+                                   "verification の要素には kind（文字列）と ref が必要です"))
             elif v["kind"] not in VERIFY_KINDS:
-                out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, f"verification.kind が不正です: {v['kind']}"))
+                out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, f"verification.kind が不正です: {v['kind']!r}"))
 
         for m in r.get("measures") or []:
-            if not isinstance(m, dict):
-                out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid, "measures の要素はマッピングである必要があります"))
-                continue
             if (not isinstance(m.get("subject"), str) or not m["subject"]
-                    or m.get("op") not in OPS
+                    or not isinstance(m.get("op"), str) or m["op"] not in OPS
                     or not isinstance(m.get("value"), (int, float))
                     or isinstance(m.get("value"), bool)):
                 out.append(finding(
@@ -278,8 +294,7 @@ def check_schema(reg: Registry) -> list[dict]:
 
         for key in ("asserts", "forbids"):
             for a in r.get(key) or []:
-                if (not isinstance(a, dict) or not isinstance(a.get("key"), str)
-                        or not a["key"] or "value" not in a):
+                if not isinstance(a.get("key"), str) or not a["key"] or "value" not in a:
                     out.append(finding(LEVEL_ERROR, "E-SCHEMA", rid,
                                        f"{key} の要素には key（文字列）と value が必要です"))
 
@@ -505,7 +520,7 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
         if r.get("status") not in LIVE_STATUS:
             continue
         for m in r.get("measures") or []:
-            if not isinstance(m, dict) or m.get("op") not in OPS:
+            if not isinstance(m.get("op"), str) or m["op"] not in OPS:
                 continue
             if not isinstance(m.get("value"), (int, float)) or isinstance(m.get("value"), bool):
                 continue
@@ -579,9 +594,18 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
 
 
 def _hashable(value):
-    """比較・表示に使える値へ落とす（リスト等はそのまま比較できるよう文字列化する）."""
+    """比較・表示に使える値へ落とす.
+
+    YAMLのマッピングは記述順に意味がないため、キー順で再帰的に正規化してから
+    文字列化する。順序違いを別の値と誤認して衝突を報告しないようにする。
+    """
     if isinstance(value, (str, int, float, bool)) or value is None:
         return value
+    if isinstance(value, dict):
+        return "{" + ", ".join(
+            f"{k!r}: {_hashable(value[k])!r}" for k in sorted(value, key=repr)) + "}"
+    if isinstance(value, (list, tuple)):
+        return "[" + ", ".join(repr(_hashable(v)) for v in value) + "]"
     return repr(value)
 
 
@@ -597,10 +621,10 @@ def check_fact_conflicts(reg: Registry) -> list[dict]:
         if r.get("status") not in LIVE_STATUS:
             continue
         for a in r.get("asserts") or []:
-            if isinstance(a, dict) and isinstance(a.get("key"), str) and a["key"]:
+            if isinstance(a.get("key"), str) and a["key"]:
                 asserts.setdefault(a["key"], []).append((rid, _hashable(a.get("value"))))
         for a in r.get("forbids") or []:
-            if isinstance(a, dict) and isinstance(a.get("key"), str) and a["key"]:
+            if isinstance(a.get("key"), str) and a["key"]:
                 forbids.setdefault(a["key"], []).append((rid, _hashable(a.get("value"))))
 
     for key, entries in sorted(asserts.items()):
@@ -809,11 +833,15 @@ def gen_index(reg: Registry) -> str:
 def gen_traceability(reg: Registry) -> str:
     """ストーリー→要求→検証手段のトレーサビリティ表を生成する."""
     lines = ["# トレーサビリティマトリクス（自動生成 / 手で編集しないこと）", "",
-             "ユーザーストーリー → 要求 → 検証手段。テストの合格条件はこの表がすべて埋まっていること。", "",
+             "ユーザーストーリー → 要求 → 検証手段。テストの合格条件はこの表がすべて埋まっていること。",
+             "取下げ（dropped）のストーリーは達成対象外のため掲載しない。", "",
              "| ストーリー | 要求 | 要求文 | 検証手段 |",
              "|------------|------|--------|----------|"]
     covered: set[str] = set()
     for sid in sorted(reg.stories):
+        # dropped は達成対象から外れているため、合格条件の表に載せない
+        if reg.stories[sid].get("status") == "dropped":
+            continue
         acc = reg.story_reqs(sid)
         if not acc:
             lines.append(f"| {sid} | (なし) | - | **未定義** |")
