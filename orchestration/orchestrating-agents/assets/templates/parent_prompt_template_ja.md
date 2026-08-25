@@ -48,7 +48,7 @@ Objective
 Context
 プロジェクト: Webアプリケーション
 前フェーズ: なし（新規開発）
-関連: docs/sdd/requirements/
+関連: docs/requirements/
 
 Constraints
 - escalation_policy: 要件の曖昧さがあればエスカレーション
@@ -67,7 +67,7 @@ Phase-2のタスク群（TASK-005a, TASK-005b, TASK-005c）を並列実行する
 Context
 プロジェクト: Webアプリケーション
 前フェーズ: docs/sdd/tasks/phase-2/
-関連: docs/sdd/design/components/
+関連: docs/requirements/generated/traceability.md
 
 Constraints
 - escalation_policy: ファイル削除・仕様変更はエスカレーション

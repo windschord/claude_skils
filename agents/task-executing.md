@@ -1,6 +1,6 @@
 ---
 name: task-executing
-description: docs/sdd/tasks/に記載されたタスクを実行し、コード実装を行うエージェント。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビューで整合性を確認する。orchestrating-agentsスキルの3階層構成ではWorker（孫）としても動作する。SDDワークフローの実装フェーズで使用する。Do NOT use for 要件定義・設計・タスク計画の作成（各サブスキルを使用すること）。
+description: docs/sdd/tasks/に記載されたタスクを実行し、コード実装を行うエージェント。タスクごとにステータス更新とコミットを作成し、実装完了後は逆順レビューで整合性を確認する。orchestrating-agentsスキルの3階層構成ではWorker（孫）としても動作する。SDDワークフローの実装フェーズで使用する。Do NOT use for 要求の定義・タスク計画の作成（requirement-management、task-planningを使用すること）。設計は本エージェントが実装時に行い、PR本文へ記載する。
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 metadata:
@@ -17,7 +17,7 @@ docs/sdd/tasks/に記載されたタスクを実行し、SDDワークフロー�
 
 ```text
 requirement-management → task-planning → task-executing（設計はPR本文に記載）
-   (requirements/)         (design/)           (tasks/)         (実装)
+   (docs/requirements/)    (PR本文に記載)       (GitHub Issue)    (実装)
 ```
 
 ### 主な機能
@@ -25,7 +25,7 @@ requirement-management → task-planning → task-executing（設計はPR本文�
 - docs/sdd/tasks/からタスクを読み取り、実行順序を決定
 - タスクごとのステータス更新（TODO → IN_PROGRESS → REVIEW → DONE、レビュー不要時はREVIEWをスキップ）
 - 統一されたコミットテンプレートによるGit管理
-- 実装後の逆順レビュー（実装→タスク→設計→要件の整合性確認）
+- 実装後の逆順レビュー（実装→タスク→要求の整合性確認。設計はPR本文の設計ノートと突き合わせる）
 - 並列実行可能なタスクの並列処理
 
 ## このエージェントを使用する場面
@@ -253,8 +253,9 @@ Task 1.3: ユーザー一覧コンポーネントのサイドバー対応
 
 ## 関連ドキュメント
 - docs/sdd/tasks/[phase]/TASK-XXX.md: タスク詳細
-- docs/sdd/design/components/[name].md: 関連コンポーネント
-- docs/sdd/requirements/stories/US-XXX.md: 関連要件
+- 要求: REQ-XXXX, REQ-YYYY（docs/requirements/）
+- ストーリー: US-XXX
+- 設計: PR本文の設計ノート
 
 ## テスト
 - テスト実行結果（npm test等）
@@ -274,14 +275,14 @@ Update docs/sdd/tasks/index.md: タスクID completed
 ### レビューの流れ
 
 ```text
-実装 → docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
+実装 → タスク（GitHub Issue / docs/sdd/tasks/） → 要求（docs/requirements/）
 ```
 
 ### チェック項目
 
 1. **実装 → タスク**: 受入基準達成、ファイル一致、テスト通過
-2. **タスク → 設計**: コンポーネント/API/データモデル対応
-3. **設計 → 要件**: 要件カバレッジ、過剰実装チェック
+2. **タスク → 要求**: 要求カバレッジ、`verification` へのテスト登録、`reqctl.py validate --strict --check-tests` の通過、PR本文の設計ノートとの一致、過剰実装チェック
+3. **要求側の問題**: 矛盾や実現不能が判明したら実装で辻褄を合わせず、変更提案を出してユーザー承認を得る
 
 ### 不整合発見時
 

@@ -145,7 +145,7 @@ B) React + JavaScript
 docs/sdd/design/の作成完了後：
 - **task-planning**: design/を基にタスクを分解
 
-task-planningスキルで逆順レビュー（タスク → 設計 → 要件）が行われます。
+task-planningスキルで逆順レビュー（タスク → 要求）が行われます。設計は逆順レビューの対象外です（PR本文の設計ノートと実装を突き合わせます）。
 
 ## リソース
 

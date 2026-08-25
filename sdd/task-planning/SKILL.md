@@ -90,10 +90,16 @@ docs/sdd/tasks/
 
 ### 前段スキルとの連携
 
-**docs/sdd/requirements/、docs/sdd/design/が存在する場合**:
-1. 両方のドキュメントを読み込む
-2. タスクが設計・要件と整合しているか確認
-3. 逆順レビュー（タスク → 設計 → 要件）を実施
+**docs/requirements/（requirement-management）が存在する場合**:
+1. `docs/requirements/generated/traceability.md` を読み込み、対象の要求IDとユーザーストーリーを特定する
+2. 各タスクが1つ以上の要求IDに対応しているか確認する
+3. 逆順レビュー（タスク → 要求）を実施する
+
+設計書は読み込まない。設計は実装時にPR本文へ記載するため、タスク計画時点では存在しない。
+
+**docs/sdd/requirements/、docs/sdd/design/しか存在しない場合（旧構成）**:
+
+`requirements-defining` / `software-designing` は非推奨。移行が済むまでは旧ドキュメントを読み込んでよいが、移行手順（`requirement-management/references/migration_from_sdd_ja.md`）の実施を検討する。
 
 ## AIエージェント向けタスク設計
 
@@ -156,7 +162,7 @@ docs/sdd/tasks/
 
 ### 新規作成フロー
 
-1. **ドキュメント確認**: docs/sdd/requirements/、docs/sdd/design/を読み込む
+1. **ドキュメント確認**: `docs/requirements/generated/traceability.md` を読み込み、実装対象の要求IDとストーリーを特定する（旧構成の場合は docs/sdd/requirements/）
 2. **情報分類**: 明示された情報と不明な情報を分類
 3. **不明点確認**: 必要な情報をユーザーに確認
 4. **環境確認**: `mcp__github__get_me` で対象リポジトリ・権限を確認。ラベル（`sdd:task`等）が未作成なら作成
@@ -165,7 +171,7 @@ docs/sdd/tasks/
 7. **重複確認**: `mcp__github__search_issues` で既存タスクを確認
 8. **Issue起票**: `mcp__github__issue_write`（method: create）で各タスクをIssue化。タイトル `[TASK-XXX] タイトル`、ラベル `sdd:task` / `sdd:phase-N` / `sdd:status/todo` を付与
 9. **依存関係整理**: 各Issue本文の「依存関係」に依存Issue番号（例: `依存: #12`）を記載。必要に応じてラベル `sdd:group-X`
-10. **逆順レビュー**: タスク → 設計 → 要件の整合性確認
+10. **逆順レビュー**: タスク → 要求の整合性確認
 11. **TodoWrite同期**: 起票したIssueをTodoWriteに登録（`sdd-documentation/references/task_sync_guide_ja.md` 参照）
 12. **ユーザー確認**: 起票したIssue番号一覧を提示し、承認を得て完了
 
@@ -190,7 +196,7 @@ docs/sdd/tasks/
 
 ## 逆順レビュープロセス
 
-タスク → 設計 → 要件の整合性を確認する。詳細チェック項目は `sdd-documentation/references/checklist_ja.md` を参照。不整合発見時はリストアップしてユーザーに確認してから修正する。
+タスク → 要求の整合性を確認する（各タスクが要求IDに対応し、対象ストーリーの受入要求が漏れなく覆われているか）。詳細チェック項目は `sdd-documentation/references/checklist_ja.md` を参照。不整合発見時はリストアップしてユーザーに確認してから修正する。
 
 ## タスク同期（TodoWrite連携）
 
@@ -256,8 +262,8 @@ docs/sdd/tasks/
 - [ ] 各タスクの「情報の明確性」セクションが記載されている
 - [ ] 推測に基づく実装指示が含まれていない
 - [ ] TDD手順が含まれている
-- [ ] すべてのタスクがdesign/のコンポーネント/APIに対応している
-- [ ] すべての設計要素がrequirements/に対応している
+- [ ] すべてのタスクが1つ以上の要求ID（REQ-XXXX）に対応している
+- [ ] 対象ストーリーの受入要求が、いずれかのタスクで覆われている
 - [ ] TodoWriteにタスク一覧が同期されている
 - [ ] 並列実行グループが明示されている（チーム実行時）
 
