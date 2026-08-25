@@ -1,6 +1,6 @@
 ---
 name: requirement-management
-description: 要求とその理由だけをYAMLレジストリで管理し、追加・変更・廃止のたびに要求間の整合性と矛盾を機械的に検証する。要求の追加/変更/削除、矛盾チェック、トレーサビリティ確認、ユーザーストーリーと受入条件の管理が必要な場合に使用する。設計は実装時にPR本文・GitHubコメントに書くだけで永続化しない運用を前提とする。Do NOT use for 設計書の作成・永続化（設計はPRに書く）、docs/sdd/requirements/ のMarkdown要件定義（requirements-definingを使用すること）。
+description: 要求とその理由だけをYAMLレジストリで管理し、追加・変更・廃止のたびに要求間の整合性と矛盾を機械的に検証する。要求の追加/変更/削除、矛盾チェック、トレーサビリティ確認、ユーザーストーリーと受入条件の管理が必要な場合に使用する。設計は実装時にPR本文・GitHubコメントに書くだけで永続化しない運用を前提とする。requirements-defining / software-designing / sdd-document-management の移行先。Do NOT use for 設計書の作成・永続化（設計はPRに書く）。
 metadata:
   version: "1.0.0"
 ---
@@ -19,7 +19,7 @@ metadata:
 | テストの合格条件 | すべての有効要求に検証手段があり、全ユーザーストーリーが要求で覆われていること |
 | 削除の扱い | 物理削除は禁止。`deprecated` / `superseded` として理由付きで残す（墓標） |
 
-`requirements-defining`（Markdownによる要件定義）との併用は想定していません。どちらか一方を選んでください。
+このスキルは `requirements-defining` / `software-designing` / `sdd-document-management` の移行先です。これらは非推奨であり、併用は想定していません。既存の `docs/sdd/` からの移行手順は `references/migration_from_sdd_ja.md` を参照してください。
 
 ## ディレクトリ構成
 
@@ -169,3 +169,4 @@ python3 scripts/reqctl.py stats                        # 件数サマリ
 - `references/change_workflow_ja.md`: 追加・変更・廃止の判断基準
 - `references/design_in_pr_ja.md`: 設計をPRに閉じる運用
 - `references/management_options_ja.md`: 管理方式の比較検討と採用理由
+- `references/migration_from_sdd_ja.md`: 既存 docs/sdd/ からの移行手順

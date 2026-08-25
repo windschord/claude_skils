@@ -165,8 +165,8 @@ docs/sdd/troubleshooting/
 
 ```text
 sdd-documentation
-    ├── requirements-defining → docs/sdd/requirements/
-    ├── software-designing   → docs/sdd/design/
+    ├── requirement-management → docs/requirements/
+    ├── 設計                    → PR本文（永続化しない）
     ├── task-planning        → GitHub Issue（デフォルト）/ docs/sdd/tasks/
     ├── task-executing       → 実装コード
     └── sdd-troubleshooting  → 問題分析・修正タスク（このスキル）

@@ -42,13 +42,13 @@
 ```text
 sdd-documentation（オーケストレーター）
     │
-    ├── requirements-defining（要件定義）
+    ├── requirement-management（要求管理）
     │       └── docs/sdd/requirements/
     │               ├── index.md
     │               ├── stories/US-XXX.md
     │               └── nfr/*.md
     │
-    ├── software-designing（設計）
+    ├── 設計（PR本文に記載・永続化しない）
     │       └── docs/sdd/design/
     │               ├── index.md
     │               ├── components/*.md
@@ -97,7 +97,7 @@ docs/sdd/
 
 ### フェーズ2: 要件定義
 
-**使用スキル**: `requirements-defining`
+**使用スキル**: `requirement-management`（`requirements-defining` は非推奨）
 
 **目的**: 何を作るかを明確に定義
 
@@ -119,7 +119,7 @@ docs/sdd/
 
 ### フェーズ3: 設計
 
-**使用スキル**: `software-designing`
+**使用スキル**: なし。設計は実装時にPR本文へ記載する（`software-designing` は非推奨）
 
 **目的**: どのように作るかを文書化
 
@@ -244,8 +244,8 @@ docs/sdd/
 
 | 作業内容 | 使用スキル |
 |---------|-----------|
-| 要件の追加・修正 | `requirements-defining` |
-| 設計の更新 | `software-designing` |
+| 要求の追加・修正 | `requirement-management` |
+| 設計の更新 | PR本文に記載（スキルは使わない） |
 | タスクの追加・更新 | `task-planning` |
 | 整合性チェック | `sdd-documentation` |
 

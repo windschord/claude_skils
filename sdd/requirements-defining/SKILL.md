@@ -1,11 +1,25 @@
 ---
 name: requirements-defining
-description: EARS記法を用いた要件定義書を作成・編集する。ユーザーストーリーの作成、受入基準の定義、非機能要件の整理が必要な場合に使用する。要件定義フェーズのみを単独で実行する際に使用する。Do NOT use for SDDワークフロー全体の管理（sdd-documentationを使用すること）。
+description: 【非推奨】requirement-management に統合された。新規の要件定義には requirement-management を使用すること。既存の docs/sdd/requirements/ を保守・参照する場合にのみ使用する。EARS記法によるMarkdownの要件定義書（ユーザーストーリー・受入基準・非機能要件）を作成・編集する。Do NOT use for 新規プロジェクトの要件定義（requirement-management を使用すること）。
 metadata:
   version: "1.0.0"
 ---
 
-# 要件定義スキル
+# 要件定義スキル（非推奨）
+
+> **⚠️ このスキルは非推奨です。**
+>
+> 要件定義の機能は `requirement-management` に統合されました。要求の矛盾・欠落を機械検証できる同スキルを新規利用では使用してください。
+>
+> | | 非推奨（本スキル） | 移行先 |
+> |---|---|---|
+> | 保存形式 | Markdown（`docs/sdd/requirements/`） | YAML（`docs/requirements/`） |
+> | 整合性チェック | 人手のレビュー | `reqctl.py validate` による機械検証 |
+> | 理由の記録 | 任意 | 必須（`rationale.why`） |
+> | 検証手段 | 受入基準の文章 | テストIDへの紐付け（`verification`） |
+>
+> 移行手順は `sdd/requirement-management/references/migration_from_sdd_ja.md` を参照してください。
+> 既存の `docs/sdd/requirements/` を保守・参照する場合にのみ、以下の手順を使用します。
 
 EARS記法（Easy Approach to Requirements Syntax）を用いて、明確でテスト可能な要件定義書を作成します。
 
@@ -114,7 +128,7 @@ EARS記法の詳細は `references/ears_notation_ja.md` を参照。
 ## 後続スキルとの連携
 
 docs/sdd/requirements/の作成完了後：
-- **software-designing**: docs/sdd/requirements/を基に技術設計を行う
+- ~~software-designing~~（非推奨）: 設計は実装時にPR本文へ記載する
 - **task-planning**: 要件に基づきタスクを分解
 
 後続スキルで整合性の確認が行われます。

@@ -32,17 +32,19 @@ docs/                              # ユーザー向けドキュメント（人�
 
 ```text
 sdd-documentation（オーケストレーター）
-    ├── requirements-defining    → docs/sdd/requirements/
-    ├── software-designing       → docs/sdd/design/
+    ├── requirement-management   → docs/requirements/*.yaml（要求・ストーリー・理由・用語・関係）
+    │                               ＋ generated/（自動生成の一覧・追跡表・関係グラフ）
     ├── task-planning            → GitHub Issue（デフォルト）/ docs/sdd/tasks/（オプション）
     ├── task-executing           → 実装コード（逆順レビュー付き）
-    ├── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
-    └── sdd-document-management  → ドキュメント管理・メンテナンス（承認フロー付き）
+    └── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
 
-requirement-management（独立・requirements-definingの代替）
-    → docs/requirements/*.yaml（要求・ユーザーストーリー・理由・用語・要求間の関係）
-      ＋ generated/（自動生成の一覧・追跡表・関係グラフ）
+非推奨（既存 docs/sdd/ の保守・参照のみ。新規利用は禁止）
+    ├── requirements-defining    → requirement-management に統合
+    ├── software-designing       → 設計はPR本文とGitHubコメントに記載（永続化しない）
+    └── sdd-document-management  → 要求の整合性チェックは reqctl.py validate に統合
 ```
+
+> **設計の記録先**: 設計は実装時に必ず行うが、PR本文とGitHubコメントにのみ記載し、リポジトリには永続化しない。レジストリにはPRのURLを `design_refs` として残す。
 
 > **タスクの出力先**: SDDスキルはタスクを**デフォルトでGitHub Issueとして起票**する（1タスク＝1 Issue、詳細はIssue本文に集約、ラベル `sdd:task` で一覧＝目次）。ステータスはラベル `sdd:status/*`、DONEはIssueのcloseで表現。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成する。
 
@@ -55,14 +57,14 @@ requirement-management（独立・requirements-definingの代替）
 - **references/task_sync_guide_ja.md** - タスク同期（TodoWrite連携）ガイド
 - **references/checklist_ja.md** - チェックリスト
 
-### sdd/requirements-defining/
+### sdd/requirements-defining/（非推奨 → requirement-management）
 - **SKILL.md** - スキル定義ファイル
 - **assets/templates/requirements_index_template_ja.md** - 要件目次テンプレート
 - **assets/templates/user_story_template_ja.md** - ユーザーストーリーテンプレート
 - **assets/templates/nfr_template_ja.md** - 非機能要件テンプレート
 - **references/ears_notation_ja.md** - EARS記法の詳細ガイド
 
-### sdd/software-designing/
+### sdd/software-designing/（非推奨 → 設計はPR本文へ）
 - **SKILL.md** - スキル定義ファイル
 - **assets/templates/design_index_template_ja.md** - 設計目次テンプレート
 - **assets/templates/component_template_ja.md** - コンポーネント設計テンプレート
@@ -94,7 +96,7 @@ requirement-management（独立・requirements-definingの代替）
 - **assets/templates/bugfix_task_template_ja.md** - バグ修正タスクテンプレート
 - **references/analysis_guide_ja.md** - 分析ガイドライン
 
-### sdd/sdd-document-management/
+### sdd/sdd-document-management/（非推奨 → reqctl.py validate）
 - **SKILL.md** - スキル定義ファイル（5機能の定義・承認フロー）
 - **assets/templates/consistency_report_template_ja.md** - 整合性レポートテンプレート
 - **assets/templates/sync_report_template_ja.md** - 同期レポートテンプレート
@@ -120,8 +122,9 @@ requirement-management（独立・requirements-definingの代替）
 - **references/change_workflow_ja.md** - 追加・変更・廃止の判断基準と承認ゲート
 - **references/design_in_pr_ja.md** - 設計をPRに閉じる運用
 - **references/management_options_ja.md** - 管理方式の比較検討と採用理由
+- **references/migration_from_sdd_ja.md** - 既存 docs/sdd/ からの移行手順
 
-> **注**: このスキルは `requirements-defining`（Markdownによる要件定義）の代替であり、併用しない。永続化するのは要求・ユーザーストーリー・理由・用語・要求間の関係で、設計書は作らない（設計はPR本文・GitHubコメントに記載）。要求の追加・変更・廃止のたびに `reqctl.py validate` で矛盾・欠落を機械検出する。
+> **注**: このスキルは `requirements-defining` / `software-designing` / `sdd-document-management` の移行先であり、これらとの併用はしない。永続化するのは要求・ユーザーストーリー・理由・用語・要求間の関係で、設計書は作らない（設計はPR本文・GitHubコメントに記載）。要求の追加・変更・廃止のたびに `reqctl.py validate` で矛盾・欠落を機械検出する。
 
 ### code-quality/pr-comment-fixer/
 - **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）

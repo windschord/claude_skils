@@ -56,7 +56,7 @@ docs/sdd/
 
 ### Phase 1: 要件定義
 
-`requirements-defining`スキルでEARS記法を使って要件を定義します。
+`requirement-management`スキルで要求・ユーザーストーリー・理由をYAMLレジストリに登録します（`requirements-defining` は非推奨）。
 
 **EARS記法の基本パターン:**
 
@@ -76,7 +76,7 @@ docs/sdd/
 
 ### Phase 2: 設計
 
-`software-designing`スキルで要件を基に技術設計を文書化します。
+設計は実装時に行い、PR本文とGitHubコメントに記載します。設計書は永続化しません（`software-designing` は非推奨）。
 
 **チェックポイント:**
 
@@ -175,7 +175,7 @@ sdd-troubleshootingスキルを使用
 | 並列タスク実行 | task-executing | 依存関係のないタスクを並列実装 |
 | 並列レビュー | 逆順レビュー | requirements↔design↔tasksの整合性を並列チェック |
 | 競合仮説デバッグ | sdd-troubleshooting | 複数仮説を並列調査 |
-| 並列ドキュメントチェック | sdd-document-management | 4機能を並列実行 |
+| 並列ドキュメントチェック | ~~sdd-document-management~~（非推奨） | 4機能を並列実行。要求の検査は `reqctl.py validate` に移行 |
 
 ### チーム運用ルール
 

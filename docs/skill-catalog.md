@@ -8,7 +8,7 @@
 
 ### sdd-documentation（オーケストレーター）
 
-SDDドキュメント全体を統括するオーケストレータースキルです。6つのサブスキルを統合管理し、要件定義から実装までの全工程をカバーします。
+SDDドキュメント全体を統括するオーケストレータースキルです。4つの現行サブスキルを統合管理し、要求管理から実装までの全工程をカバーします（旧サブスキル3件は非推奨）。
 
 **使用開始:**
 
@@ -20,14 +20,15 @@ docsディレクトリを初期化してください
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| requirements-defining | EARS記法による要件定義 | `docs/sdd/requirements/` |
-| software-designing | 技術アーキテクチャ設計 | `docs/sdd/design/` |
+| requirement-management | 要求・ストーリー・理由の管理と矛盾の機械検証 | `docs/requirements/` |
+| ~~requirements-defining~~ | **非推奨** → requirement-management | `docs/sdd/requirements/`（保守のみ） |
+| ~~software-designing~~ | **非推奨** → 設計はPR本文へ | `docs/sdd/design/`（保守のみ） |
 | task-planning | AIエージェント向けタスク分解 | **GitHub Issue（デフォルト）** / `docs/sdd/tasks/`（オプション） |
 | task-executing | タスク実行・逆順レビュー | 実装コード |
 | sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, **GitHub Issue（修正タスク）** |
-| sdd-document-management | ドキュメント管理・メンテナンス | `docs/sdd/archive/`, `docs/sdd/reports/` |
+| ~~sdd-document-management~~ | **非推奨** → `reqctl.py validate` | `docs/sdd/archive/`, `docs/sdd/reports/`（保守のみ） |
 
-> **代替系**: `requirement-management` は上記サブスキル群とは独立したスキルです。要求とその理由を軸に管理し設計書を持たない運用を選ぶ場合に、`requirements-defining` の代わりに使用します。
+> **非推奨スキルについて**: `requirements-defining` / `software-designing` / `sdd-document-management` は `requirement-management` への統合により非推奨になりました。ファイルは残してありますが、新規の利用では使用しないでください。既存の `docs/sdd/` を持つプロジェクトの移行手順は `sdd/requirement-management/references/migration_from_sdd_ja.md` にあります。
 
 **主な機能:**
 
@@ -42,7 +43,7 @@ docsディレクトリを初期化してください
 
 ---
 
-### requirements-defining
+### requirements-defining（非推奨）
 
 EARS記法を用いた要件定義書を作成・管理するスキルです。
 
@@ -64,7 +65,7 @@ EARS記法を用いた要件定義書を作成・管理するスキルです。
 
 ---
 
-### software-designing
+### software-designing（非推奨）
 
 技術アーキテクチャ・設計書を作成・管理するスキルです。
 
@@ -152,7 +153,7 @@ SDDタスク（GitHub Issue）を進めてください
 
 ---
 
-### sdd-document-management
+### sdd-document-management（非推奨）
 
 ドキュメントのメンテナンス・整理を行うスキルです。
 
@@ -171,7 +172,7 @@ SDDタスク（GitHub Issue）を進めてください
 
 ### requirement-management
 
-要求とその理由を軸に、ユーザーストーリー・用語・要求間の関係までをYAMLレジストリで管理し、要求どうしの矛盾を機械的に検証するスキルです。設計書は作りません。`requirements-defining` の代替として使い、併用はしません。
+要求とその理由を軸に、ユーザーストーリー・用語・要求間の関係までをYAMLレジストリで管理し、要求どうしの矛盾を機械的に検証するスキルです。設計書は作りません。`requirements-defining` / `software-designing` / `sdd-document-management` の移行先であり、これらとの併用はしません。
 
 **使用開始:**
 

@@ -1,6 +1,6 @@
 ---
 name: ipa-nfr-operations-design
-description: IPA非機能要求グレード2018（可用性・性能拡張性・運用保守性・移行性・セキュリティ・システム環境）の記入済み要件を入力として、運用設計書を生成する。非機能要件定義が完了しているプロジェクトの運用設計フェーズで使用する。Do NOT use for 非機能要件の定義自体（requirements-definingを使用すること）。Do NOT use for 業界調査やヒアリングから始める運用設計（operations-designを使用すること）。
+description: IPA非機能要求グレード2018（可用性・性能拡張性・運用保守性・移行性・セキュリティ・システム環境）の記入済み要件を入力として、運用設計書を生成する。非機能要件定義が完了しているプロジェクトの運用設計フェーズで使用する。Do NOT use for 非機能要件の定義自体（requirement-managementを使用すること）。Do NOT use for 業界調査やヒアリングから始める運用設計（operations-designを使用すること）。
 metadata:
   version: "2.0.0"
 ---

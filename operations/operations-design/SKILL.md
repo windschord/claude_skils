@@ -1,6 +1,6 @@
 ---
 name: operations-design
-description: 運用設計コンサルタントとして、対象業界の調査とヒアリングに基づきITIL 4・SRE・DevOpsベストプラクティスの運用設計書を作成する。新規サービスの運用設計、既存システムの運用改善、運用移管の準備に使用する。Do NOT use for ソフトウェアの機能設計（software-designingを使用すること）。
+description: 運用設計コンサルタントとして、対象業界の調査とヒアリングに基づきITIL 4・SRE・DevOpsベストプラクティスの運用設計書を作成する。新規サービスの運用設計、既存システムの運用改善、運用移管の準備に使用する。Do NOT use for ソフトウェアの機能要求の定義（requirement-managementを使用すること）。
 metadata:
   version: "1.0.0"
 ---

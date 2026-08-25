@@ -6,7 +6,7 @@
 
 ## Task Instruction
 task_id: {{TASK-XXX}}
-task_type: {{スキル種別（例: task-executing, requirements-defining）}}
+task_type: {{スキル種別（例: task-executing, requirement-management）}}
 
 ## Objective
 {{目的と期待成果物の詳細}}
@@ -40,7 +40,7 @@ task_type: {{スキル種別（例: task-executing, requirements-defining）}}
 
 Task Instruction
 task_id: TASK-001
-task_type: requirements-defining
+task_type: requirement-management
 
 Objective
 ユーザー認証機能の要件定義書を作成する

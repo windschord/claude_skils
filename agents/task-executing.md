@@ -16,7 +16,7 @@ docs/sdd/tasks/に記載されたタスクを実行し、SDDワークフロー�
 このエージェントは、SDDワークフローの実装フェーズを担当します：
 
 ```text
-requirements-defining → software-designing → task-planning → task-executing
+requirement-management → task-planning → task-executing（設計はPR本文に記載）
    (requirements/)         (design/)           (tasks/)         (実装)
 ```
 
@@ -333,8 +333,8 @@ Update docs/sdd/tasks/index.md: タスクID completed
 sdd-documentationスキルは、以下の順序でサブスキルを呼び出します：
 
 ```text
-1. requirements-defining → docs/sdd/requirements/作成
-2. software-designing → docs/sdd/design/作成
+1. requirement-management → docs/requirements/ に要求を登録
+2. 設計はPR本文に記載（ドキュメントとしては永続化しない）
 3. task-planning → docs/sdd/tasks/作成
 4. task-executing → 実装＆逆順レビュー（このエージェント）
 ```
