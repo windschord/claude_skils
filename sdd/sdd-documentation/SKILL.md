@@ -1,6 +1,6 @@
 ---
 name: sdd-documentation
-description: SDDワークフロー全体を統括するオーケストレーター。要件定義・設計・タスク計画・実装・逆順レビューの一連のフローを管理する。新規プロジェクトのSDD一括作成、複数フェーズにまたがるワークフロー管理、エラー・バグの体系的な分析と修正に使用する。Do NOT use for 個別フェーズのみの作業（requirements-defining、software-designing、task-planningを直接使用すること）。
+description: SDDワークフロー全体を統括するオーケストレーター。要求管理・タスク計画・実装・逆順レビューの一連のフローを管理する。複数フェーズにまたがるワークフロー管理、エラー・バグの体系的な分析と修正に使用する。要求は requirement-management、設計はPR本文が既定の記録先であり、requirements-defining と software-designing は非推奨。Do NOT use for 個別フェーズのみの作業（requirement-management、task-planningを直接使用すること）。
 metadata:
   version: "1.0.0"
 ---
@@ -8,6 +8,17 @@ metadata:
 # SDD ドキュメンテーションスキル
 
 ソフトウェア設計ドキュメント（SDD）の作成・管理・実装を統括するオーケストレータースキルです。
+
+> **既定の記録先が変わりました。**
+>
+> | 対象 | 既定の記録先 | 旧サブスキル |
+> |------|-------------|-------------|
+> | 要求・ユーザーストーリー・理由 | `requirement-management`（`docs/requirements/*.yaml`） | requirements-defining（非推奨） |
+> | 設計 | PR本文とGitHubコメント（永続化しない） | software-designing（非推奨） |
+> | 要求の整合性チェック | `reqctl.py validate` | sdd-document-management（非推奨） |
+> | タスク | GitHub Issue（`label:sdd:task`） | 変更なし |
+>
+> 非推奨サブスキルは、既存の `docs/sdd/` を保守・参照する場合にのみ使用します。移行手順は `sdd/requirement-management/references/migration_from_sdd_ja.md` を参照してください。
 
 ## 実行原則（タイムアウト防止）
 
@@ -42,7 +53,7 @@ metadata:
 - **ドキュメント作成フェーズ（requirements/design/tasks）**: 並列処理判定は不要。順次作成する
 - **タスク実行フェーズ**: タスク特定後に並列処理判定を実施（Agent tool + worktree）
 - **トラブルシューティング**: 原因候補列挙後に並列処理判定を実施（Agent tool）
-- **ドキュメント管理フルスキャン**: 4機能をAgent tool + worktreeで並列実行
+- **ドキュメント管理フルスキャン**: 5機能をAgent tool + worktreeで並列実行
 
 ### 進捗の可視化
 
@@ -50,12 +61,12 @@ metadata:
 
 ```text
 出力例:
-  [requirements-defining] ステップ 1/5: 入力要件を読み込み中...
-  [requirements-defining] ステップ 2/5: 情報を分類中（明示/不明）...
-  [requirements-defining] ステップ 3/5: EARS記法で要件を生成中...
-  [requirements-defining] ステップ 4/5: ユーザーストーリーを作成中...
-  [requirements-defining] ステップ 5/5: index.mdを作成中...
-  [requirements-defining] 完了: 5ファイル作成
+  [requirement-management] ステップ 1/6: 入力要件を読み込み中...
+  [requirement-management] ステップ 2/6: 情報を分類中（明示/不明）...
+  [requirement-management] ステップ 3/6: 既存要求との衝突を確認中...
+  [requirement-management] ステップ 4/6: 要求とストーリーをYAMLに追記中...
+  [requirement-management] ステップ 5/6: validate で検査中...
+  [requirement-management] 完了: 要求5件を追加、エラー0件
 ```
 
 ### 情報分類の段階的処理
@@ -79,8 +90,7 @@ metadata:
 フォールバック手順:
   1. スキル実行を中断
   2. テンプレートファイルを直接参照:
-     - requirements: requirements-defining/assets/templates/
-     - design: software-designing/assets/templates/
+     - requirements: requirement-management/assets/templates/
      - tasks: task-planning/assets/templates/
   3. Writeツールでテンプレートに基づきドキュメントを手動作成
   4. 作成後にチェックリストで品質確認
@@ -90,16 +100,17 @@ metadata:
 
 ## 概要
 
-このスキルは、以下の6つのサブスキルを連携させて、要件定義から実装・メンテナンスまでの全工程を管理します：
+このスキルは、以下のサブスキルを連携させて、要求管理から実装・メンテナンスまでの全工程を管理します（先頭4件が現行、残り3件は非推奨）：
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| **requirements-defining** | EARS記法による要件定義 | docs/sdd/requirements/ |
-| **software-designing** | 技術アーキテクチャ設計 | docs/sdd/design/ |
+| **requirement-management** | 要求・ストーリー・理由の管理と矛盾の機械検証 | docs/requirements/ |
+| ~~requirements-defining~~（非推奨） | EARS記法による要件定義 | docs/sdd/requirements/（保守のみ） |
+| ~~software-designing~~（非推奨） | 技術アーキテクチャ設計 | docs/sdd/design/（保守のみ）。今後の設計はPR本文へ |
 | **task-planning** | AIエージェント向けタスク分解 | **GitHub Issue（デフォルト）** / docs/sdd/tasks/（オプション） |
 | **task-executing** | タスク実行・逆順レビュー | 実装コード |
 | **sdd-troubleshooting** | 問題分析・修正方針策定 | docs/sdd/troubleshooting/, **GitHub Issue（修正タスク）** |
-| **sdd-document-management** | ドキュメント管理・メンテナンス | docs/sdd/archive/, docs/sdd/reports/ |
+| ~~sdd-document-management~~（非推奨） | ドキュメント管理・メンテナンス | docs/sdd/archive/, docs/sdd/reports/（保守のみ） |
 
 > **タスクの出力先（重要）**: タスクは**デフォルトでGitHub Issueとして起票**する（1タスク＝1 Issue、詳細はIssue本文に集約、`label:sdd:task` で一覧＝目次）。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成する。詳細は `task-planning/SKILL.md` を参照。
 
@@ -141,7 +152,7 @@ docs/sdd/
 
 ### 全体管理
 - 3つのドキュメント間の整合性を確認したい場合
-- 逆順レビュー（タスク → 設計 → 要件）を実施したい場合
+- 逆順レビュー（実装 → タスク → 要求）を実施したい場合
 
 ### 実装フェーズ
 - docs/sdd/tasks/に沿って実装を行う場合
@@ -166,12 +177,12 @@ docs/sdd/
 
 ### 個別作業が必要な場合
 特定の工程のみ実施する場合は、各サブスキルを直接使用：
-- 要件定義のみ → `requirements-defining`
-- 設計のみ → `software-designing`
+- 要求の追加・変更・廃止のみ → `requirement-management`
 - タスク計画のみ → `task-planning`
 - 実装のみ → `task-executing`
 - 問題分析のみ → `sdd-troubleshooting`
-- ドキュメント管理のみ → `sdd-document-management`
+- 設計のみ → スキルは使わない。実装時にPR本文へ設計ノートを書く
+- 既存 `docs/sdd/` の保守のみ → 非推奨サブスキル（`requirements-defining` / `software-designing` / `sdd-document-management`）
 
 ## ワークフロー
 
@@ -182,10 +193,10 @@ docs/sdd/
 ```text
 1. 初期化 → docs/sdd/ディレクトリ構造を作成
       ↓ ★ ユーザーに報告 ★
-2. requirements-defining → docs/sdd/requirements/
+2. requirement-management → docs/requirements/（要求・ストーリー・理由）
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
-3. software-designing → docs/sdd/design/
-      ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
+3. 設計はここでは作らない（実装時にPR本文へ記載する）
+      ↓
 4. task-planning → GitHub Issue起票（デフォルト） / docs/sdd/tasks/（オプション）
       ↓ ★ ユーザーに結果（起票Issue番号一覧）を提示・承認待ち ★（ここで応答を返す）
 5. 実行モード判定: Jules API / Agent tool並列処理（タスク実行フェーズのみ）
@@ -250,8 +261,8 @@ Jules API（JULES_API_KEY）が利用可能な場合のモード判定とアサ�
 「docsディレクトリを初期化してください」と依頼されたら：
 
 1. **ディレクトリ構造の作成**
-2. **requirements/index.md** - テンプレート: `requirements-defining/assets/templates/requirements_index_template_ja.md`
-3. **design/index.md** - テンプレート: `software-designing/assets/templates/design_index_template_ja.md`
+2. **docs/requirements/** - `requirement-management` の初期化手順に従い、`glossary.yaml` と `<ドメイン>.yaml` を作成する
+3. **design/**: 作成しない。設計は実装時にPR本文へ記載する
 4. **タスク**: デフォルトはGitHub Issue起票のため `tasks/` は作成しない。ファイルモード（オプション）指定時のみ **tasks/index.md** を作成 - テンプレート: `task-planning/assets/templates/tasks_index_template_ja.md`
 
 ## 逆順レビュープロセス
@@ -264,7 +275,7 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 ## EARS記法
 
-詳細は [requirements-defining/references/ears_notation_ja.md](../requirements-defining/references/ears_notation_ja.md) を参照。
+詳細は [requirements-defining/references/ears_notation_ja.md](../requirements-defining/references/ears_notation_ja.md) を参照（同スキルは非推奨だが、EARS記法のリファレンスとしては引き続き有効）。
 
 ## 自律実行モード（orchestrating-agents連携）
 
@@ -288,8 +299,7 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 | サブスキル | 階層モード | 理由 |
 |-----------|-----------|------|
-| requirements-defining | 2階層 | 単一作業、並列化不要 |
-| software-designing | 2階層 | 同上 |
+| requirement-management | 2階層 | 単一作業、並列化不要 |
 | task-planning | 2階層 | 同上 |
 | task-executing | 3階層 | 複数タスクの並列実行が可能 |
 | sdd-troubleshooting | 条件分岐 | 仮説3つ以上なら3階層 |
@@ -312,9 +322,12 @@ docs/sdd/tasks/のタスクとTodoWriteの同期ルール。詳細は [reference
 - タスク同期ガイド: `references/task_sync_guide_ja.md`
 
 ### サブスキル
-- 要件定義: `requirements-defining/SKILL.md`
-- 設計: `software-designing/SKILL.md`
+- 要求管理: `requirement-management/SKILL.md`
 - タスク計画: `task-planning/SKILL.md`
 - タスク実行: `task-executing/SKILL.md`
 - トラブルシューティング: `sdd-troubleshooting/SKILL.md`
-- ドキュメント管理: `sdd-document-management/SKILL.md`
+- 移行手順: `requirement-management/references/migration_from_sdd_ja.md`
+
+非推奨（既存 docs/sdd/ の保守時のみ）:
+
+- `requirements-defining/SKILL.md` / `software-designing/SKILL.md` / `sdd-document-management/SKILL.md`

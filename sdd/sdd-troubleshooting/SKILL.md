@@ -36,7 +36,7 @@ metadata:
       ↓
 3. 根本原因の分析（コードを追跡して原因を特定）
       ↓
-4. 仕様との照合（docs/sdd/requirements/, docs/sdd/design/）
+4. 仕様との照合（docs/requirements/ の要求、およびPR本文の設計ノート）
       ↓
 5. 修正方針の策定（どう直すか、影響範囲は）
       ↓
@@ -107,8 +107,8 @@ metadata:
 
 ### ステップ3: 仕様との照合
 
-- **要件定義との照合**: docs/sdd/requirements/を参照
-- **設計との照合**: docs/sdd/design/を参照
+- **要求との照合**: docs/requirements/ を参照
+- **要求との照合**: docs/requirements/ の要求と `verification` を参照。設計方針はPR本文の設計ノートを参照
 - **乖離の分類**:
   - 実装バグ（仕様は正しいが実装が間違っている）
   - 仕様バグ（仕様自体に問題がある）
@@ -165,16 +165,16 @@ docs/sdd/troubleshooting/
 
 ```text
 sdd-documentation
-    ├── requirements-defining → docs/sdd/requirements/
-    ├── software-designing   → docs/sdd/design/
+    ├── requirement-management → docs/requirements/
+    ├── 設計                    → PR本文（永続化しない）
     ├── task-planning        → GitHub Issue（デフォルト）/ docs/sdd/tasks/
     ├── task-executing       → 実装コード
     └── sdd-troubleshooting  → 問題分析・修正タスク（このスキル）
 ```
 
 連携するドキュメント:
-- **参照**: docs/sdd/requirements/（仕様照合用）
-- **参照**: docs/sdd/design/（仕様照合用）
+- **参照**: docs/requirements/（仕様照合用）
+- **参照**: docs/requirements/（要求）、PR本文の設計ノート（設計方針）
 - **作成**: 修正タスク（デフォルト: GitHub Issue `sdd:task`+`sdd:bugfix` / オプション: docs/sdd/tasks/）
 - **作成**: docs/sdd/troubleshooting/（分析レポート）
 

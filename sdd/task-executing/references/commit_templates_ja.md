@@ -2,6 +2,13 @@
 
 task-executingスキルで使用するコミットテンプレートの詳細ガイドです。
 
+## 目次
+
+- [実装コミット](#実装コミット)
+- [ステータス更新（DONE）](#ステータス更新done)
+- [セーフポイントコミット](#セーフポイントコミット)
+- [ベストプラクティス](#ベストプラクティス)
+
 ## 実装コミット
 
 ```text
@@ -17,8 +24,9 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 
 ## 関連ドキュメント
 - タスク: #<Issue番号>（Issueモード）または docs/sdd/tasks/[phase]/TASK-XXX.md（ファイルモード）
-- docs/sdd/design/components/[name].md: 関連コンポーネント
-- docs/sdd/requirements/stories/US-XXX.md: 関連要件
+- 要求: REQ-XXXX, REQ-YYYY（docs/requirements/）
+- ストーリー: US-XXX
+- 設計: PR本文の設計ノート
 
 ## テスト
 - テスト実行結果（npm test等）
@@ -46,8 +54,9 @@ task-executingスキルで使用するコミットテンプレートの詳細ガ
 
 ## 関連ドキュメント
 - docs/sdd/tasks/phase-1/TASK-001.md: タスク詳細
-- docs/sdd/design/components/authentication.md: AuthenticationComponent
-- docs/sdd/requirements/stories/US-001.md: REQ-001, REQ-002
+- 要求: REQ-0001, REQ-0002（docs/requirements/auth.yaml）
+- ストーリー: US-001
+- 設計: PR本文の設計ノート
 
 ## テスト
 npm test: 15 passed, 0 failed

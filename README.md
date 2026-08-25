@@ -22,13 +22,14 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 
 | カテゴリ | スキル | 説明 |
 |---------|--------|------|
-| **SDD** | sdd-documentation | SDDオーケストレーター（6つのサブスキルを統括） |
-| | requirements-defining | EARS記法による要件定義 |
-| | software-designing | 技術アーキテクチャ設計 |
+| **SDD** | sdd-documentation | SDDオーケストレーター（4つの現行サブスキルを統括） |
+| | requirement-management | 要求・ストーリー・理由をYAMLレジストリで管理し、矛盾を機械検証（設計は永続化しない） |
 | | task-planning | AIエージェント向けタスク分解（デフォルト: GitHub Issue起票 / オプション: ファイル生成） |
 | | task-executing | タスク実行・逆順レビュー |
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
-| | sdd-document-management | ドキュメント管理・メンテナンス |
+| | ~~requirements-defining~~ | **非推奨** → requirement-management（既存 docs/sdd/requirements/ の保守のみ） |
+| | ~~software-designing~~ | **非推奨** → 設計はPR本文に記載（既存 docs/sdd/design/ の保守のみ） |
+| | ~~sdd-document-management~~ | **非推奨** → reqctl.py validate（既存 docs/sdd/ の保守のみ） |
 | **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
 | | self-review | サブエージェント並列によるローカル変更の6観点セルフレビュー |
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
@@ -117,11 +118,16 @@ claude_skils/
 │   ├── sdd-documentation/             # SDDオーケストレータースキル
 │   │   ├── SKILL.md
 │   │   └── references/
-│   ├── requirements-defining/         # 要件定義サブスキル
+│   ├── requirement-management/        # 要求管理スキル（YAMLレジストリ＋矛盾検証）
+│   │   ├── SKILL.md
+│   │   ├── scripts/                   # reqctl.py（検証・生成・影響分析）
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── requirements-defining/         # 要件定義サブスキル（非推奨）
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
-│   ├── software-designing/            # 設計サブスキル
+│   ├── software-designing/            # 設計サブスキル（非推奨）
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
@@ -135,7 +141,7 @@ claude_skils/
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
-│   └── sdd-document-management/       # ドキュメント管理スキル
+│   └── sdd-document-management/       # ドキュメント管理スキル（非推奨）
 │       ├── SKILL.md
 │       ├── assets/templates/
 │       └── references/

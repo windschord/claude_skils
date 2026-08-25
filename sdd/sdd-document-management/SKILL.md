@@ -1,11 +1,25 @@
 ---
 name: sdd-document-management
-description: SDDドキュメントの整合性チェック、実装同期確認、アーカイブ（CLAUDE.md同期含む）、ファイル最適化を行う。ドキュメント間の矛盾検出、実装との乖離確認、完了タスクの整理と仕様のCLAUDE.md転記、肥大化ファイルの分割が必要な場合に使用する。Do NOT use for ドキュメントの新規作成（requirements-defining、software-designing、task-planningを使用すること）。
+description: 【非推奨】要求の整合性チェックは requirement-management の reqctl.py validate に統合された。既存の docs/sdd/ を保守する場合にのみ使用する。SDDドキュメントの整合性チェック、実装同期確認、アーカイブ（CLAUDE.md同期含む）、ファイル最適化を行う。Do NOT use for 要求の矛盾検出（requirement-management を使用すること）。
 metadata:
   version: "1.0.0"
 ---
 
-# SDDドキュメント管理スキル
+# SDDドキュメント管理スキル（非推奨）
+
+> **⚠️ このスキルは非推奨です。**
+>
+> 要求の整合性チェックは `requirement-management` の `reqctl.py validate` に統合されました。人手のレビューではなく機械検証で無矛盾性を保証できます。
+>
+> | 本スキルの機能 | 移行先 |
+> |---|---|
+> | 整合性チェック（要求間の矛盾検出） | `reqctl.py validate`（数値・事実の矛盾、循環、参照切れを機械検出） |
+> | 検証手段の実在確認 | `reqctl.py validate --check-tests`（`verification` が指すテストファイルの存在確認。実装コードと要求の乖離は検査しない） |
+> | アーカイブ | 物理削除を禁止し `deprecated` / `superseded` の墓標として残す運用 |
+> | ファイル最適化 | レジストリのドメイン単位分割（`references/change_workflow_ja.md`） |
+>
+> 移行手順は `sdd/requirement-management/references/migration_from_sdd_ja.md` を参照してください。
+> 既存の `docs/sdd/` を保守する場合にのみ、以下の手順を使用します。
 
 SDDワークフローで作成されたドキュメントのメンテナンス・整理を行い、品質と一貫性を維持します。
 

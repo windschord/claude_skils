@@ -8,7 +8,7 @@
 
 ### sdd-documentation（オーケストレーター）
 
-SDDドキュメント全体を統括するオーケストレータースキルです。6つのサブスキルを統合管理し、要件定義から実装までの全工程をカバーします。
+SDDドキュメント全体を統括するオーケストレータースキルです。4つの現行サブスキルを統合管理し、要求管理から実装までの全工程をカバーします（旧サブスキル3件は非推奨）。
 
 **使用開始:**
 
@@ -20,19 +20,22 @@ docsディレクトリを初期化してください
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| requirements-defining | EARS記法による要件定義 | `docs/sdd/requirements/` |
-| software-designing | 技術アーキテクチャ設計 | `docs/sdd/design/` |
+| requirement-management | 要求・ユーザーストーリー・理由・用語・要求間の関係の管理と矛盾の機械検証 | `docs/requirements/` |
+| ~~requirements-defining~~ | **非推奨** → requirement-management | `docs/sdd/requirements/`（保守のみ） |
+| ~~software-designing~~ | **非推奨** → 設計はPR本文へ | `docs/sdd/design/`（保守のみ） |
 | task-planning | AIエージェント向けタスク分解 | **GitHub Issue（デフォルト）** / `docs/sdd/tasks/`（オプション） |
 | task-executing | タスク実行・逆順レビュー | 実装コード |
 | sdd-troubleshooting | 問題分析・修正方針策定 | `docs/sdd/troubleshooting/`, **GitHub Issue（修正タスク）** |
-| sdd-document-management | ドキュメント管理・メンテナンス | `docs/sdd/archive/`, `docs/sdd/reports/` |
+| ~~sdd-document-management~~ | **非推奨** → `reqctl.py validate` | `docs/sdd/archive/`, `docs/sdd/reports/`（保守のみ） |
+
+> **非推奨スキルについて**: `requirements-defining` / `software-designing` / `sdd-document-management` は `requirement-management` への統合により非推奨になりました。ファイルは残してありますが、新規の利用では使用しないでください。既存の `docs/sdd/` を持つプロジェクトの移行手順は `sdd/requirement-management/references/migration_from_sdd_ja.md` にあります。
 
 **主な機能:**
 
 - EARS記法による構造化された要件定義
 - 技術設計の文書化（Mermaidダイアグラム対応）
 - AIエージェント向けに最適化されたタスク分解
-- タスク実行と逆順レビュー（実装→タスク→設計→要件の整合性チェック）
+- タスク実行と逆順レビュー（実装→タスク→要求の整合性チェック）
 - エージェントチームによる並列実行
 - TodoWriteとのタスク同期
 
@@ -40,7 +43,7 @@ docsディレクトリを初期化してください
 
 ---
 
-### requirements-defining
+### requirements-defining（非推奨）
 
 EARS記法を用いた要件定義書を作成・管理するスキルです。
 
@@ -62,7 +65,7 @@ EARS記法を用いた要件定義書を作成・管理するスキルです。
 
 ---
 
-### software-designing
+### software-designing（非推奨）
 
 技術アーキテクチャ・設計書を作成・管理するスキルです。
 
@@ -125,7 +128,7 @@ SDDタスク（GitHub Issue）を進めてください
 - 並列実行可能なタスクの並列処理（3つ以上でエージェントチーム使用）
 - タスクごとの自動コミット作成
 - タスク完了前チェックリスト（UI変更、外部連携、データ操作等）
-- 逆順レビュー（実装→タスク→設計→要件）
+- 逆順レビュー（実装→タスク→要求）
 
 ---
 
@@ -150,7 +153,7 @@ SDDタスク（GitHub Issue）を進めてください
 
 ---
 
-### sdd-document-management
+### sdd-document-management（非推奨）
 
 ドキュメントのメンテナンス・整理を行うスキルです。
 
@@ -164,6 +167,50 @@ SDDタスク（GitHub Issue）を進めてください
 | ファイル最適化 | 肥大化ファイルの分割・重複統合 |
 
 すべての操作でユーザー承認が必須です。
+
+---
+
+### requirement-management
+
+要求とその理由を軸に、ユーザーストーリー・用語・要求間の関係までをYAMLレジストリで管理し、要求どうしの矛盾を機械的に検証するスキルです。設計書は作りません。`requirements-defining` / `software-designing` / `sdd-document-management` の移行先であり、これらとの併用はしません。
+
+**使用開始:**
+
+```text
+要求を追加したい
+要求の矛盾をチェックしたい
+```
+
+**特徴:**
+
+| 項目 | 方針 |
+|------|------|
+| 永続化するもの | 要求・ユーザーストーリー・理由・用語・要求間の関係のみ |
+| 永続化しないもの | 設計書（設計は実装時に行い、PR本文とGitHubコメントにのみ記載） |
+| テストの合格条件 | 全有効要求に検証手段があり、全ユーザーストーリーが要求で覆われていること |
+| 削除の扱い | 物理削除は禁止。理由付きの墓標（`deprecated` / `superseded`）として残す |
+
+**成果物:**
+
+```text
+docs/requirements/
+├── glossary.yaml            # 用語集＋検査ポリシー
+├── <ドメイン>.yaml           # 要求とユーザーストーリー
+└── generated/               # 自動生成（手で編集しない）
+    ├── index.md             # 全要求一覧＋墓標
+    ├── traceability.md      # ストーリー→要求→検証 マトリクス
+    └── graph.md             # Mermaid関係グラフ
+```
+
+**検証コマンド:**
+
+```bash
+python3 scripts/reqctl.py validate --strict --check-tests   # 矛盾・欠落の検出
+python3 scripts/reqctl.py impact REQ-0002                   # 変更前の影響範囲確認
+python3 scripts/reqctl.py generate                          # 生成物の更新
+```
+
+数値制約の充足不能（例: 同じ指標に「2秒以内」と「5秒以上」）、事実主張の食い違い、依存の循環、廃止済み要求への参照、検証手段の欠落などをCIで検出し、マージを阻止できます。
 
 ---
 
