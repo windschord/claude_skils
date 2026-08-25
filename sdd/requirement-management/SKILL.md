@@ -1,6 +1,6 @@
 ---
 name: requirement-management
-description: 要求とその理由だけをYAMLレジストリで管理し、追加・変更・廃止のたびに要求間の整合性と矛盾を機械的に検証する。要求の追加/変更/削除、矛盾チェック、トレーサビリティ確認、ユーザーストーリーと受入条件の管理が必要な場合に使用する。設計は実装時にPR本文・GitHubコメントに書くだけで永続化しない運用を前提とする。requirements-defining / software-designing / sdd-document-management の移行先。Do NOT use for 設計書の作成・永続化（設計はPRに書く）。
+description: 要求・ユーザーストーリー・理由・用語・要求間の関係をYAMLレジストリで管理し、追加・変更・廃止のたびに要求間の整合性と矛盾を機械的に検証する。要求の追加/変更/削除、矛盾チェック、トレーサビリティ確認、ユーザーストーリーと受入条件の管理が必要な場合に使用する。設計は実装時にPR本文・GitHubコメントに書くだけで永続化しない運用を前提とする。requirements-defining / software-designing / sdd-document-management の移行先。Do NOT use for 設計書の作成・永続化（設計はPRに書く）。
 metadata:
   version: "1.0.0"
 ---

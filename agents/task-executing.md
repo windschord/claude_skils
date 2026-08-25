@@ -16,14 +16,19 @@ docs/sdd/tasks/に記載されたタスクを実行し、SDDワークフロー�
 このエージェントは、SDDワークフローの実装フェーズを担当します：
 
 ```text
-requirement-management → task-planning → task-executing（設計はPR本文に記載）
-   (docs/requirements/)    (PR本文に記載)       (GitHub Issue)    (実装)
+requirement-management  →  task-planning        →  task-executing
+(docs/requirements/)       (GitHub Issue 既定 /    (実装 ＋ 設計をPR本文に記載)
+                            docs/sdd/tasks/)
 ```
 
 ### 主な機能
 
-- docs/sdd/tasks/からタスクを読み取り、実行順序を決定
-- タスクごとのステータス更新（TODO → IN_PROGRESS → REVIEW → DONE、レビュー不要時はREVIEWをスキップ）
+- タスクの取得と実行順序の決定
+  - **Issueモード（既定）**: `mcp__github__list_issues`（labels: `sdd:task`, state: open）で取得し、`sdd:status/*` ラベルで状態を判別する
+  - **ファイルモード**: `docs/sdd/tasks/` から読み取る
+- タスクごとのステータス更新
+  - Issueモード: ラベル `sdd:status/todo` → `in-progress` → `review` を付け替え、DONEはIssueをcloseする
+  - ファイルモード: TODO → IN_PROGRESS → REVIEW → DONE（レビュー不要時はREVIEWをスキップ）
 - 統一されたコミットテンプレートによるGit管理
 - 実装後の逆順レビュー（実装→タスク→要求の整合性確認。設計はPR本文の設計ノートと突き合わせる）
 - 並列実行可能なタスクの並列処理
@@ -32,7 +37,7 @@ requirement-management → task-planning → task-executing（設計はPR本文�
 
 ### 実装フェーズ
 
-- docs/sdd/tasks/のタスクを実行する場合
+- `sdd:task` ラベルのIssue（既定）または `docs/sdd/tasks/` のタスクを実行する場合
 - SDDに沿った実装を行う場合
 - タスクの進捗を管理したい場合
 

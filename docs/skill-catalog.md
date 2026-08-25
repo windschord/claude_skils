@@ -20,7 +20,7 @@ docsディレクトリを初期化してください
 
 | サブスキル | 役割 | 成果物 |
 |-----------|------|--------|
-| requirement-management | 要求・ストーリー・理由の管理と矛盾の機械検証 | `docs/requirements/` |
+| requirement-management | 要求・ユーザーストーリー・理由・用語・要求間の関係の管理と矛盾の機械検証 | `docs/requirements/` |
 | ~~requirements-defining~~ | **非推奨** → requirement-management | `docs/sdd/requirements/`（保守のみ） |
 | ~~software-designing~~ | **非推奨** → 設計はPR本文へ | `docs/sdd/design/`（保守のみ） |
 | task-planning | AIエージェント向けタスク分解 | **GitHub Issue（デフォルト）** / `docs/sdd/tasks/`（オプション） |

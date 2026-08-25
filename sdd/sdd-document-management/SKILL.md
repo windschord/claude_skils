@@ -14,7 +14,7 @@ metadata:
 > | 本スキルの機能 | 移行先 |
 > |---|---|
 > | 整合性チェック（要求間の矛盾検出） | `reqctl.py validate`（数値・事実の矛盾、循環、参照切れを機械検出） |
-> | 実装同期チェック | `reqctl.py validate --check-tests`（検証手段の実在確認） |
+> | 検証手段の実在確認 | `reqctl.py validate --check-tests`（`verification` が指すテストファイルの存在確認。実装コードと要求の乖離は検査しない） |
 > | アーカイブ | 物理削除を禁止し `deprecated` / `superseded` の墓標として残す運用 |
 > | ファイル最適化 | レジストリのドメイン単位分割（`references/change_workflow_ja.md`） |
 >

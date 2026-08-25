@@ -43,7 +43,7 @@ docs/sdd/tasks/                     → 移行しない（GitHub Issue運用の�
 
 ```bash
 cd <プロジェクトルート>
-mkdir -p docs/requirements
+mkdir -p docs/requirements scripts
 cp <スキルのパス>/assets/templates/glossary_template_ja.yaml docs/requirements/glossary.yaml
 cp <スキルのパス>/assets/templates/requirements_registry_template_ja.yaml docs/requirements/<ドメイン>.yaml
 cp <スキルのパス>/scripts/reqctl.py scripts/reqctl.py

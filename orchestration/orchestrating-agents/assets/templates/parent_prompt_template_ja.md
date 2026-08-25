@@ -43,7 +43,7 @@ task_id: TASK-001
 task_type: requirement-management
 
 Objective
-ユーザー認証機能の要件定義書を作成する
+ユーザー認証機能の要求を docs/requirements/auth.yaml に登録し、reqctl.py validate を通す
 
 Context
 プロジェクト: Webアプリケーション

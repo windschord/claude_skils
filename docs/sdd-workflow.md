@@ -70,9 +70,12 @@ docs/sdd/
 
 **チェックポイント:**
 
-- すべての要件がEARS記法に従っている
-- 要件IDが一意（REQ-XXX、NFR-XXX）
-- 各要件がテスト可能で測定可能
+- `python3 scripts/reqctl.py validate --strict` がエラー・警告ゼロで終了する
+- すべての要求に理由（`rationale.why`）がある
+- 有効な要求に検証手段（`verification`）がある
+- 数値要件が `measures` に構造化され、矛盾が機械検出できる状態にある
+
+旧構成（`docs/sdd/requirements/` のMarkdown）は非推奨。移行手順は `sdd/requirement-management/references/migration_from_sdd_ja.md` を参照。
 
 ### Phase 2: 設計
 
@@ -173,9 +176,9 @@ sdd-troubleshootingスキルを使用
 | パターン | 使用フェーズ | 説明 |
 |---------|------------|------|
 | 並列タスク実行 | task-executing | 依存関係のないタスクを並列実装 |
-| 並列レビュー | 逆順レビュー | requirements↔design↔tasksの整合性を並列チェック |
+| 並列レビュー | 逆順レビュー | 実装↔タスク↔要求の整合性を並列チェック |
 | 競合仮説デバッグ | sdd-troubleshooting | 複数仮説を並列調査 |
-| 並列ドキュメントチェック | ~~sdd-document-management~~（非推奨） | 4機能を並列実行。要求の検査は `reqctl.py validate` に移行 |
+| 並列ドキュメントチェック | ~~sdd-document-management~~（非推奨） | 5機能を並列実行。要求の検査は `reqctl.py validate` に移行 |
 
 ### チーム運用ルール
 

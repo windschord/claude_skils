@@ -43,13 +43,13 @@
 sdd-documentation（オーケストレーター）
     │
     ├── requirement-management（要求管理）
-    │       └── docs/sdd/requirements/
-    │               ├── index.md
-    │               ├── stories/US-XXX.md
-    │               └── nfr/*.md
+    │       └── docs/requirements/
+    │               ├── glossary.yaml
+    │               ├── <ドメイン>.yaml
+    │               └── generated/（index.md / traceability.md / graph.md）
     │
-    ├── 設計（PR本文に記載・永続化しない）
-    │       └── docs/sdd/design/
+    ├── 設計（PR本文とGitHubコメントに記載・永続化しない）
+    │       └── レジストリにはPRのURLを design_refs として残すのみ
     │               ├── index.md
     │               ├── components/*.md
     │               ├── api/*.md
@@ -311,7 +311,7 @@ SDDワークフローの特定フェーズでAgent tool（`isolation: worktree`�
 
 ### ドキュメント管理での並列処理
 
-フルスキャン時にAgent tool（`isolation: worktree`）で4機能を並列実行:
+フルスキャン時にAgent tool（`isolation: worktree`）で5機能を並列実行:
 
 1. 整合性チェック
 2. 実装同期チェック

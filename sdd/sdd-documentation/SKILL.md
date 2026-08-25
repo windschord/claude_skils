@@ -53,7 +53,7 @@ metadata:
 - **ドキュメント作成フェーズ（requirements/design/tasks）**: 並列処理判定は不要。順次作成する
 - **タスク実行フェーズ**: タスク特定後に並列処理判定を実施（Agent tool + worktree）
 - **トラブルシューティング**: 原因候補列挙後に並列処理判定を実施（Agent tool）
-- **ドキュメント管理フルスキャン**: 4機能をAgent tool + worktreeで並列実行
+- **ドキュメント管理フルスキャン**: 5機能をAgent tool + worktreeで並列実行
 
 ### 進捗の可視化
 

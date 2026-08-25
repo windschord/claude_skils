@@ -184,9 +184,14 @@ def load_registry(root: Path) -> Registry:
                 continue
             reg.terms[name] = item
 
-        if isinstance(data.get("policy"), dict):
-            reg.policy.update(data["policy"])
+        if "policy" in data and data["policy"] is not None:
+            if isinstance(data["policy"], dict):
+                reg.policy.update(data["policy"])
+            else:
+                reg.load_errors.append(
+                    (rel, f"policy はマッピングである必要があります（実際: {type(data['policy']).__name__}）"))
 
+    normalize_policy(reg)
     normalize_registry(reg)
     return reg
 
@@ -242,6 +247,39 @@ def _normalize(item: dict, target: str, list_fields, map_fields, str_fields) -> 
                                    f"{field} の要素はマッピングである必要があります"))
                 item[field] = kept
     return out
+
+
+def normalize_policy(reg: "Registry") -> None:
+    """policy の各フィールドの型を検証し、不正な値を既定値へ落とす.
+
+    `stale_days` の int() 変換や `multi_value_keys` の set() 化で
+    例外を出さないようにする。不正な値は E-SCHEMA として報告する。
+    """
+    policy = reg.policy
+
+    value = policy.get("stale_days")
+    if value is not None and (not isinstance(value, int) or isinstance(value, bool)):
+        reg.type_errors.append(finding(
+            LEVEL_ERROR, "E-SCHEMA", "policy",
+            f"stale_days は整数である必要があります（実際: {type(value).__name__}）"))
+        policy.pop("stale_days")
+
+    for field in ("multi_value_keys", "ambiguous_words"):
+        value = policy.get(field)
+        if value is None:
+            continue
+        if not isinstance(value, list):
+            reg.type_errors.append(finding(
+                LEVEL_ERROR, "E-SCHEMA", "policy",
+                f"{field} はリストである必要があります（実際: {type(value).__name__}）"))
+            policy.pop(field)
+            continue
+        kept = [v for v in value if isinstance(v, str)]
+        if len(kept) != len(value):
+            reg.type_errors.append(finding(
+                LEVEL_ERROR, "E-SCHEMA", "policy",
+                f"{field} の要素は文字列である必要があります"))
+            policy[field] = kept
 
 
 def normalize_registry(reg: "Registry") -> None:
@@ -568,18 +606,25 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
         # 値を確定させている要求（下限側・上限側）を特定し、!= 側がそれらすべてと
         # 許容済み衝突を宣言している場合にのみ報告を省く。要求単位で除外すると、
         # その要求が無関係な相手と起こす矛盾まで隠れてしまう。
-        lo, lo_strict, lo_src = -math.inf, False, None
-        hi, hi_strict, hi_src = math.inf, False, None
+        # 同じ強さの境界を複数の要求が作る場合があるため、確定元は集合で保持する。
+        # 1件しか保持しないと、!= 側が一部の要求とだけ衝突を宣言したときに
+        # 残りの要求との未宣言の矛盾が隠れてしまう。
+        lo, lo_strict, lo_srcs = -math.inf, False, set()
+        hi, hi_strict, hi_srcs = math.inf, False, set()
         for rid, m in ranged:
             low, low_strict, high, high_strict = _interval(m["op"], m["value"])
             if low > lo or (low == lo and low_strict and not lo_strict):
-                lo, lo_strict, lo_src = low, low_strict, rid
+                lo, lo_strict, lo_srcs = low, low_strict, {rid}
+            elif low == lo and low_strict == lo_strict and low != -math.inf:
+                lo_srcs.add(rid)
             if high < hi or (high == hi and high_strict and not hi_strict):
-                hi, hi_strict, hi_src = high, high_strict, rid
+                hi, hi_strict, hi_srcs = high, high_strict, {rid}
+            elif high == hi and high_strict == hi_strict and high != math.inf:
+                hi_srcs.add(rid)
 
         if lo == hi and not lo_strict and not hi_strict:
             point = lo
-            sources = {src for src in (lo_src, hi_src) if src is not None}
+            sources = lo_srcs | hi_srcs
             for rid, m in entries:
                 if m["op"] != "!=" or m["value"] != point:
                     continue

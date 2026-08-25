@@ -45,7 +45,7 @@ sdd-documentation（オーケストレーター）
 ```
 
 > **設計の記録先**: 設計は実装時に必ず行うが、PR本文とGitHubコメントにのみ記載し、リポジトリには永続化しない。レジストリにはPRのURLを `design_refs` として残す。
-
+>
 > **タスクの出力先**: SDDスキルはタスクを**デフォルトでGitHub Issueとして起票**する（1タスク＝1 Issue、詳細はIssue本文に集約、ラベル `sdd:task` で一覧＝目次）。ステータスはラベル `sdd:status/*`、DONEはIssueのcloseで表現。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成する。
 
 ## スキルファイル一覧
