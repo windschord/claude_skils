@@ -549,24 +549,32 @@ def check_numeric_conflicts(reg: Registry) -> list[dict]:
         # 上のペア判定で網羅できる。許容済みペアを二重に報告しないよう、
         # 全体判定は行わない。
 
-        # != と 1点確定の衝突（許容済み衝突を含む要求は判定から外す）
-        in_accepted = {
-            rid for rid, _ in entries
-            if any(frozenset((rid, other)) in accepted for other, _ in entries if other != rid)
-        }
-        iv = (-math.inf, False, math.inf, False)
+        # != と 1点確定の衝突。
+        # 値を確定させている要求（下限側・上限側）を特定し、!= 側がそれらすべてと
+        # 許容済み衝突を宣言している場合にのみ報告を省く。要求単位で除外すると、
+        # その要求が無関係な相手と起こす矛盾まで隠れてしまう。
+        lo, lo_strict, lo_src = -math.inf, False, None
+        hi, hi_strict, hi_src = math.inf, False, None
         for rid, m in ranged:
-            if rid in in_accepted:
-                continue
-            iv = _intersect(iv, _interval(m["op"], m["value"]))
-        if not _empty(iv) and iv[0] == iv[2]:
-            point = iv[0]
+            low, low_strict, high, high_strict = _interval(m["op"], m["value"])
+            if low > lo or (low == lo and low_strict and not lo_strict):
+                lo, lo_strict, lo_src = low, low_strict, rid
+            if high < hi or (high == hi and high_strict and not hi_strict):
+                hi, hi_strict, hi_src = high, high_strict, rid
+
+        if lo == hi and not lo_strict and not hi_strict:
+            point = lo
+            sources = {src for src in (lo_src, hi_src) if src is not None}
             for rid, m in entries:
-                if rid in in_accepted:
+                if m["op"] != "!=" or m["value"] != point:
                     continue
-                if m["op"] == "!=" and m["value"] == point:
-                    out.append(finding(LEVEL_ERROR, "E-CONFLICT-NUM", rid,
-                                       f"'{subject}' は他の制約により {point} に確定しますが、{rid} が != {point} を要求しています"))
+                others = {src for src in sources if src != rid}
+                if others and all(frozenset((rid, src)) in accepted for src in others):
+                    continue  # 確定させている要求すべてと衝突を宣言済み
+                out.append(finding(
+                    LEVEL_ERROR, "E-CONFLICT-NUM", rid,
+                    f"'{subject}' は {', '.join(sorted(sources))} により {point} に確定しますが、"
+                    f"{rid} が != {point} を要求しています"))
     return out
 
 
