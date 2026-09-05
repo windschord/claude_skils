@@ -434,7 +434,7 @@ PRのマージを確認したら`scripts/jules.sh close-session ${SESSION_ID}`�
 
 ## PRマージ後のセッションクローズ
 
-Julesの作業が完了しPRがマージされたら、`scripts/jules.sh close-session ${SESSION_ID}`でJulesセッションを削除する。
+Julesの作業完了後、PRがマージされたら、`scripts/jules.sh close-session ${SESSION_ID}`でJulesセッションを削除する。
 
 ```text
 1. GitHub側でPRがマージ済み（state: merged）であることを確認する
