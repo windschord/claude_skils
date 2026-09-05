@@ -79,6 +79,7 @@ JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
 | `approve-plan` | `<session_id>` | プラン承認 |
 | `send-message` | `<session_id>` / message: stdin | メッセージ送信 |
 | `list-activities` | `<session_id> [page_size=20]` | アクティビティ一覧 |
+| `close-session` | `<session_id>` | セッションを削除（`DELETE`）する。**元に戻せない**ため、PRのマージを確認した後にのみ実行する |
 | `get-pr-branch` | `<owner> <repo> <pr_number>` | PRのheadブランチ名取得 |
 
 ヘルプ表示: `scripts/jules.sh help`
@@ -417,6 +418,8 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 **マージ日時**: {日時}
 ```
 
+PRのマージを確認したら`scripts/jules.sh close-session ${SESSION_ID}`でJulesセッションを削除する（下記「PRマージ後のセッションクローズ」参照）。
+
 **段階4（レビュー対応時）**:
 ```markdown
 ## レビュー対応履歴
@@ -426,6 +429,23 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 **指摘内容**: [内容]
 **対応内容**: [要約]
 ```
+
+---
+
+## PRマージ後のセッションクローズ
+
+Julesの作業が完了しPRがマージされたら、`scripts/jules.sh close-session ${SESSION_ID}`でJulesセッションを削除する。
+
+```text
+1. GitHub側でPRがマージ済み（state: merged）であることを確認する
+   （pull_request_read等でmerged: trueを確認。マージ前・マージ判定不明の状態で実行しない）
+2. scripts/jules.sh close-session ${SESSION_ID}
+3. docs/sdd/tasks/のタスクファイルにクローズ日時を記録する
+```
+
+> **注意（元に戻せない）**: `close-session`は`DELETE /v1alpha/sessions/{sessionId}`を呼び出し、Jules側のセッション記録を完全に削除する。復元手段は無い。削除後は`get-session`・`list-activities`が404になるため、PR URL・Julesブランチ名など後で必要な情報は段階1〜3で必ずタスクファイルに記録してから実行すること。PRやコード自体（既にマージ済み）には影響しない。
+>
+> レビュー対応フローで既存セッションを再利用する可能性が残っている間（マージ前）はクローズしない。マージ後にレビュー指摘が来た場合はセッションを再利用できないため、新規セッションまたはローカル修正で対応する。
 
 ## リソース
 

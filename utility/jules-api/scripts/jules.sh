@@ -11,6 +11,7 @@
 #   jules.sh approve-plan <session_id>
 #   echo "message" | jules.sh send-message <session_id>
 #   jules.sh list-activities <session_id> [page_size=20]
+#   jules.sh close-session <session_id>
 #   jules.sh get-pr-branch <owner> <repo> <pr_number>
 #
 # 認証情報の解決（優先順）:
@@ -204,6 +205,14 @@ cmd_list_activities() {
   jules_curl 60 "${API_BASE}/sessions/${session_id}/activities?pageSize=${page_size}" | jq .
 }
 
+# セッションを削除する。DELETEは元に戻せないため、PRマージ確認後にのみ呼び出すこと
+cmd_close_session() {
+  local session_id="${1:?Usage: $0 close-session <session_id>}"
+  require_jules_key
+  jules_curl 30 "${API_BASE}/sessions/${session_id}" -X DELETE
+  echo "Jules session ${session_id} を削除しました" >&2
+}
+
 cmd_get_pr_branch() {
   local pr_usage="Usage: $0 get-pr-branch <owner> <repo> <pr_number>"
   local owner="${1:?${pr_usage}}"
@@ -226,6 +235,7 @@ case "$COMMAND" in
   approve-plan)    cmd_approve_plan "$@" ;;
   send-message)    cmd_send_message "$@" ;;
   list-activities) cmd_list_activities "$@" ;;
+  close-session)   cmd_close_session "$@" ;;
   get-pr-branch)   cmd_get_pr_branch "$@" ;;
   help|--help|-h)  usage ;;
   *)
