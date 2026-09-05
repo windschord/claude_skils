@@ -60,12 +60,15 @@ resolve_secret() {
   fi
 }
 
+# JULES_USE_CLOUD_CREDENTIAL=1 の場合、認証はクラウド環境のAPI credentials機能
+# （セッション外でエージェントプロキシがヘッダーを付与する仕組み）に委ねる
 using_cloud_credential() {
   [[ "${JULES_USE_CLOUD_CREDENTIAL:-}" == "1" ]]
 }
 
 require_jules_key() {
   if using_cloud_credential; then
+    # 1Password URI・直接キーと同時設定は認証方式が曖昧なため停止する
     if [[ -n "${JULES_API_KEY_OP_URI:-}" || -n "${JULES_API_KEY:-}" ]]; then
       die "JULES_USE_CLOUD_CREDENTIAL=1 と JULES_API_KEY_OP_URI/JULES_API_KEY が同時に設定されています。どちらの認証方式を使うか曖昧なため停止しました。クラウドのAPI credentials機能を使う場合は JULES_API_KEY_OP_URI/JULES_API_KEY を未設定にしてください。"
     fi
@@ -80,6 +83,7 @@ require_github_token() {
 
 jules_curl() {
   # jules_curl <max_time> <url> [curl args...]
+  # クラウド認証モードでは x-goog-api-key を付けない（エージェントプロキシがセッション外で付与するため）
   local max_time="$1" url="$2"
   shift 2
   if using_cloud_credential; then
