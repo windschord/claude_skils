@@ -21,8 +21,11 @@ metadata:
 |------|----------|------|
 | 1 | `JULES_API_KEY_OP_URI` / `GITHUB_TOKEN_OP_URI` | 1Passwordシークレット参照（`op://<vault>/<item>/<field>`）。実行時に`op read`で取得 |
 | 2 | `JULES_API_KEY` / `GITHUB_TOKEN` | シークレットの直接指定（後方互換） |
+| 3 | `JULES_USE_CLOUD_CREDENTIAL=1` | Jules宛リクエストの認証をClaude Codeクラウド環境のAPI credentials機能に委ねる（下記「クラウド環境でAPI credentialsを使う場合」参照）。GitHub側（`get-pr-branch`）は対象外で、従来通り`GITHUB_TOKEN_OP_URI`/`GITHUB_TOKEN`が必要 |
 
 **1Passwordシークレット参照を推奨する。** 環境変数には参照URIのみが載り、シークレット本体はプロセス環境・シェル履歴・設定ファイルに残らない。1Password CLI（`op`）のインストールとサインインが前提。
+
+`JULES_USE_CLOUD_CREDENTIAL=1`を設定した場合、`JULES_API_KEY_OP_URI`または`JULES_API_KEY`が同時に設定されているとスクリプトはエラーで停止する（どちらの認証方式を使うか曖昧なまま進めないため）。
 
 Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/settings.json`）に設定する例:
 
@@ -36,6 +39,30 @@ Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/setti
 ```
 
 `JULES_API_KEY_OP_URI`の設定時に`op`コマンドの不在や`op read`の失敗を検知した場合、スクリプトはエラーで停止する（直接指定へ黙ってフォールバックしない）。
+
+### クラウド環境でAPI credentialsを使う場合
+
+Claude Code のクラウド環境設定 → 対象環境を編集 →
+「認証情報を追加」で以下を入力する。
+
+| 項目               | 値                                    |
+|--------------------|----------------------------------------|
+| 追加先             | 対象のCloud environment                |
+| 名前               | 任意（例: Jules API）                  |
+| 認証情報タイプ     | Bearer のまま                          |
+| 許可ウェブサイト   | jules.googleapis.com                   |
+| カスタムヘッダー名 | x-goog-api-key に書き換える            |
+| プレフィックス     | 空にする（Bearer のままだと認証失敗する）|
+| 値                 | jules.google.com の Settings で発行したAPIキー |
+
+保存後は新しいセッションを開始してから反映される
+（実行中のセッションには反映されない）。
+
+設定後は以下で疎通確認する:
+
+```bash
+JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
+```
 
 ## スクリプト
 
