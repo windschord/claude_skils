@@ -267,6 +267,30 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}:sendMessage
 
 **レスポンス**: 空（エージェントの応答は次のアクティビティとして取得）
 
+#### Delete Session - セッション削除
+
+セッションを削除します。**元に戻せない**ため、PRのマージを確認した後にのみ呼び出す。
+
+```text
+DELETE /v1alpha/sessions/{sessionId}
+```
+
+```bash
+# 推奨: スクリプト経由
+scripts/jules.sh close-session "${SESSION_ID}"
+
+# 直接curl
+curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}" \
+  -X DELETE \
+  -H "x-goog-api-key: $JULES_API_KEY"
+```
+
+**リクエストボディ**: 空
+
+**レスポンス**: 空
+
+削除後は同セッションへの`get-session`・`list-activities`等が404になる。PR URL・Julesブランチ名など後で必要な情報は削除前に必ず記録すること。
+
 ### Activities API
 
 #### List Activities - アクティビティ一覧

@@ -11,6 +11,7 @@
 #   jules.sh approve-plan <session_id>
 #   echo "message" | jules.sh send-message <session_id>
 #   jules.sh list-activities <session_id> [page_size=20]
+#   jules.sh close-session <session_id>
 #   jules.sh get-pr-branch <owner> <repo> <pr_number>
 #
 # 認証情報の解決（優先順）:
@@ -18,6 +19,11 @@
 #      （op://<vault>/<item>/<field>）が設定されていれば、実行時に `op read` で取得する。
 #      環境変数には参照URIのみが載り、シークレット本体は載らないため安全。
 #   2. 未設定の場合は JULES_API_KEY / GITHUB_TOKEN を直接使用する（後方互換）。
+#   3. JULES_USE_CLOUD_CREDENTIAL=1 の場合、Jules宛リクエストの認証は
+#      Claude Codeクラウド環境のAPI credentials機能（セッション外でエージェント
+#      プロキシがヘッダーを自動付与）に委ねる。この場合キーはセッションの
+#      プロセス環境に一切現れないため、JULES_API_KEY_OP_URI/JULES_API_KEY は
+#      設定しない（設定されていればエラーで停止する）。GitHub側は対象外。
 set -euo pipefail
 
 API_BASE="https://jules.googleapis.com/v1alpha"
@@ -55,7 +61,20 @@ resolve_secret() {
   fi
 }
 
+# JULES_USE_CLOUD_CREDENTIAL=1 の場合、認証はクラウド環境のAPI credentials機能
+# （セッション外でエージェントプロキシがヘッダーを付与する仕組み）に委ねる
+using_cloud_credential() {
+  [[ "${JULES_USE_CLOUD_CREDENTIAL:-}" == "1" ]]
+}
+
 require_jules_key() {
+  if using_cloud_credential; then
+    # 1Password URI・直接キーと同時設定は認証方式が曖昧なため停止する
+    if [[ -n "${JULES_API_KEY_OP_URI:-}" || -n "${JULES_API_KEY:-}" ]]; then
+      die "JULES_USE_CLOUD_CREDENTIAL=1 と JULES_API_KEY_OP_URI/JULES_API_KEY が同時に設定されています。どちらの認証方式を使うか曖昧なため停止しました。クラウドのAPI credentials機能を使う場合は JULES_API_KEY_OP_URI/JULES_API_KEY を未設定にしてください。"
+    fi
+    return 0
+  fi
   JULES_API_KEY="$(resolve_secret JULES_API_KEY_OP_URI JULES_API_KEY)"
 }
 
@@ -65,12 +84,19 @@ require_github_token() {
 
 jules_curl() {
   # jules_curl <max_time> <url> [curl args...]
+  # クラウド認証モードでは x-goog-api-key を付けない（エージェントプロキシがセッション外で付与するため）
   local max_time="$1" url="$2"
   shift 2
-  curl -sf --connect-timeout 10 --max-time "$max_time" \
-    "$url" \
-    -H "x-goog-api-key: $JULES_API_KEY" \
-    "$@"
+  if using_cloud_credential; then
+    curl -sf --connect-timeout 10 --max-time "$max_time" \
+      "$url" \
+      "$@"
+  else
+    curl -sf --connect-timeout 10 --max-time "$max_time" \
+      "$url" \
+      -H "x-goog-api-key: $JULES_API_KEY" \
+      "$@"
+  fi
 }
 
 # stdinをPROMPTに読み込む。空（空白のみ含む）の場合はエラー
@@ -179,6 +205,14 @@ cmd_list_activities() {
   jules_curl 60 "${API_BASE}/sessions/${session_id}/activities?pageSize=${page_size}" | jq .
 }
 
+# セッションを削除する。DELETEは元に戻せないため、PRマージ確認後にのみ呼び出すこと
+cmd_close_session() {
+  local session_id="${1:?Usage: $0 close-session <session_id>}"
+  require_jules_key
+  jules_curl 30 "${API_BASE}/sessions/${session_id}" -X DELETE
+  echo "Jules session ${session_id} を削除しました" >&2
+}
+
 cmd_get_pr_branch() {
   local pr_usage="Usage: $0 get-pr-branch <owner> <repo> <pr_number>"
   local owner="${1:?${pr_usage}}"
@@ -201,6 +235,7 @@ case "$COMMAND" in
   approve-plan)    cmd_approve_plan "$@" ;;
   send-message)    cmd_send_message "$@" ;;
   list-activities) cmd_list_activities "$@" ;;
+  close-session)   cmd_close_session "$@" ;;
   get-pr-branch)   cmd_get_pr_branch "$@" ;;
   help|--help|-h)  usage ;;
   *)
