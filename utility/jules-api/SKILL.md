@@ -42,6 +42,8 @@ Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/setti
 
 ### クラウド環境でAPI credentialsを使う場合
 
+この方式を使う場合、`settings.json`に`JULES_API_KEY_OP_URI`/`JULES_API_KEY`を設定しないこと（上記「Claude Codeの`settings.json`に設定する例」とは併用しない。既に設定済みなら削除してから使う。同時設定はスクリプトがエラーで停止する）。
+
 Claude Code のクラウド環境設定 → 対象環境を編集 →
 「認証情報を追加」で以下を入力する。
 
@@ -96,8 +98,9 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 ### 基本フロー
 
 ```text
-1. 認証情報の確認（JULES_API_KEY_OP_URI または JULES_API_KEY。手順12のPRブランチ取得まで行う場合は
-   GITHUB_TOKEN_OP_URI または GITHUB_TOKEN も確認。上記「認証情報の設定」参照）
+1. 認証情報の確認（JULES_API_KEY_OP_URI／JULES_API_KEY／JULES_USE_CLOUD_CREDENTIAL=1のいずれか。
+   手順12のPRブランチ取得まで行う場合はGITHUB_TOKEN_OP_URI または GITHUB_TOKEN も確認。
+   上記「認証情報の設定」参照）
 2. scripts/jules.sh list-sources でソース名（sources/github/{owner}/{repo}）を確認
    （全ページを自動取得するため、対象リポジトリが多数の接続先の後方にあっても見落とさない）
 3. docs/sdd/tasks/ でTODOタスクを確認・選択
