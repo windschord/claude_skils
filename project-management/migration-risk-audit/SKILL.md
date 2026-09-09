@@ -154,7 +154,7 @@ Backlogのタスク一覧、課題リスト、WBS、または現状のモヤモ�
 ### references/
 - `framework_general_ja.md`: 汎用フレームワーク（データライフサイクルと異常系／周辺アクター／時間軸の境界／マルチベンダー責任分界点）
 - `framework_requirements_phase_ja.md`: 要件定義フェーズ特化フレームワーク（現行仕様のブラックボックス化と非互換性／非機能要件とパフォーマンス制限／データ移行要件／セキュリティと監査要件）
-- `framework_operations_phase_ja.md`: 運用設計フェーズ特化フレームワーク（障害時の責任分界点と一次切り分け／日常運用のプロセスと権限／計画停止とパッチ適用／BCPとバックアップ復旧）
+- `framework_operations_phase_ja.md`: 運用設計フェーズ特化フレームワーク（障害時の責任分界点・一次切り分け／日常運用のプロセス・権限／計画停止・パッチ適用／BCP・バックアップ復旧）
 
 ### assets/templates/
 - `risk_audit_report_template_ja.md`: リスク監査レポートテンプレート（フレームワーク別リスク表＋キラークエスチョン）
