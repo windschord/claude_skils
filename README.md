@@ -42,7 +42,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
 | **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
-| **プロジェクト管理** | migration-risk-audit | マルチベンダー移行プロジェクトの潜在リスク監査（PMO視点、4視点フレームワーク） |
+| **プロジェクト管理** | project-phase-risk-audit | マルチベンダー移行プロジェクトの潜在リスク監査（PMO視点、フェーズ別4視点フレームワーク） |
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
 | **ユーティリティ** | jules-api | Jules REST APIによる対話的タスク管理（ベースブランチ指定、プラン承認、Claude協調） |
 | | things-url | Things 3とのタスク双方向共有 |
@@ -201,7 +201,7 @@ claude_skils/
 │       └── assets/templates/
 │
 ├── project-management/                # プロジェクト管理スキル群
-│   └── migration-risk-audit/          # 移行リスク監査スキル（PMO視点）
+│   └── project-phase-risk-audit/      # プロジェクトフェーズ別リスク監査スキル（PMO視点）
 │       ├── SKILL.md
 │       ├── assets/templates/
 │       └── references/

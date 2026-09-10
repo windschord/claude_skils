@@ -227,7 +227,7 @@ sdd-documentation（オーケストレーター）
 - **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）
 - **assets/templates/service_specification_template_ja.md** - サービス仕様書テンプレート
 
-### project-management/migration-risk-audit/
+### project-management/project-phase-risk-audit/
 - **SKILL.md** - スキル定義ファイル（マルチベンダー管理・リスクマネジメントに長けたPMO視点での移行リスク監査、4視点フレームワーク×フェーズ特化切り替え）
 - **references/framework_general_ja.md** - 汎用フレームワーク（データライフサイクルと異常系／周辺アクター／時間軸の境界／マルチベンダー責任分界点）
 - **references/framework_requirements_phase_ja.md** - 要件定義フェーズ特化フレームワーク（現行仕様のブラックボックス化と非互換性／非機能要件／データ移行要件／セキュリティと監査要件）
