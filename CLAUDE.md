@@ -232,6 +232,7 @@ sdd-documentation（オーケストレーター）
 - **references/framework_general_ja.md** - 汎用フレームワーク（データライフサイクルと異常系／周辺アクター／時間軸の境界／マルチベンダー責任分界点）
 - **references/framework_requirements_phase_ja.md** - 要件定義フェーズ特化フレームワーク（現行仕様のブラックボックス化と非互換性／非機能要件／データ移行要件／セキュリティと監査要件）
 - **references/framework_operations_phase_ja.md** - 運用設計フェーズ特化フレームワーク（障害時の責任分界点／日常運用のプロセスと権限／計画停止とパッチ適用／BCPとバックアップ復旧）
+- **references/framework_load_test_phase_ja.md** - 負荷試験フェーズ特化フレームワーク（シナリオの現実性と突発的スパイク／マルチベンダー連携と境界ボトルネック／本番同等のデータ状態とキャッシュ／限界突破時の挙動と縮退運転）
 - **assets/templates/risk_audit_report_template_ja.md** - リスク監査レポートテンプレート（フレームワーク別リスク表＋キラークエスチョン）
 
 ## デバッグ・エラー修正の必須プロセス
