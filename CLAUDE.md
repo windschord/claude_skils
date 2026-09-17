@@ -190,6 +190,9 @@ sdd-documentation（オーケストレーター）
 - **SKILL.md** - 製品インタビュースキル
 - **assets/templates/interview_log_template_ja.md** - インタビューログテンプレート
 
+### interview/key-needs-interview/
+- **SKILL.md** - キーニーズ法（梅澤理論）ヒアリング＆分析スキル定義ファイル（Q1/Q2/Butの3段階深掘り、会話ログ保存、強さ×未充足度分析。質問時にこちらの予想・想定をユーザーの回答前に述べないことを厳守）
+
 ### knowledge/knowledge-base/
 - **SKILL.md** - ナレッジベース管理スキル
 

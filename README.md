@@ -39,6 +39,7 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | ipa-nfr-operations-design | IPA非機能要求グレード準拠の運用設計書生成 |
 | **インタビュー** | depth-interviewing-career | 社員キャリアインタビュー |
 | | depth-interviewing-product | 製品ユーザーインタビュー |
+| | key-needs-interview | キーニーズ法（梅澤理論）による深掘りヒアリングと強さ×未充足度分析 |
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
 | **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
@@ -184,9 +185,11 @@ claude_skils/
 │   ├── depth-interviewing-career/     # キャリアインタビュースキル
 │   │   ├── SKILL.md
 │   │   └── assets/templates/
-│   └── depth-interviewing-product/    # 製品インタビュースキル
-│       ├── SKILL.md
-│       └── assets/templates/
+│   ├── depth-interviewing-product/    # 製品インタビュースキル
+│   │   ├── SKILL.md
+│   │   └── assets/templates/
+│   └── key-needs-interview/           # キーニーズ法ヒアリング＆分析スキル
+│       └── SKILL.md
 │
 ├── knowledge/                         # ナレッジ管理スキル群
 │   ├── knowledge-base/                # ナレッジベース管理スキル（SKILL.mdのみで動作）
