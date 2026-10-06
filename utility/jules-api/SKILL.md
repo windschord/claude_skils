@@ -74,15 +74,17 @@ JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
 |-------------|------|------|
 | `list-sources` | — | 接続済みリポジトリ一覧（全ページを自動取得） |
 | `create-session` | `<source> <branch> <title> [--force]` / prompt: stdin | セッション作成（同名タイトルの重複作成を自動検知して中断） |
-| `list-sessions` | `[page_size=10]` | セッション一覧 |
+| `list-sessions` | `[page_size=100]` | セッション一覧（全ページを自動取得。`page_size`は1リクエストあたりの件数） |
 | `get-session` | `<session_id>` | セッション詳細・状態確認 |
 | `approve-plan` | `<session_id>` | プラン承認 |
 | `send-message` | `<session_id>` / message: stdin | メッセージ送信 |
-| `list-activities` | `<session_id> [page_size=20]` | アクティビティ一覧 |
+| `list-activities` | `<session_id> [page_size=100]` | アクティビティ一覧（全ページを自動取得し`createTime`昇順に整列。`.activities[-1]`が最新） |
 | `close-session` | `<session_id>` | セッションを削除（`DELETE`）する。**元に戻せない**ため、PRのマージを確認した後にのみ実行する |
 | `get-pr-branch` | `<owner> <repo> <pr_number>` | PRのheadブランチ名取得 |
 
 ヘルプ表示: `scripts/jules.sh help`
+
+> **ページネーション（最新状況の誤判定防止）**: Activities APIは古い順に返り、1ページ（`pageSize`件）しか返さない。1ページ目だけを見ると、アクティビティが増えたセッションで最新の`agentMessage`・`completed`等が2ページ目以降に隠れ、「Julesが応答なし・停止している」と誤判定する。`list-activities`/`list-sessions`/`list-sources`は`nextPageToken`を辿って全ページを取得するため、**必ずスクリプト経由で確認し、`curl`で1ページ目だけを見て停止判定しないこと**。停止の判断は`.activities[-1]`（最新）の`createTime`と、`get-session`の`state`・`updateTime`の両方で行う。
 
 ## ワークフロー
 

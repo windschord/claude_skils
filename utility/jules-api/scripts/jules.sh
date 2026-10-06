@@ -6,13 +6,18 @@
 # Usage:
 #   jules.sh list-sources
 #   echo "prompt" | jules.sh create-session <source> <branch> <title> [--force]
-#   jules.sh list-sessions [page_size=10]
+#   jules.sh list-sessions [page_size=100]
 #   jules.sh get-session <session_id>
 #   jules.sh approve-plan <session_id>
 #   echo "message" | jules.sh send-message <session_id>
-#   jules.sh list-activities <session_id> [page_size=20]
+#   jules.sh list-activities <session_id> [page_size=100]
 #   jules.sh close-session <session_id>
 #   jules.sh get-pr-branch <owner> <repo> <pr_number>
+#
+# ページネーション:
+#   list-sources / list-sessions / list-activities は nextPageToken を辿って全ページを
+#   取得・結合する。page_size は1リクエストあたりの件数で、出力件数の上限ではない。
+#   list-activities は createTime 昇順に整列するため、.activities[-1] が最新となる。
 #
 # 認証情報の解決（優先順）:
 #   1. JULES_API_KEY_OP_URI / GITHUB_TOKEN_OP_URI に1Passwordシークレット参照
@@ -107,20 +112,24 @@ read_stdin_prompt() {
   fi
 }
 
-# fetch_all_pages <endpoint> <items_key>
+# fetch_all_pages <endpoint> <items_key> [page_size=100]
 # pageTokenを辿って全ページを取得し、結合したJSON配列を標準出力に返す
-# （対象がpage 2以降にある場合に見落とさないため）
+# （対象がpage 2以降にある場合に見落とさないため。1ページ目だけを見て
+#   「最新のアクティビティが無い＝Julesが止まっている」と誤判定するのを防ぐ）
 fetch_all_pages() {
-  local endpoint="$1" items_key="$2"
-  local page_token="" all_items="[]" url response
+  local endpoint="$1" items_key="$2" page_size="${3:-100}"
+  local page_token="" prev_token="" all_items="[]" url response
   while :; do
-    url="${API_BASE}/${endpoint}?pageSize=100"
-    [[ -n "$page_token" ]] && url="${url}&pageToken=${page_token}"
+    url="${API_BASE}/${endpoint}?pageSize=${page_size}"
+    [[ -n "$page_token" ]] && url="${url}&pageToken=$(jq -rn --arg t "$page_token" '$t|@uri')"
     response=$(jules_curl 60 "$url")
     all_items=$(jq -n --argjson acc "$all_items" --argjson resp "$response" --arg k "$items_key" \
       '$acc + ($resp[$k] // [])')
+    prev_token="$page_token"
     page_token=$(echo "$response" | jq -r '.nextPageToken // empty')
     [[ -z "$page_token" ]] && break
+    # 同じトークンが返り続けた場合の無限ループ防止
+    [[ "$page_token" == "$prev_token" ]] && die "nextPageToken が進まないため取得を中断しました（${endpoint}）"
   done
   echo "$all_items"
 }
@@ -166,11 +175,12 @@ cmd_create_session() {
       '{prompt:$p,sourceContext:{source:$s,githubRepoContext:{startingBranch:$b}},automationMode:"AUTO_CREATE_PR",requirePlanApproval:true,title:$t}')"
 }
 
+# 全ページを取得して表示する（page_size は1リクエストあたりの件数であり、出力件数の上限ではない）
 cmd_list_sessions() {
-  local page_size="${1:-10}"
+  local page_size="${1:-100}"
   require_jules_key
-  jules_curl 60 "${API_BASE}/sessions?pageSize=${page_size}" \
-    | jq '.sessions[] | {name, title, state}'
+  fetch_all_pages "sessions" "sessions" "$page_size" \
+    | jq '.[] | {name, title, state}'
 }
 
 cmd_get_session() {
@@ -198,11 +208,15 @@ cmd_send_message() {
     -d "$(jq -n --arg p "$PROMPT" '{prompt:$p}')"
 }
 
+# 全ページを取得し、createTime昇順（古い→新しい）に整列して {activities: [...]} で表示する。
+# 末尾要素（.activities[-1]）が常に最新のアクティビティになる。
+# page_size は1リクエストあたりの件数であり、出力件数の上限ではない。
 cmd_list_activities() {
   local session_id="${1:?Usage: $0 list-activities <session_id> [page_size]}"
-  local page_size="${2:-20}"
+  local page_size="${2:-100}"
   require_jules_key
-  jules_curl 60 "${API_BASE}/sessions/${session_id}/activities?pageSize=${page_size}" | jq .
+  fetch_all_pages "sessions/${session_id}/activities" "activities" "$page_size" \
+    | jq '{activities: (sort_by(.createTime // ""))}'
 }
 
 # セッションを削除する。DELETEは元に戻せないため、PRマージ確認後にのみ呼び出すこと
