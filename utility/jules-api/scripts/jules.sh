@@ -122,7 +122,7 @@ fetch_all_pages() {
   while :; do
     url="${API_BASE}/${endpoint}?pageSize=${page_size}"
     [[ -n "$page_token" ]] && url="${url}&pageToken=$(jq -rn --arg t "$page_token" '$t|@uri')"
-    response=$(jules_curl 60 "$url")
+    response=$(jules_curl 60 "$url") || die "ページ取得に失敗しました（${endpoint}）。認証情報・対象ID・ネットワークを確認してください"
     all_items=$(jq -n --argjson acc "$all_items" --argjson resp "$response" --arg k "$items_key" \
       '$acc + ($resp[$k] // [])')
     prev_token="$page_token"
@@ -210,13 +210,16 @@ cmd_send_message() {
 
 # 全ページを取得し、createTime昇順（古い→新しい）に整列して {activities: [...]} で表示する。
 # 末尾要素（.activities[-1]）が常に最新のアクティビティになる。
+# createTime は小数秒の桁数が揃わない（なし/3桁/9桁）ことがあり、文字列比較だと
+# 時系列と一致しないため、小数秒を9桁にゼロ埋めしてから整列する。
 # page_size は1リクエストあたりの件数であり、出力件数の上限ではない。
 cmd_list_activities() {
   local session_id="${1:?Usage: $0 list-activities <session_id> [page_size]}"
   local page_size="${2:-100}"
   require_jules_key
   fetch_all_pages "sessions/${session_id}/activities" "activities" "$page_size" \
-    | jq '{activities: (sort_by(.createTime // ""))}'
+    | jq 'def sortable_time: sub("Z$"; "") | split(".") as $p | $p[0] + "." + (($p[1] // "") + "000000000")[0:9];
+        {activities: (sort_by((.createTime // "") | sortable_time))}'
 }
 
 # セッションを削除する。DELETEは元に戻せないため、PRマージ確認後にのみ呼び出すこと
