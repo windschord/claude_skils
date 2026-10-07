@@ -207,6 +207,8 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions?pageSize=10' \
   -H "x-goog-api-key: $JULES_API_KEY"
 ```
 
+> **重要**: 1回のリクエストは1ページ分のみ返す。`nextPageToken` が存在する限り `pageToken` を指定して全ページを取得すること。`scripts/jules.sh list-sessions` は全ページを自動取得して結合する。
+
 #### Get Session - セッション詳細
 
 ```text
@@ -312,6 +314,8 @@ GET /v1alpha/sessions/{sessionId}/activities
 curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}/activities?pageSize=20" \
   -H "x-goog-api-key: $JULES_API_KEY"
 ```
+
+> **重要**: アクティビティは古い順に返り、1回のリクエストでは1ページ分のみ。`nextPageToken` を辿らずに1ページ目だけを見ると、最新のアクティビティ（`completed`・`agentMessage`等）を見落とし、「Julesが応答なし・停止」と誤判定する。`scripts/jules.sh list-activities` は全ページを取得して `createTime` 昇順に整列し、`.activities[-1]` が最新となる。
 
 ## リソース定義
 
