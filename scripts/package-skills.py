@@ -45,17 +45,29 @@ def find_skills() -> list[Path]:
 
 
 def parse_frontmatter(skill_md: Path) -> dict[str, str]:
+    """トップレベルキーと値を返す。`>` `|` のブロックスカラーと複数行の値にも対応する。"""
     lines = skill_md.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0] != "---":
         raise ValueError("YAMLフロントマターがありません")
     keys: dict[str, str] = {}
+    current = None
     for line in lines[1:]:
         if line == "---":
-            return keys
+            return {k: _fold(v) for k, v in keys.items()}
         m = re.match(r"^([A-Za-z_-]+):\s*(.*)$", line)
         if m:
-            keys[m.group(1)] = m.group(2).strip()
+            current = m.group(1)
+            keys[current] = [m.group(2).strip()]
+        elif current and line[:1] in (" ", "\t"):
+            keys[current].append(line.strip())
     raise ValueError("YAMLフロントマターが閉じられていません")
+
+
+def _fold(parts: list[str]) -> str:
+    """ブロックスカラー指示子（> | と -/+）を除き、本文行を連結する。"""
+    if parts and re.fullmatch(r"[>|][+-]?", parts[0]):
+        parts = parts[1:]
+    return " ".join(p for p in parts if p).strip()
 
 
 def validate(skill_dir: Path) -> list[str]:
