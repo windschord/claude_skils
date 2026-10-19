@@ -1,0 +1,53 @@
+name: Package Skills
+
+# claude.ai（チャット）へアップロードするスキルzipを生成する。
+# - PR / main への push: zipが生成できることを検証し、Artifactとして保存
+# - タグ（v*）の push: 生成したzipをGitHub Releaseに添付
+# - 手動実行: Artifactとして保存
+
+on:
+  pull_request:
+    paths:
+      - '**/SKILL.md'
+      - '**/references/**'
+      - '**/assets/**'
+      - '**/scripts/**'
+      - '.github/workflows/package-skills.yml'
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # タグ時のRelease作成・アセット添付に必要
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build skill zips
+        run: python3 -I scripts/package-skills.py --out dist/skills
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-skills-zips
+          path: dist/skills/*.zip
+          retention-days: 30
+
+      - name: Attach zips to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/skills/*.zip --clobber
+          else
+            gh release create "$TAG" dist/skills/*.zip --title "$TAG" --generate-notes
+          fi
