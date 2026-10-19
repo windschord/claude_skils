@@ -46,8 +46,20 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
         run: |
+          (cd dist/skills && sha256sum *.zip > SHA256SUMS)
+          cat > dist/release-notes.md <<'EOF'
+          ## claude.ai（チャット）へのインストール
+
+          1. 使いたいスキルの `<スキル名>.zip` を下の Assets からダウンロードします
+          2. claude.ai の「設定 > 機能 > スキル」からzipをアップロードします
+
+          zipの検証: `sha256sum -c SHA256SUMS`（`SHA256SUMS` と同じフォルダで実行）
+
+          > claude.aiのスキルはAPI・Claude Codeとは同期されません。更新時は新しいzipで再アップロードしてください。
+          EOF
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" dist/skills/*.zip --clobber
+            gh release upload "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS --clobber
           else
-            gh release create "$TAG" dist/skills/*.zip --title "$TAG" --generate-notes
+            gh release create "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS \
+              --title "$TAG" --notes-file dist/release-notes.md --generate-notes
           fi
