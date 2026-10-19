@@ -66,7 +66,8 @@ graphify extract . --code-only
 ```bash
 git log -1 --format=%cI -- graphify-out/graph.json 2>/dev/null   # 追跡している場合
 stat -c %y graphify-out/graph.json                                 # ファイルの更新時刻
-git diff --stat HEAD                                               # 未反映の変更の有無
+git diff --stat HEAD                                               # 追跡ファイルの未反映の変更
+git status --short                                                 # 未追跡の新規ファイルも含めた変更の有無
 ```
 
 乖離がある場合は、LLM不要の差分更新を行う。
