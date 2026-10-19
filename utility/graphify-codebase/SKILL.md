@@ -40,7 +40,7 @@ ls graphify-out/graph.json   # グラフが生成済みか
 
 | 状態 | 対応 |
 |------|------|
-| 導入済み・グラフあり | ステップ3（鮮度確認）へ |
+| 導入済み・グラフあり | ステップ3（更新）へ |
 | 導入済み・グラフなし | ステップ2（生成）へ |
 | 未導入 | ユーザーに導入可否を確認。拒否・不可なら**従来の調査にフォールバック**して終了 |
 
@@ -59,22 +59,15 @@ graphify extract . --code-only
 - 生成後、`.gitignore` と `.claudeignore` に `graphify-out/` を追記する（既に無いか確認してから）
 - 大規模リポジトリで時間がかかる場合は対象ディレクトリを絞る（`graphify extract <サブディレクトリ>`）
 
-### ステップ3: グラフの鮮度確認と更新
+### ステップ3: グラフの更新
 
-調査の前に、グラフが現在のコードと乖離していないか確認する。
-
-```bash
-git log -1 --format=%cI -- graphify-out/graph.json 2>/dev/null   # 追跡している場合
-stat -c %y graphify-out/graph.json                                 # ファイルの更新時刻
-git diff --stat HEAD                                               # 追跡ファイルの未反映の変更
-git status --short                                                 # 未追跡の新規ファイルも含めた変更の有無
-```
-
-乖離がある場合は、LLM不要の差分更新を行う。
+調査の前に、Gitの作業ツリーの状態にかかわらず、LLM不要の差分更新を実行する。
 
 ```bash
 graphify update .
 ```
+
+`graphify-out/` はコミットしない派生物のため、Gitの状態（`git diff` / `git status`）からグラフの古さは判定できない。グラフ生成後にソースの変更をコミットすると、作業ツリーはcleanでもグラフは古いままになる。判定を試みず、毎回更新する。
 
 リファクタリングでコードを削除した後は、ノード数が減るため `--force` が必要になる場合がある（`graphify update . --force`）。
 
@@ -130,7 +123,7 @@ Graphifyを使えない場合、同じ目的を次の手段で代替する。
 
 ```text
 [graphify-codebase] ステップ 1/5: 利用可否を判定中...
-[graphify-codebase] ステップ 3/5: グラフの鮮度を確認中（最終更新: ...）...
+[graphify-codebase] ステップ 3/5: グラフを差分更新中...
 [graphify-codebase] ステップ 4/5: query を実行中...
 [graphify-codebase] 完了: 候補ファイル N 件を特定（実コードで確認済み M 件）
 ```
