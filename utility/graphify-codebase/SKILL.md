@@ -50,12 +50,13 @@ ls graphify-out/graph.json   # グラフが生成済みか
 # 前提: Python 3.10+ と uv（または pipx）。パッケージ名は graphifyy（yが2つ）
 uv tool install graphifyy
 
-# APIキー不要・コードのみ（tree-sitter、ローカル完結）
-graphify extract . --code-only
+# 初回生成（APIキー不要・ローカル完結）。ステップ3の更新コマンドと同じ
+graphify update .
 ```
 
-- ドキュメント（Markdown・PDF等）も対象にするには `--code-only` を外す。意味的解析のため APIキー（`ANTHROPIC_API_KEY` 等）が必要
-- 生成物は `graphify-out/`（`graph.json` / `GRAPH_REPORT.md` / `graph.html`）
+- `graphify update .` は `extract` を先に実行しなくても動く。tree-sitter によるコード解析に加えて、Markdown の見出し構造とリンク参照もローカルで取り込む。`graph.json` / `GRAPH_REPORT.md` / `graph.html` が `graphify-out/` に出力される
+- コードだけを対象にしたい場合は `graphify extract . --code-only` を使う。Markdown などは対象外になり、`graph.json` だけが出力される。レポートと HTML が必要なら続けて `graphify cluster-only . --no-label` を実行する
+- 文書の意味的な関係（概念間のつながり）まで抽出する場合は、`--code-only` なしの `graphify extract .` が必要になる。APIキーが要り、文書の内容が外部に送られるため、承認を得てから実行する
 - 生成後、`.gitignore` と `.claudeignore` に `graphify-out/` を追記する（既に無いか確認してから）
 - 大規模リポジトリで時間がかかる場合は対象ディレクトリを絞る（`graphify extract <サブディレクトリ>`）
 
@@ -74,14 +75,21 @@ graphify update .
 ### ステップ4: 照会
 
 ```bash
-graphify query "認証トークンの検証はどこで行われるか"   # 質問に関連する部分グラフ（既定2000トークン上限）
+graphify query "認証トークンの検証はどこで行われるか"   # 質問に関連する部分グラフ
 graphify explain "TokenValidator"                      # ノードと隣接ノードの説明
 graphify path "LoginController" "UserRepository"       # 2ノード間の最短経路
 graphify affected "UserRepository" --depth 2           # 逆方向探索: 変更の波及先
 graphify god-nodes --top 10                            # 最も接続数の多いハブ
 ```
 
-終了コード: `0`=回答あり / `3`=名前が曖昧（候補が列挙される。候補から選んで再実行）/ `4`=該当ノードなし（Grep にフォールバック）。
+終了コード: `0`=回答あり / `3`=同じ名前が複数のファイルに存在し曖昧（候補が列挙される。ファイルパス付きで再実行）/ `4`=該当ノードなし（Grep にフォールバック）。
+
+実行して分かった注意点（graphify 0.9.92、本リポジトリで確認）:
+
+- 関数のノード名は `finding()` のように末尾に `()` を含む。部分一致でも当たるものの、曖昧な場合は別のノードが選ばれることもある
+- 曖昧でも同一ファイル内の一致や近い一致の場合は、終了コード `0` のまま最上位の候補が選ばれ、標準エラーに `warning: source match was ambiguous` と出る。終了コードだけでなく警告も確認し、意図したノードかどうかを確かめる
+- `query` はノードがすべて収まる場合にエッジを削らないため、既定の2000トークンを超えることがある（実測で約6900トークン）。質問を絞るか `--seed` / `--context` で範囲を狭める
+- `path` は同じファイル内の関数同士だと、ファイルノードを経由する `contains` の経路を返すことがある。`calls` / `imports` / `references` の経路だけを意味のある依存として読む
 
 全コマンドの詳細は `references/cli_reference_ja.md` を参照。
 

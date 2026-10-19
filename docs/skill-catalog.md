@@ -490,7 +490,8 @@ Graphifyを導入してコードベースのグラフを作ってください
 **注意事項:**
 
 - グラフの結果は仮説であり、`INFERRED`（推論）エッジは特に、採用前に実コードで確認する
-- `--code-only` はコードをローカルのみで解析する。ドキュメント等の意味的解析はAPIキーが必要で、内容が外部に送られる
+- `graphify update .` はAPIキーなしでローカルのみで動作し、コードに加えて Markdown の見出し構造とリンク参照も取り込む。ドキュメントの意味的解析（`--code-only` なしの `extract`）はAPIキーが必要で、内容が外部に送られる
+- `query` は予算（既定2000トークン）を超えて出力することがあり、`path` は同一ファイル内の関数同士だと自明な経路を返すことがある。詳細は `utility/graphify-codebase/references/cli_reference_ja.md` を参照
 - `graphify claude install` や `graphify hook install` は設定やgitフックを書き換えるため、ユーザーの承認なしに実行しない
 - `graphify-out/` は派生物のため、`.gitignore` と `.claudeignore` に追加する
 
