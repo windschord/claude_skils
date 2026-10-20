@@ -59,9 +59,14 @@ jobs:
 
           > claude.aiのスキルはAPI・Claude Codeとは同期されません。更新時は新しいzipで再アップロードしてください。
           EOF
+          # v1.2.3-rc.1 のようにハイフンを含むタグはプレリリースとして公開する
+          PRERELEASE_FLAG=""
+          if [[ "$TAG" == *-* ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS --clobber
           else
             gh release create "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS \
-              --title "$TAG" --notes-file dist/release-notes.md --generate-notes
+              --title "$TAG" --notes-file dist/release-notes.md --generate-notes $PRERELEASE_FLAG
           fi
