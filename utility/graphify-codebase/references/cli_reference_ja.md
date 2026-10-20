@@ -1,7 +1,7 @@
 # Graphify CLI リファレンス
 
 > graphify 0.9.92 の `graphify --help` と、本リポジトリ（Markdown 主体）での実行結果に基づく。バージョンが異なる場合は `graphify --help` で確認すること。
-> 実行して確認済み: `update` / `extract --code-only` / `cluster-only --no-label` / `query` / `explain` / `path` / `affected` / `god-nodes` / `benchmark`。未実行: 意味的解析（`--code-only` なしの `extract`）、`hook`、`claude install`、`export`、`save-result`、`reflect`。
+> 実行して確認済み: `update` / `extract --code-only` / `cluster-only --no-label` / `query` / `explain` / `path` / `affected` / `god-nodes` / `benchmark` / `save-result` / `reflect`。未実行: 意味的解析（`--code-only` なしの `extract`）、`hook`、`claude install`、`export`。
 > 公式: https://github.com/Graphify-Labs/graphify （ライセンス: Apache-2.0 / MIT）
 
 ## 導入
@@ -70,8 +70,8 @@ graphify --version
 
 | コマンド | 用途 |
 |---------|------|
-| `graphify save-result --question Q --answer A --nodes N1 N2 --outcome useful\|dead_end\|corrected [--correction TEXT]` | 照会結果と成否を `graphify-out/memory/` に保存 |
-| `graphify reflect` | 蓄積した結果から教訓ドキュメントを生成 |
+| `graphify save-result --question Q --answer A --nodes N1 N2 --outcome useful\|dead_end\|corrected [--correction TEXT]` | 照会結果と成否を `graphify-out/memory/<種別>_<日時>_<ID>_<質問>.md` に保存（実行確認済み）。質問と回答がそのまま残るため、機密情報を含めない |
+| `graphify reflect` | 蓄積した結果から教訓ドキュメント `graphify-out/reflections/LESSONS.md` を生成（実行確認済み。1件の `corrected` を集約して成功） |
 
 ## エクスポート
 

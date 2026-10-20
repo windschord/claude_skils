@@ -103,6 +103,10 @@ graphify god-nodes --top 10                            # 最も接続数の多�
 graphify save-result --question "..." --answer "..." --nodes A B --outcome corrected --correction "実際は..."
 ```
 
+- `graphify-out/memory/` に Markdown（質問・回答・結果・関連ノード）として保存される。`--outcome` は `useful` / `dead_end` / `corrected`（graphify 0.9.92 で実行して確認済み）
+- 質問と回答がそのままファイルに残る。機密情報や認証情報を含めない
+- 蓄積したメモは `graphify reflect` で集約でき、`graphify-out/reflections/LESSONS.md` が生成される。どちらも `graphify-out/` 配下のためコミットしない
+
 ## 禁止事項
 
 - グラフの結果だけを根拠にした設計判断・レビュー指摘・修正（必ず実コードで確認する）
