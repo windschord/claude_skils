@@ -238,6 +238,12 @@ sdd-documentation（オーケストレーター）
 - **references/framework_load_test_phase_ja.md** - 負荷試験フェーズ特化フレームワーク（シナリオの現実性と突発的スパイク／マルチベンダー連携と境界ボトルネック／本番同等のデータ状態とキャッシュ／限界突破時の挙動と縮退運転）
 - **assets/templates/risk_audit_report_template_ja.md** - リスク監査レポートテンプレート（フレームワーク別リスク表＋キラークエスチョン）
 
+### scripts/ + .github/workflows/package-skills.yml（claude.ai向けスキルzip生成）
+- **scripts/package-skills.py** - claude.ai（チャット）の「設定 > 機能 > スキル」へアップロードするzipを生成する。`python3 scripts/package-skills.py [スキル名...] [--out DIR]`（既定の出力先は `dist/skills/`、gitignore対象）。SKILL.mdのフロントマターを検証し（nameとディレクトリ名の一致・description 1024文字以内・許可キーのみ）、スキルごとに `<スキル名>/` をルートとするzipを作る。スキル外を指す相対リンク（例: `../ai-code-review/...`）は zip内の `linked/` へ同梱してリンクを書き換える（リポジトリ内のファイルは変更しない）。依存は標準ライブラリのみ
+- **.github/workflows/package-skills.yml** - PR/mainではzip生成を検証してArtifact保存、`v*` タグではGitHub Releaseへ添付
+
+> **注**: claude.aiのスキルはAPI・Claude Codeとは同期されない。利用環境ごとにアップロードが必要。
+
 ## デバッグ・エラー修正の必須プロセス
 
 **エラーやバグに遭遇した場合は、必ず`sdd-troubleshooting`スキルを使用してください。**

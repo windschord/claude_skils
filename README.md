@@ -18,6 +18,14 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 
 詳しい導入手順は[はじめに](docs/getting-started.md)を参照してください。
 
+claude.ai（チャット）で使う場合は、スキルをzipにしてアップロードします。
+
+```bash
+python3 scripts/package-skills.py   # dist/skills/<スキル名>.zip を生成
+```
+
+生成したzipを「設定 > 機能 > スキル」からアップロードしてください。`v*` タグを push すると、zipがGitHub Releaseにも添付されます。
+
 ## 利用可能なスキル
 
 | カテゴリ | スキル | 説明 |
@@ -111,7 +119,8 @@ claude_skils/
 ├── scripts/                           # ユーティリティスクリプト
 │   ├── generate-toc.sh                # 目次生成
 │   ├── github-slug.mjs                # GitHubスラグ生成
-│   └── lint-skills.sh                 # スキル定義リント
+│   ├── lint-skills.sh                 # スキル定義リント
+│   └── package-skills.py              # claude.ai用スキルzip生成
 ├── CLAUDE.md                          # Claude Code用ガイド（スキル内部リソース）
 ├── README.md                          # このファイル
 ├── LICENSE                            # MITライセンス

@@ -30,6 +30,22 @@ git clone https://github.com/windschord/claude_skils.git
 /plugin marketplace add /path/to/claude_skils
 ```
 
+### claude.ai（チャット）で使う場合
+
+claude.aiのチャットでは、スキルをzipでアップロードします。zipはスクリプトで生成できます。
+
+```bash
+python3 scripts/package-skills.py                 # 全スキルを dist/skills/ へ出力
+python3 scripts/package-skills.py task-planning   # 指定スキルのみ
+```
+
+1. 生成した `dist/skills/<スキル名>.zip` を用意します（`v*` タグを push すると GitHub Release にも添付されます）
+2. claude.aiの「設定 > 機能 > スキル」からzipをアップロードします
+3. スキルを更新したときは、zipを再生成して同じ手順でアップロードし直します
+
+> **注意**: claude.aiのスキルはAPI（`/v1/skills`）やClaude Codeとは同期されません。利用する環境ごとにアップロードが必要です。
+> 他スキルへの相対リンク（例: `../ai-code-review/...`）は、zip内の `linked/` に同梱されリンクが書き換わります。
+
 ## クイックスタート
 
 ### SDDワークフローで開発を始める

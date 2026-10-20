@@ -1,0 +1,72 @@
+name: Package Skills
+
+# claude.ai（チャット）へアップロードするスキルzipを生成する。
+# - PR / main への push: zipが生成できることを検証し、Artifactとして保存
+# - タグ（v*）の push: 生成したzipをGitHub Releaseに添付
+# - 手動実行: Artifactとして保存
+
+on:
+  pull_request:
+    paths:
+      - '**/SKILL.md'
+      - '**/references/**'
+      - '**/assets/**'
+      - '**/scripts/**'
+      - '.github/workflows/package-skills.yml'
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # タグ時のRelease作成・アセット添付に必要
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Build skill zips
+        run: python3 -I scripts/package-skills.py --out dist/skills
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-skills-zips
+          path: dist/skills/*.zip
+          retention-days: 30
+
+      - name: Attach zips to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          (cd dist/skills && sha256sum *.zip > SHA256SUMS)
+          cat > dist/release-notes.md <<'EOF'
+          ## claude.ai（チャット）へのインストール
+
+          1. 使いたいスキルの `<スキル名>.zip` を下の Assets からダウンロードします
+          2. claude.ai の「設定 > 機能 > スキル」からzipをアップロードします
+
+          zipの検証: `sha256sum -c SHA256SUMS`（`SHA256SUMS` と同じフォルダで実行）
+
+          > claude.aiのスキルはAPI・Claude Codeとは同期されません。更新時は新しいzipで再アップロードしてください。
+          EOF
+          # v1.2.3-rc.1 のようにハイフンを含むタグはプレリリースとして公開する
+          PRERELEASE_FLAG=""
+          if [[ "$TAG" == *-* ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS --clobber
+          else
+            gh release create "$TAG" dist/skills/*.zip dist/skills/SHA256SUMS \
+              --title "$TAG" --notes-file dist/release-notes.md --generate-notes $PRERELEASE_FLAG
+          fi
