@@ -464,6 +464,39 @@ SDDのタスクをThingsと共有してください
 
 ---
 
+### graphify-codebase
+
+[Graphify](https://github.com/Graphify-Labs/graphify) でコードベースをナレッジグラフ化し、SDDの設計・レビュー・実装・トラブルシューティングで「どこを読むべきか」「何に波及するか」を調べるスキルです。Graphifyは任意の補助ツールで、未導入でも従来の調査（Grep/Read）で作業を進められます。
+
+**使用開始:**
+
+```text
+Graphifyでこのリポジトリの影響範囲を調べてください
+```
+
+または
+
+```text
+Graphifyを導入してコードベースのグラフを作ってください
+```
+
+**主な機能:**
+
+- 利用可否の判定、導入、グラフ生成・差分更新（`graphify extract` / `update`）
+- 質問・経路・影響先の照会（`query` / `explain` / `path` / `affected` / `god-nodes`）
+- SDDフェーズ別の使い方（設計ノートの影響範囲、レビューでの差分外の影響先確認、実装前の対象絞り込み、障害の経路特定）
+- 影響範囲調査ノートのテンプレート（実コード確認済みの内容と要確認の候補を分けて記載）
+
+**注意事項:**
+
+- グラフの結果は仮説であり、`INFERRED`（推論）エッジは特に、採用前に実コードで確認する
+- `graphify update .` はAPIキーなしでローカルのみで動作し、コードに加えて Markdown の見出し構造とリンク参照も取り込む。ドキュメントの意味的解析（`--code-only` なしの `extract`）はAPIキーが必要で、内容が外部に送られる
+- `query` は予算（既定2000トークン）を超えて出力することがあり、`path` は同一ファイル内の関数同士だと自明な経路を返すことがある。詳細は `utility/graphify-codebase/references/cli_reference_ja.md` を参照
+- `graphify claude install` や `graphify hook install` は設定やgitフックを書き換えるため、ユーザーの承認なしに実行しない
+- `graphify-out/` は派生物のため、`.gitignore` と `.claudeignore` に追加する
+
+---
+
 ### pr-comment-fixer
 
 GitHub PRのレビューコメント（インラインスレッド・レビュー本文・Issueコメント）を自動検出し、修正を適用するスキルです。CodeRabbit・Copilot等のbotコメントにも対応します。
