@@ -59,13 +59,21 @@ def parse_frontmatter(skill_md: Path) -> dict[str, str]:
             current = m.group(1)
             keys[current] = [m.group(2).strip()]
         elif current and line[:1] in (" ", "\t"):
-            keys[current].append(line.strip())
+            text = line.strip()
+            # ブロックスカラー（> |）の本文では # も内容。それ以外のインデントされた # 行はYAMLコメント
+            if text.startswith("#") and not _is_block(keys[current]):
+                continue
+            keys[current].append(text)
     raise ValueError("YAMLフロントマターが閉じられていません")
+
+
+def _is_block(parts: list[str]) -> bool:
+    return bool(parts) and re.fullmatch(r"[>|][+-]?", parts[0]) is not None
 
 
 def _fold(parts: list[str]) -> str:
     """ブロックスカラー指示子（> | と -/+）を除き、本文行を連結する。"""
-    if parts and re.fullmatch(r"[>|][+-]?", parts[0]):
+    if _is_block(parts):
         parts = parts[1:]
     return " ".join(p for p in parts if p).strip()
 
