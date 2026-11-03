@@ -63,10 +63,19 @@ jobs:
             echo "::error::タグ名は v1.2.3 または v1.2.3-rc.1 の形式で指定してください: $TAG"
             exit 1
           fi
-          gh api -X POST "repos/$REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+          # 再実行できるよう、既存タグが同じコミットを指すなら作成をスキップする
+          EXISTING_SHA=$(gh api "repos/$REPO/git/ref/tags/$TAG" --jq .object.sha 2>/dev/null || true)
+          if [[ -z "$EXISTING_SHA" ]]; then
+            gh api -X POST "repos/$REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+          elif [[ "$EXISTING_SHA" == "$GITHUB_SHA" ]]; then
+            echo "タグ $TAG は既に $GITHUB_SHA を指しています。作成をスキップします。"
+          else
+            echo "::error::タグ $TAG は既に別のコミット($EXISTING_SHA)を指しています。現在のmain($GITHUB_SHA)とは異なるため中止します。"
+            exit 1
+          fi
 
       - name: Attach zips to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
+        if: (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) || inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.release_tag || github.ref_name }}
