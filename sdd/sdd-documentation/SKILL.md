@@ -309,6 +309,10 @@ docs/sdd/tasks/ → docs/sdd/design/ → docs/sdd/requirements/
 
 **条件を満たす場合は積極的に使用する。** 判定基準・パターン・呼び出し例は [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md) を参照。
 
+## Graphify連携（任意の調査補助）
+
+設計（PR本文の設計ノート）・レビュー・実装・トラブルシューティングで既存コードの構造や変更の影響範囲を調べる際、Graphify（コードベースのナレッジグラフ）が導入済みなら `utility/graphify-codebase/SKILL.md` に従って `query` / `affected` / `path` を使える。未導入・グラフが古い場合は従来どおり Grep/Read で調査し、導入を強要しない。グラフの結果は仮説であり、採用前に必ず実コードで確認する。フェーズ別の手順は `utility/graphify-codebase/references/sdd_integration_ja.md` を参照。
+
 ## タスク同期プロトコル
 
 docs/sdd/tasks/のタスクとTodoWriteの同期ルール。詳細は [references/task_sync_guide_ja.md](references/task_sync_guide_ja.md) を参照。
@@ -327,6 +331,10 @@ docs/sdd/tasks/のタスクとTodoWriteの同期ルール。詳細は [reference
 - タスク実行: `task-executing/SKILL.md`
 - トラブルシューティング: `sdd-troubleshooting/SKILL.md`
 - 移行手順: `requirement-management/references/migration_from_sdd_ja.md`
+
+調査補助（任意）:
+
+- Graphify連携: `utility/graphify-codebase/SKILL.md`
 
 非推奨（既存 docs/sdd/ の保守時のみ）:
 

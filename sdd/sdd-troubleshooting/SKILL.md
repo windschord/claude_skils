@@ -105,6 +105,8 @@ metadata:
 
 **分析テクニック**: [references/analysis_guide_ja.md](references/analysis_guide_ja.md)
 
+**Graphify（任意）**: 導入済みなら `graphify path` でエントリポイントからエラー箇所への経路、`graphify affected` で修正の波及範囲を候補として洗い出せる（`utility/graphify-codebase/SKILL.md`）。経路は原因の**候補**であり、原因の特定は従来どおり実コードの追跡とログで行う。推測による修正の禁止は変わらない。
+
 ### ステップ3: 仕様との照合
 
 - **要求との照合**: docs/requirements/ を参照

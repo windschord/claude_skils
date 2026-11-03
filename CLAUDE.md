@@ -221,6 +221,12 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/session_state_template_ja.md** - セッション状態テンプレート
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
+### utility/graphify-codebase/
+- **SKILL.md** - Graphifyコードベース調査スキル（導入・更新・照会。設計・レビュー・実装・トラブルシューティングでの影響範囲／依存関係調査用。任意の補助ツールで、未導入時は Grep/Read にフォールバック。グラフの結果は仮説であり実コードで確認する）
+- **references/cli_reference_ja.md** - Graphify CLIリファレンス（query/explain/path/affected/god-nodes/update、終了コード、EXTRACTED/INFERRED）
+- **references/sdd_integration_ja.md** - SDDフェーズ別活用ガイド（設計／タスク計画／実装／レビュー／トラブルシューティング）
+- **assets/templates/impact_analysis_note_template_ja.md** - 影響範囲調査ノート（PR設計ノート・Issue本文に貼る）
+
 ### utility/jules-api/
 - **SKILL.md** - Jules API統合スキル（スクリプト経由のタスク管理、ベースブランチ指定、プラン承認、Claude協調、1Password連携）
 - **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）

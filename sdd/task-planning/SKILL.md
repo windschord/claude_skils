@@ -103,6 +103,8 @@ docs/sdd/tasks/
 
 ## AIエージェント向けタスク設計
 
+> **Graphify連携（任意）**: 変更対象ファイルの候補出しに `graphify query` / `affected` を使える（`utility/graphify-codebase/SKILL.md`）。Readで確認できたものだけを変更対象に記載し、未確認の候補は「要確認」と明記する。未導入なら Grep/Read で調査する。
+
 ### タスク粒度の目安
 
 | 分類 | 作業時間 | 内容例 |

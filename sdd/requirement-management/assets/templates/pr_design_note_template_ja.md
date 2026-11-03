@@ -22,6 +22,10 @@
 
 [データ構造、API形状、処理フローを簡潔に。図が必要なら Mermaid で書く]
 
+### 影響範囲
+
+[変更が波及するコード・テストの範囲。Graphifyを使った場合は `utility/graphify-codebase/assets/templates/impact_analysis_note_template_ja.md` の形式で、実コードで確認した内容のみ記載する。使わない場合は Grep/Read で確認した範囲を書く]
+
 ### 検討した代替案と却下理由
 
 | 代替案 | 却下理由 |
