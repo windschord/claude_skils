@@ -3,7 +3,8 @@ name: Package Skills
 # claude.ai（チャット）へアップロードするスキルzipを生成する。
 # - PR / main への push: zipが生成できることを検証し、Artifactとして保存
 # - タグ（v*）の push: 生成したzipをGitHub Releaseに添付
-# - 手動実行: Artifactとして保存
+# - 手動実行: Artifactとして保存。release_tag を指定すると、mainの最新コミットにタグを作成してReleaseも公開する
+#   （GITHUB_TOKENで作ったタグはpushイベントを起こさないため、同じ実行内でReleaseまで行う）
 
 on:
   pull_request:
@@ -17,6 +18,11 @@ on:
     branches: [main]
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'タグを作成してReleaseを公開する場合のタグ名（例: v2.1.0 / v2.1.0-rc.1 ※ハイフン付きはプレリリース）。空ならArtifactのみ'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -42,11 +48,28 @@ jobs:
           path: dist/skills/*.zip
           retention-days: 30
 
-      - name: Attach zips to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Create tag (manual release)
+        if: inputs.release_tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.release_tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "::error::release_tag を指定した実行は main ブランチで行ってください（現在: $GITHUB_REF）"
+            exit 1
+          fi
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::タグ名は v1.2.3 または v1.2.3-rc.1 の形式で指定してください: $TAG"
+            exit 1
+          fi
+          gh api -X POST "repos/$REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
+
+      - name: Attach zips to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.release_tag || github.ref_name }}
         run: |
           (cd dist/skills && sha256sum *.zip > SHA256SUMS)
           cat > dist/release-notes.md <<'EOF'
