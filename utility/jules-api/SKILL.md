@@ -81,7 +81,7 @@ JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
 | サブコマンド | 引数 | 説明 |
 |-------------|------|------|
 | `list-sources` | — | 接続済みリポジトリ一覧（全ページを自動取得） |
-| `create-session` | `<source> <branch> <title> [--force]` / prompt: stdin | セッション作成（同名タイトルの重複作成を自動検知して中断） |
+| `create-session`（廃止） | `<source> <branch> <title> [--force]` / prompt: stdin | 新規セッションは作成しない。参照用（同名タイトルの重複作成を自動検知して中断） |
 | `list-sessions` | `[page_size=100]` | セッション一覧（全ページを自動取得。`page_size`は1リクエストあたりの件数） |
 | `get-session` | `<session_id>` | セッション詳細・状態確認 |
 | `approve-plan` | `<session_id>` | プラン承認 |
@@ -246,6 +246,8 @@ until scripts/jules.sh list-activities ${SESSION_ID} 2>/dev/null \
 
 ## リトライ時の重複防止
 
+> **廃止（参照用）**: 新規セッションの作成は行わない。2026-11-11 より前に `create-session` を実行して応答が曖昧だった場合の、重複セッション確認用として残している。
+
 `scripts/jules.sh create-session` はセッション作成前に同名タイトルの既存セッションを検索し、見つかった場合はエラーで中断する。
 
 **曖昧な失敗（タイムアウト・応答なし等）が起きても、ユーザーの作業承認を待たずに`scripts/jules.sh create-session`を再実行してはならない。** リクエストがJules側では成功していた場合、再実行は同一タスクの重複セッションを生成する。
@@ -292,6 +294,8 @@ webUrl が取得できない間は `https://jules.google` にアクセスして�
 
 ## JSONペイロードと特殊文字・日本語
 
+> **廃止（参照用）**: 新規セッションの作成は行わない。`send-message` で特殊文字・日本語を送る際の参考としてのみ使用する。
+
 スクリプト（`scripts/jules.sh create-session`・`scripts/jules.sh send-message`）は内部で `jq --arg` を使用してJSONを生成するため、**バッククォート・シングルクォート・日本語を含む任意のテキストを安全に送れる**。ヒアドキュメント（`<<'EOF'`）を使うとシェル展開なしで渡せる:
 
 ```bash
@@ -337,6 +341,8 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
 
 ## Jules依頼文の形式
 
+> **廃止（参照用）**: 新規セッションの作成は行わない。既存セッションへの `send-message` の書き方の参考としてのみ使用する。
+
 ```text
 タスク: [タスクタイトル]（[TASK-XXX]）
 
@@ -358,6 +364,8 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
 PRの作成先ブランチは依頼文ではなく`startingBranch`パラメータで指定する。依頼文は日本語で、技術用語・ファイルパスは英語のまま使用する。
 
 ## セッション作成パラメータ
+
+> **廃止（参照用）**: 新規セッションの作成は行わない。既存セッションの `get-session` 出力を読む際の参考としてのみ使用する。
 
 | パラメータ | 型 | 説明 |
 |-----------|-----|------|
@@ -390,11 +398,13 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 
 ## 複数タスクの並行処理
 
-依存関係のないタスクは複数セッションを同時作成できる:
+> **廃止（参照用）**: 新規セッションの作成は行わない。新規タスクの並列実行は task-executing（Agent tool / `isolation: worktree`）を使用する。以下は、2026-11-11 より前に作成済みの複数セッションを管理する場合の参照用である。
+
+作成済みの複数セッションは、次の手順で管理する:
 
 ```text
-1. 並行実行可能タスクを特定（依存関係グラフ分析）
-2. 各タスクの scripts/jules.sh create-session（共通ベースブランチ）
+1. scripts/jules.sh list-sessions で作成済みの全セッションを確認
+2. 各セッションの scripts/jules.sh get-session で状態（state）を確認
 3. 全セッションの scripts/jules.sh list-activities を監視
 4. 各セッションのプランを順次確認・承認
 5. 完了後 docs/sdd/tasks/ を更新
