@@ -43,8 +43,7 @@ python3 scripts/package-skills.py   # dist/skills/<スキル名>.zip を生成
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
 | **運用・監視** | health-check | インフラメトリクスの定期調査・健全性評価 |
 | | incident-rca | なぜなぜ分析によるインシデント根本原因特定 |
-| | operations-design | ITIL 4/SRE/DevOps運用設計書作成 |
-| | ipa-nfr-operations-design | IPA非機能要求グレード準拠の運用設計書生成 |
+| | ipa-nfr-workflow | ヒアリング→IPAマッピング→DB管理→顧客レビュー用Excel→指摘取込→運用設計書（Word）の一貫ワークフロー |
 | **インタビュー** | depth-interviewing-career | 社員キャリアインタビュー |
 | | depth-interviewing-product | 製品ユーザーインタビュー |
 | | key-needs-interview | キーニーズ法（梅澤理論）による深掘りヒアリングと強さ×未充足度分析 |
@@ -181,15 +180,12 @@ claude_skils/
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── sessions/
-│   ├── operations-design/             # 運用設計スキル
-│   │   ├── SKILL.md
-│   │   ├── assets/templates/
-│   │   ├── hearing_items/
-│   │   └── references/
-│   └── ipa-nfr-operations-design/    # IPA非機能要求グレード準拠 運用設計書生成スキル
+│   └── ipa-nfr-workflow/              # IPA非機能要求グレード ワークフロースキル（Excel/Word/DB）
 │       ├── SKILL.md
+│       ├── assets/master/
 │       ├── assets/templates/
-│       └── references/
+│       ├── references/
+│       └── scripts/
 │
 ├── interview/                         # インタビュースキル群
 │   ├── depth-interviewing-career/     # キャリアインタビュースキル
