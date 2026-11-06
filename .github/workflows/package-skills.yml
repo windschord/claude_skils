@@ -63,8 +63,11 @@ jobs:
             echo "::error::タグ名は v1.2.3 または v1.2.3-rc.1 の形式で指定してください: $TAG"
             exit 1
           fi
-          # 再実行できるよう、既存タグが同じコミットを指すなら作成をスキップする
-          EXISTING_SHA=$(gh api "repos/$REPO/git/ref/tags/$TAG" --jq .object.sha 2>/dev/null || true)
+          # 再実行できるよう、既存タグが同じコミットを指すなら作成をスキップする。
+          # gh api はHTTPエラー(404等)でも応答本文を標準出力へ出すため、出力の有無ではなく終了コードで存在を判定する。
+          if ! EXISTING_SHA=$(gh api "repos/$REPO/git/ref/tags/$TAG" --jq .object.sha 2>/dev/null); then
+            EXISTING_SHA=""
+          fi
           if [[ -z "$EXISTING_SHA" ]]; then
             gh api -X POST "repos/$REPO/git/refs" -f ref="refs/tags/$TAG" -f sha="$GITHUB_SHA"
           elif [[ "$EXISTING_SHA" == "$GITHUB_SHA" ]]; then
