@@ -79,6 +79,32 @@ my-new-skill/
 - `guides/`や`templates/`（assets/なし）など非標準のディレクトリ名を使わない
 - テンプレートとリファレンスを同じディレクトリに混在させない
 
+## リリース手順
+
+リリースは、`v*` のタグを付与（push）したことをトリガーに、GitHub Actionsが自動で行います。ワークフロー（`.github/workflows/package-skills.yml`）が、配布用のzip（非推奨を除く）と `SHA256SUMS` をReleaseに添付します。
+
+1. リリースしたい変更が、`main` にマージされていることを確認します。
+2. `gh` コマンドで、`main` の最新コミットにタグを付与します。
+
+   ```bash
+   SHA=$(gh api "repos/{owner}/{repo}/commits/main" --jq .sha)
+   gh api "repos/{owner}/{repo}/git/refs" -f ref=refs/tags/v2.1.0 -f sha="$SHA"
+   ```
+
+3. タグの付与で起動したワークフローの結果と、作られたReleaseを確認します。
+
+   ```bash
+   gh run list --workflow=package-skills.yml --limit 3
+   gh release view v2.1.0
+   ```
+
+- タグ名は `v1.2.3` の形式にします。`v1.2.3-rc.1` のようにハイフンを含めると、プレリリースとして公開されます。
+- 間違えて公開した場合は、Releaseとタグを削除します。
+
+  ```bash
+  gh release delete v2.1.0 --cleanup-tag --yes
+  ```
+
 ## 日本語文章チェック
 
 textlintを使用して日本語ドキュメントの品質を維持しています。
