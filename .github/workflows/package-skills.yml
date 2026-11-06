@@ -90,6 +90,7 @@ jobs:
           zipの検証: `sha256sum -c SHA256SUMS`（`SHA256SUMS` と同じフォルダで実行）
 
           > claude.aiのスキルはAPI・Claude Codeとは同期されません。更新時は新しいzipで再アップロードしてください。
+          > 非推奨のスキル（descriptionが「【非推奨】」で始まるもの）はzipに含まれません。
           EOF
           # v1.2.3-rc.1 のようにハイフンを含むタグはプレリリースとして公開する
           PRERELEASE_FLAG=""
