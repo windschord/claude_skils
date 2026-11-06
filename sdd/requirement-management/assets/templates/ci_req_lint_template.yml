@@ -1,0 +1,41 @@
+# 要求レジストリ検査のCI設定例
+# 配置: .github/workflows/req-lint.yml
+# 前提: reqctl.py をプロジェクトの scripts/ にコピーしていること。
+#       スキルから直接実行する場合は、以下のパスを実際の配置先に読み替える。
+# 注: generate の出力は入力が同じなら常に同一になるため、差分チェックが安定して動作する。
+name: req-lint
+
+on:
+  pull_request:
+    paths:
+      - "docs/requirements/**"
+      - "scripts/reqctl.py"
+      - "tests/**"
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      # 矛盾・欠落があればここで失敗させる（マージ阻止）
+      - name: Validate requirements
+        run: python3 scripts/reqctl.py validate --strict --check-tests
+
+      # generated/ が最新か確認する（手編集・再生成漏れの検出）
+      - name: Check generated docs are up to date
+        run: |
+          python3 scripts/reqctl.py generate
+          if ! git diff --exit-code -- docs/requirements/generated; then
+            echo "::error::generated/ が最新ではありません。reqctl.py generate を実行してコミットしてください"
+            exit 1
+          fi

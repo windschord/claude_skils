@@ -207,6 +207,8 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions?pageSize=10' \
   -H "x-goog-api-key: $JULES_API_KEY"
 ```
 
+> **重要**: 1回のリクエストは1ページ分のみ返す。`nextPageToken` が存在する限り `pageToken` を指定して全ページを取得すること。`scripts/jules.sh list-sessions` は全ページを自動取得して結合する。
+
 #### Get Session - セッション詳細
 
 ```text
@@ -267,6 +269,30 @@ curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}:sendMessage
 
 **レスポンス**: 空（エージェントの応答は次のアクティビティとして取得）
 
+#### Delete Session - セッション削除
+
+セッションを削除します。**元に戻せない**ため、PRのマージを確認した後にのみ呼び出す。
+
+```text
+DELETE /v1alpha/sessions/{sessionId}
+```
+
+```bash
+# 推奨: スクリプト経由
+scripts/jules.sh close-session "${SESSION_ID}"
+
+# 直接curl
+curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}" \
+  -X DELETE \
+  -H "x-goog-api-key: $JULES_API_KEY"
+```
+
+**リクエストボディ**: 空
+
+**レスポンス**: 空
+
+削除後は同セッションへの`get-session`・`list-activities`等が404になる。PR URL・Julesブランチ名など後で必要な情報は削除前に必ず記録すること。
+
 ### Activities API
 
 #### List Activities - アクティビティ一覧
@@ -288,6 +314,8 @@ GET /v1alpha/sessions/{sessionId}/activities
 curl -s "https://jules.googleapis.com/v1alpha/sessions/${SESSION_ID}/activities?pageSize=20" \
   -H "x-goog-api-key: $JULES_API_KEY"
 ```
+
+> **重要**: アクティビティは古い順に返り、1回のリクエストでは1ページ分のみ。`nextPageToken` を辿らずに1ページ目だけを見ると、最新のアクティビティ（`completed`・`agentMessage`等）を見落とし、「Julesが応答なし・停止」と誤判定する。`scripts/jules.sh list-activities` は全ページを取得して `createTime` 昇順に整列し、`.activities[-1]` が最新となる。
 
 ## リソース定義
 

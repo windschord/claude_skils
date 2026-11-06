@@ -250,6 +250,8 @@ status: "pending"
 
 ### 6. ドキュメント管理でタスク追加時（sdd-document-management）
 
+> `sdd-document-management` は非推奨です。この節は既存 `docs/sdd/` を保守する場合にのみ適用されます。要求の整合性チェックは `requirement-management` の `reqctl.py validate` を使用してください。
+
 **トリガー**: sdd-document-managementが整合性修正タスクを追加した時点
 
 **手順**:
@@ -346,8 +348,8 @@ content: "[BLOCKED] [Phase-1/TASK-003](#14) 外部API連携の実装"
 
 ### 同期が不要な場面
 
-- 要件定義（requirements-defining）: タスクがまだ存在しない
-- 設計（software-designing）: タスクがまだ存在しない
+- 要求管理（requirement-management）: タスクがまだ存在しない
+- 設計（PR本文に記載）: タスクがまだ存在しない
 - 逆順レビュー: タスクの状態変更がない（レビュー結果は別途報告）
 
 ### 同期漏れの防止

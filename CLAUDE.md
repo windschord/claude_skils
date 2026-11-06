@@ -32,14 +32,20 @@ docs/                              # ユーザー向けドキュメント（人�
 
 ```text
 sdd-documentation（オーケストレーター）
-    ├── requirements-defining    → docs/sdd/requirements/
-    ├── software-designing       → docs/sdd/design/
+    ├── requirement-management   → docs/requirements/*.yaml（要求・ストーリー・理由・用語・関係）
+    │                               ＋ generated/（自動生成の一覧・追跡表・関係グラフ）
     ├── task-planning            → GitHub Issue（デフォルト）/ docs/sdd/tasks/（オプション）
     ├── task-executing           → 実装コード（逆順レビュー付き）
-    ├── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
-    └── sdd-document-management  → ドキュメント管理・メンテナンス（承認フロー付き）
+    └── sdd-troubleshooting      → 問題分析・修正タスク（承認フロー付き）
+
+非推奨（既存 docs/sdd/ の保守・参照のみ。新規利用は禁止）
+    ├── requirements-defining    → requirement-management に統合
+    ├── software-designing       → 設計はPR本文とGitHubコメントに記載（永続化しない）
+    └── sdd-document-management  → 要求の整合性チェックは reqctl.py validate に統合
 ```
 
+> **設計の記録先**: 設計は実装時に必ず行うが、PR本文とGitHubコメントにのみ記載し、リポジトリには永続化しない。レジストリにはPRのURLを `design_refs` として残す。
+>
 > **タスクの出力先**: SDDスキルはタスクを**デフォルトでGitHub Issueとして起票**する（1タスク＝1 Issue、詳細はIssue本文に集約、ラベル `sdd:task` で一覧＝目次）。ステータスはラベル `sdd:status/*`、DONEはIssueのcloseで表現。ユーザーが「ファイルで管理」を明示した場合のみ `docs/sdd/tasks/` にファイル生成する。
 
 ## スキルファイル一覧
@@ -51,14 +57,14 @@ sdd-documentation（オーケストレーター）
 - **references/task_sync_guide_ja.md** - タスク同期（TodoWrite連携）ガイド
 - **references/checklist_ja.md** - チェックリスト
 
-### sdd/requirements-defining/
+### sdd/requirements-defining/（非推奨 → requirement-management）
 - **SKILL.md** - スキル定義ファイル
 - **assets/templates/requirements_index_template_ja.md** - 要件目次テンプレート
 - **assets/templates/user_story_template_ja.md** - ユーザーストーリーテンプレート
 - **assets/templates/nfr_template_ja.md** - 非機能要件テンプレート
 - **references/ears_notation_ja.md** - EARS記法の詳細ガイド
 
-### sdd/software-designing/
+### sdd/software-designing/（非推奨 → 設計はPR本文へ）
 - **SKILL.md** - スキル定義ファイル
 - **assets/templates/design_index_template_ja.md** - 設計目次テンプレート
 - **assets/templates/component_template_ja.md** - コンポーネント設計テンプレート
@@ -90,7 +96,7 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/bugfix_task_template_ja.md** - バグ修正タスクテンプレート
 - **references/analysis_guide_ja.md** - 分析ガイドライン
 
-### sdd/sdd-document-management/
+### sdd/sdd-document-management/（非推奨 → reqctl.py validate）
 - **SKILL.md** - スキル定義ファイル（5機能の定義・承認フロー）
 - **assets/templates/consistency_report_template_ja.md** - 整合性レポートテンプレート
 - **assets/templates/sync_report_template_ja.md** - 同期レポートテンプレート
@@ -102,6 +108,23 @@ sdd-documentation（オーケストレーター）
 - **references/archive_ja.md** - アーカイブガイド
 - **references/optimize_ja.md** - 最適化ガイド
 - **references/claude_md_sync_ja.md** - CLAUDE.md同期ガイド
+
+### sdd/requirement-management/
+- **SKILL.md** - スキル定義ファイル（要求・ストーリー・理由・用語・関係の管理／矛盾の機械検証／承認フロー）
+- **scripts/reqctl.py** - 要求レジストリの検証・生成・影響分析ツール（利用側リポジトリの `scripts/` にコピーし、プロジェクトルートから `python3 scripts/reqctl.py` で実行する。コピーしない場合はスキル内の実体パスを指定する）。サブコマンド: `validate`（構造/参照/矛盾/カバレッジ検査、`--strict`で警告もエラー扱い、`--check-tests`でテスト実在確認、`--json`で機械可読出力）/ `generate`（index.md・traceability.md・graph.mdを生成）/ `impact`（変更前の影響範囲）/ `next-id` / `stats`。依存はPyYAMLのみ
+- **assets/templates/requirements_registry_template_ja.yaml** - 要求レジストリ雛形
+- **assets/templates/glossary_template_ja.yaml** - 用語集・検査ポリシー雛形
+- **assets/templates/change_proposal_template_ja.md** - 変更提案レポート（承認ゲート用）
+- **assets/templates/pr_design_note_template_ja.md** - PR設計ノート（設計の唯一の記録先）
+- **assets/templates/ci_req_lint_template.yml** - CI設定例（矛盾があればマージ阻止）
+- **references/data_model_ja.md** - YAMLスキーマ全仕様
+- **references/consistency_rules_ja.md** - 検査コード一覧と対処法
+- **references/change_workflow_ja.md** - 追加・変更・廃止の判断基準と承認ゲート
+- **references/design_in_pr_ja.md** - 設計をPRに閉じる運用
+- **references/management_options_ja.md** - 管理方式の比較検討と採用理由
+- **references/migration_from_sdd_ja.md** - 既存 docs/sdd/ からの移行手順
+
+> **注**: このスキルは `requirements-defining` / `software-designing` / `sdd-document-management` の移行先であり、これらとの併用はしない。永続化するのは要求・ユーザーストーリー・理由・用語・要求間の関係で、設計書は作らない（設計はPR本文・GitHubコメントに記載）。要求の追加・変更・廃止のたびに `reqctl.py validate` で矛盾・欠落を機械検出する。
 
 ### code-quality/pr-comment-fixer/
 - **SKILL.md** - スキル定義ファイル（PRレビューコメント自動修正）
@@ -161,6 +184,9 @@ sdd-documentation（オーケストレーター）
 - **SKILL.md** - 製品インタビュースキル
 - **assets/templates/interview_log_template_ja.md** - インタビューログテンプレート
 
+### interview/key-needs-interview/
+- **SKILL.md** - キーニーズ法（梅澤理論）ヒアリング＆分析スキル定義ファイル（Q1/Q2/Butの3段階深掘り、会話ログ保存、強さ×未充足度分析。質問時にこちらの予想・想定をユーザーの回答前に述べないことを厳守）
+
 ### knowledge/knowledge-base/
 - **SKILL.md** - ナレッジベース管理スキル
 
@@ -189,6 +215,12 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/session_state_template_ja.md** - セッション状態テンプレート
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
+### utility/graphify-codebase/
+- **SKILL.md** - Graphifyコードベース調査スキル（導入・更新・照会。設計・レビュー・実装・トラブルシューティングでの影響範囲／依存関係調査用。任意の補助ツールで、未導入時は Grep/Read にフォールバック。グラフの結果は仮説であり実コードで確認する）
+- **references/cli_reference_ja.md** - Graphify CLIリファレンス（query/explain/path/affected/god-nodes/update、終了コード、EXTRACTED/INFERRED）
+- **references/sdd_integration_ja.md** - SDDフェーズ別活用ガイド（設計／タスク計画／実装／レビュー／トラブルシューティング）
+- **assets/templates/impact_analysis_note_template_ja.md** - 影響範囲調査ノート（PR設計ノート・Issue本文に貼る）
+
 ### utility/jules-api/
 - **SKILL.md** - Jules API統合スキル（スクリプト経由のタスク管理、ベースブランチ指定、プラン承認、Claude協調、1Password連携）
 - **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）
@@ -197,6 +229,20 @@ sdd-documentation（オーケストレーター）
 ### saas/saas-spec-document/
 - **SKILL.md** - SaaSサービス仕様書作成スキル（経済産業省ガイドライン準拠）
 - **assets/templates/service_specification_template_ja.md** - サービス仕様書テンプレート
+
+### project-management/project-phase-risk-audit/
+- **SKILL.md** - スキル定義ファイル（マルチベンダー管理・リスクマネジメントに長けたPMO視点での移行リスク監査、4視点フレームワーク×フェーズ特化切り替え）
+- **references/framework_general_ja.md** - 汎用フレームワーク（データライフサイクルと異常系／周辺アクター／時間軸の境界／マルチベンダー責任分界点）
+- **references/framework_requirements_phase_ja.md** - 要件定義フェーズ特化フレームワーク（現行仕様のブラックボックス化と非互換性／非機能要件／データ移行要件／セキュリティと監査要件）
+- **references/framework_operations_phase_ja.md** - 運用設計フェーズ特化フレームワーク（障害時の責任分界点／日常運用のプロセスと権限／計画停止とパッチ適用／BCPとバックアップ復旧）
+- **references/framework_load_test_phase_ja.md** - 負荷試験フェーズ特化フレームワーク（シナリオの現実性と突発的スパイク／マルチベンダー連携と境界ボトルネック／本番同等のデータ状態とキャッシュ／限界突破時の挙動と縮退運転）
+- **assets/templates/risk_audit_report_template_ja.md** - リスク監査レポートテンプレート（フレームワーク別リスク表＋キラークエスチョン）
+
+### scripts/ + .github/workflows/package-skills.yml（claude.ai向けスキルzip生成）
+- **scripts/package-skills.py** - claude.ai（チャット）の「設定 > 機能 > スキル」へアップロードするzipを生成する。`python3 scripts/package-skills.py [スキル名...] [--out DIR]`（既定の出力先は `dist/skills/`、gitignore対象）。SKILL.mdのフロントマターを検証し（nameとディレクトリ名の一致・description 1024文字以内・許可キーのみ）、スキルごとに `<スキル名>/` をルートとするzipを作る。スキル外を指す相対リンク（例: `../ai-code-review/...`）は zip内の `linked/` へ同梱してリンクを書き換える（リポジトリ内のファイルは変更しない）。依存は標準ライブラリのみ
+- **.github/workflows/package-skills.yml** - PR/mainではzip生成を検証してArtifact保存、`v*` タグではGitHub Releaseへ添付
+
+> **注**: claude.aiのスキルはAPI・Claude Codeとは同期されない。利用環境ごとにアップロードが必要。
 
 ## デバッグ・エラー修正の必須プロセス
 

@@ -6,7 +6,7 @@
 
 ## Task Instruction
 task_id: {{TASK-XXX}}
-task_type: {{スキル種別（例: task-executing, requirements-defining）}}
+task_type: {{スキル種別（例: task-executing, requirement-management）}}
 
 ## Objective
 {{目的と期待成果物の詳細}}
@@ -40,15 +40,15 @@ task_type: {{スキル種別（例: task-executing, requirements-defining）}}
 
 Task Instruction
 task_id: TASK-001
-task_type: requirements-defining
+task_type: requirement-management
 
 Objective
-ユーザー認証機能の要件定義書を作成する
+ユーザー認証機能の要求を docs/requirements/auth.yaml に登録し、reqctl.py validate を通す
 
 Context
 プロジェクト: Webアプリケーション
 前フェーズ: なし（新規開発）
-関連: docs/sdd/requirements/
+関連: docs/requirements/
 
 Constraints
 - escalation_policy: 要件の曖昧さがあればエスカレーション
@@ -67,7 +67,7 @@ Phase-2のタスク群（TASK-005a, TASK-005b, TASK-005c）を並列実行する
 Context
 プロジェクト: Webアプリケーション
 前フェーズ: docs/sdd/tasks/phase-2/
-関連: docs/sdd/design/components/
+関連: docs/requirements/generated/traceability.md
 
 Constraints
 - escalation_policy: ファイル削除・仕様変更はエスカレーション

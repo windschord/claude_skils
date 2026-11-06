@@ -380,12 +380,13 @@ status: <completed | failed | escalation_required>
 
 | サブスキル | 階層モード | 理由 |
 |-----------|-----------|------|
-| requirements-defining | 2階層 | 単一作業、並列化不要 |
-| software-designing | 2階層 | 同上 |
+| requirement-management | 2階層 | 単一作業、並列化不要 |
+| ~~requirements-defining~~（非推奨） | 2階層 | 同上 |
+| ~~software-designing~~（非推奨） | 2階層 | 同上 |
 | task-planning | 2階層 | 同上 |
 | task-executing | 3階層 | 複数タスクの並列実行が可能 |
 | sdd-troubleshooting | 条件分岐 | 仮説3つ以上なら3階層 |
-| sdd-document-management | 3階層 | フルスキャン時に5機能を並列実行 |
+| ~~sdd-document-management~~（非推奨） | 3階層 | フルスキャン時に5機能を並列実行 |
 
 ## テンプレート使用ルール（必須）
 

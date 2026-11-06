@@ -6,18 +6,29 @@
 # Usage:
 #   jules.sh list-sources
 #   echo "prompt" | jules.sh create-session <source> <branch> <title> [--force]
-#   jules.sh list-sessions [page_size=10]
+#   jules.sh list-sessions [page_size=100]
 #   jules.sh get-session <session_id>
 #   jules.sh approve-plan <session_id>
 #   echo "message" | jules.sh send-message <session_id>
-#   jules.sh list-activities <session_id> [page_size=20]
+#   jules.sh list-activities <session_id> [page_size=100]
+#   jules.sh close-session <session_id>
 #   jules.sh get-pr-branch <owner> <repo> <pr_number>
+#
+# ページネーション:
+#   list-sources / list-sessions / list-activities は nextPageToken を辿って全ページを
+#   取得・結合する。page_size は1リクエストあたりの件数で、出力件数の上限ではない。
+#   list-activities は createTime 昇順に整列するため、.activities[-1] が最新となる。
 #
 # 認証情報の解決（優先順）:
 #   1. JULES_API_KEY_OP_URI / GITHUB_TOKEN_OP_URI に1Passwordシークレット参照
 #      （op://<vault>/<item>/<field>）が設定されていれば、実行時に `op read` で取得する。
 #      環境変数には参照URIのみが載り、シークレット本体は載らないため安全。
 #   2. 未設定の場合は JULES_API_KEY / GITHUB_TOKEN を直接使用する（後方互換）。
+#   3. JULES_USE_CLOUD_CREDENTIAL=1 の場合、Jules宛リクエストの認証は
+#      Claude Codeクラウド環境のAPI credentials機能（セッション外でエージェント
+#      プロキシがヘッダーを自動付与）に委ねる。この場合キーはセッションの
+#      プロセス環境に一切現れないため、JULES_API_KEY_OP_URI/JULES_API_KEY は
+#      設定しない（設定されていればエラーで停止する）。GitHub側は対象外。
 set -euo pipefail
 
 API_BASE="https://jules.googleapis.com/v1alpha"
@@ -55,7 +66,20 @@ resolve_secret() {
   fi
 }
 
+# JULES_USE_CLOUD_CREDENTIAL=1 の場合、認証はクラウド環境のAPI credentials機能
+# （セッション外でエージェントプロキシがヘッダーを付与する仕組み）に委ねる
+using_cloud_credential() {
+  [[ "${JULES_USE_CLOUD_CREDENTIAL:-}" == "1" ]]
+}
+
 require_jules_key() {
+  if using_cloud_credential; then
+    # 1Password URI・直接キーと同時設定は認証方式が曖昧なため停止する
+    if [[ -n "${JULES_API_KEY_OP_URI:-}" || -n "${JULES_API_KEY:-}" ]]; then
+      die "JULES_USE_CLOUD_CREDENTIAL=1 と JULES_API_KEY_OP_URI/JULES_API_KEY が同時に設定されています。どちらの認証方式を使うか曖昧なため停止しました。クラウドのAPI credentials機能を使う場合は JULES_API_KEY_OP_URI/JULES_API_KEY を未設定にしてください。"
+    fi
+    return 0
+  fi
   JULES_API_KEY="$(resolve_secret JULES_API_KEY_OP_URI JULES_API_KEY)"
 }
 
@@ -65,12 +89,19 @@ require_github_token() {
 
 jules_curl() {
   # jules_curl <max_time> <url> [curl args...]
+  # クラウド認証モードでは x-goog-api-key を付けない（エージェントプロキシがセッション外で付与するため）
   local max_time="$1" url="$2"
   shift 2
-  curl -sf --connect-timeout 10 --max-time "$max_time" \
-    "$url" \
-    -H "x-goog-api-key: $JULES_API_KEY" \
-    "$@"
+  if using_cloud_credential; then
+    curl -sf --connect-timeout 10 --max-time "$max_time" \
+      "$url" \
+      "$@"
+  else
+    curl -sf --connect-timeout 10 --max-time "$max_time" \
+      "$url" \
+      -H "x-goog-api-key: $JULES_API_KEY" \
+      "$@"
+  fi
 }
 
 # stdinをPROMPTに読み込む。空（空白のみ含む）の場合はエラー
@@ -81,20 +112,24 @@ read_stdin_prompt() {
   fi
 }
 
-# fetch_all_pages <endpoint> <items_key>
+# fetch_all_pages <endpoint> <items_key> [page_size=100]
 # pageTokenを辿って全ページを取得し、結合したJSON配列を標準出力に返す
-# （対象がpage 2以降にある場合に見落とさないため）
+# （対象がpage 2以降にある場合に見落とさないため。1ページ目だけを見て
+#   「最新のアクティビティが無い＝Julesが止まっている」と誤判定するのを防ぐ）
 fetch_all_pages() {
-  local endpoint="$1" items_key="$2"
-  local page_token="" all_items="[]" url response
+  local endpoint="$1" items_key="$2" page_size="${3:-100}"
+  local page_token="" prev_token="" all_items="[]" url response
   while :; do
-    url="${API_BASE}/${endpoint}?pageSize=100"
-    [[ -n "$page_token" ]] && url="${url}&pageToken=${page_token}"
-    response=$(jules_curl 60 "$url")
+    url="${API_BASE}/${endpoint}?pageSize=${page_size}"
+    [[ -n "$page_token" ]] && url="${url}&pageToken=$(jq -rn --arg t "$page_token" '$t|@uri')"
+    response=$(jules_curl 60 "$url") || die "ページ取得に失敗しました（${endpoint}）。認証情報・対象ID・ネットワークを確認してください"
     all_items=$(jq -n --argjson acc "$all_items" --argjson resp "$response" --arg k "$items_key" \
       '$acc + ($resp[$k] // [])')
+    prev_token="$page_token"
     page_token=$(echo "$response" | jq -r '.nextPageToken // empty')
     [[ -z "$page_token" ]] && break
+    # 同じトークンが返り続けた場合の無限ループ防止
+    [[ "$page_token" == "$prev_token" ]] && die "nextPageToken が進まないため取得を中断しました（${endpoint}）"
   done
   echo "$all_items"
 }
@@ -140,11 +175,12 @@ cmd_create_session() {
       '{prompt:$p,sourceContext:{source:$s,githubRepoContext:{startingBranch:$b}},automationMode:"AUTO_CREATE_PR",requirePlanApproval:true,title:$t}')"
 }
 
+# 全ページを取得して表示する（page_size は1リクエストあたりの件数であり、出力件数の上限ではない）
 cmd_list_sessions() {
-  local page_size="${1:-10}"
+  local page_size="${1:-100}"
   require_jules_key
-  jules_curl 60 "${API_BASE}/sessions?pageSize=${page_size}" \
-    | jq '.sessions[] | {name, title, state}'
+  fetch_all_pages "sessions" "sessions" "$page_size" \
+    | jq '.[] | {name, title, state}'
 }
 
 cmd_get_session() {
@@ -172,11 +208,26 @@ cmd_send_message() {
     -d "$(jq -n --arg p "$PROMPT" '{prompt:$p}')"
 }
 
+# 全ページを取得し、createTime昇順（古い→新しい）に整列して {activities: [...]} で表示する。
+# 末尾要素（.activities[-1]）が常に最新のアクティビティになる。
+# createTime は小数秒の桁数が揃わない（なし/3桁/9桁）ことがあり、文字列比較だと
+# 時系列と一致しないため、小数秒を9桁にゼロ埋めしてから整列する。
+# page_size は1リクエストあたりの件数であり、出力件数の上限ではない。
 cmd_list_activities() {
   local session_id="${1:?Usage: $0 list-activities <session_id> [page_size]}"
-  local page_size="${2:-20}"
+  local page_size="${2:-100}"
   require_jules_key
-  jules_curl 60 "${API_BASE}/sessions/${session_id}/activities?pageSize=${page_size}" | jq .
+  fetch_all_pages "sessions/${session_id}/activities" "activities" "$page_size" \
+    | jq 'def sortable_time: sub("Z$"; "") | split(".") as $p | $p[0] + "." + (($p[1] // "") + "000000000")[0:9];
+        {activities: (sort_by((.createTime // "") | sortable_time))}'
+}
+
+# セッションを削除する。DELETEは元に戻せないため、PRマージ確認後にのみ呼び出すこと
+cmd_close_session() {
+  local session_id="${1:?Usage: $0 close-session <session_id>}"
+  require_jules_key
+  jules_curl 30 "${API_BASE}/sessions/${session_id}" -X DELETE
+  echo "Jules session ${session_id} を削除しました" >&2
 }
 
 cmd_get_pr_branch() {
@@ -201,6 +252,7 @@ case "$COMMAND" in
   approve-plan)    cmd_approve_plan "$@" ;;
   send-message)    cmd_send_message "$@" ;;
   list-activities) cmd_list_activities "$@" ;;
+  close-session)   cmd_close_session "$@" ;;
   get-pr-branch)   cmd_get_pr_branch "$@" ;;
   help|--help|-h)  usage ;;
   *)

@@ -61,12 +61,16 @@
 - `@src/path/to/reference.ts` - [参照理由]
 - `@src/path/to/similar-feature.ts` - [参照理由]
 
-### 関連する設計書
-- `@docs/sdd/design/components/component-a.md` - [関連コンポーネントの設計]
-- `@docs/sdd/design/api/endpoint.md` - [関連APIの仕様]
+### 関連する要求
 
-### 関連する要件
-- `@docs/sdd/requirements/stories/US-XXX.md` - [対応するユーザーストーリー]
+- `REQ-XXXX` - [このタスクが満たす要求]
+- `US-XXX` - [対応するユーザーストーリー]
+- `@docs/requirements/generated/traceability.md` - 要求と検証手段の対応表
+
+### 設計
+
+設計は本タスクの実装時に検討し、PR本文の設計ノートに記載する（設計書は作らない）。
+既に設計を議論したPR・コメントがあればURLを記載する。
 
 ---
 

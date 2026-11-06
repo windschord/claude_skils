@@ -18,17 +18,26 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 
 詳しい導入手順は[はじめに](docs/getting-started.md)を参照してください。
 
+claude.ai（チャット）で使う場合は、スキルをzipにしてアップロードします。
+
+```bash
+python3 scripts/package-skills.py   # dist/skills/<スキル名>.zip を生成
+```
+
+生成したzipを「設定 > 機能 > スキル」からアップロードしてください。`v*` タグを push すると、zipがGitHub Releaseにも添付されます。
+
 ## 利用可能なスキル
 
 | カテゴリ | スキル | 説明 |
 |---------|--------|------|
-| **SDD** | sdd-documentation | SDDオーケストレーター（6つのサブスキルを統括） |
-| | requirements-defining | EARS記法による要件定義 |
-| | software-designing | 技術アーキテクチャ設計 |
+| **SDD** | sdd-documentation | SDDオーケストレーター（4つの現行サブスキルを統括） |
+| | requirement-management | 要求・ストーリー・理由をYAMLレジストリで管理し、矛盾を機械検証（設計は永続化しない） |
 | | task-planning | AIエージェント向けタスク分解（デフォルト: GitHub Issue起票 / オプション: ファイル生成） |
 | | task-executing | タスク実行・逆順レビュー |
 | | sdd-troubleshooting | 問題分析・修正方針策定 |
-| | sdd-document-management | ドキュメント管理・メンテナンス |
+| | ~~requirements-defining~~ | **非推奨** → requirement-management（既存 docs/sdd/requirements/ の保守のみ） |
+| | ~~software-designing~~ | **非推奨** → 設計はPR本文に記載（既存 docs/sdd/design/ の保守のみ） |
+| | ~~sdd-document-management~~ | **非推奨** → reqctl.py validate（既存 docs/sdd/ の保守のみ） |
 | **コード品質** | ai-code-review | セキュリティ・可読性等6観点からのPRレビュー |
 | | self-review | サブエージェント並列によるローカル変更の6観点セルフレビュー |
 | | pr-comment-fixer | PRレビューコメントの自動検出・修正 |
@@ -37,12 +46,15 @@ Claude Code用のスキルコレクションです。各スキルは独立した
 | | ipa-nfr-workflow | ヒアリング→IPAマッピング→DB管理→顧客レビュー用Excel→指摘取込→運用設計書（Word）の一貫ワークフロー |
 | **インタビュー** | depth-interviewing-career | 社員キャリアインタビュー |
 | | depth-interviewing-product | 製品ユーザーインタビュー |
+| | key-needs-interview | キーニーズ法（梅澤理論）による深掘りヒアリングと強さ×未充足度分析 |
 | **ナレッジ管理** | knowledge-base | ローカルMarkdownによるナレッジベース管理 |
 | | report-summarizing | レポートのエグゼクティブサマリー変換 |
 | **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
+| **プロジェクト管理** | project-phase-risk-audit | マルチベンダー移行プロジェクトの潜在リスク監査（PMO視点、フェーズ別4視点フレームワーク） |
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
 | **ユーティリティ** | jules-api | Jules REST APIによる対話的タスク管理（ベースブランチ指定、プラン承認、Claude協調） |
 | | things-url | Things 3とのタスク双方向共有 |
+| | graphify-codebase | Graphifyによるコードベースのナレッジグラフ化と、SDD各フェーズでの影響範囲・依存関係調査（任意の補助ツール） |
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
 
@@ -107,7 +119,8 @@ claude_skils/
 ├── scripts/                           # ユーティリティスクリプト
 │   ├── generate-toc.sh                # 目次生成
 │   ├── github-slug.mjs                # GitHubスラグ生成
-│   └── lint-skills.sh                 # スキル定義リント
+│   ├── lint-skills.sh                 # スキル定義リント
+│   └── package-skills.py              # claude.ai用スキルzip生成
 ├── CLAUDE.md                          # Claude Code用ガイド（スキル内部リソース）
 ├── README.md                          # このファイル
 ├── LICENSE                            # MITライセンス
@@ -116,11 +129,16 @@ claude_skils/
 │   ├── sdd-documentation/             # SDDオーケストレータースキル
 │   │   ├── SKILL.md
 │   │   └── references/
-│   ├── requirements-defining/         # 要件定義サブスキル
+│   ├── requirement-management/        # 要求管理スキル（YAMLレジストリ＋矛盾検証）
+│   │   ├── SKILL.md
+│   │   ├── scripts/                   # reqctl.py（検証・生成・影響分析）
+│   │   ├── assets/templates/
+│   │   └── references/
+│   ├── requirements-defining/         # 要件定義サブスキル（非推奨）
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
-│   ├── software-designing/            # 設計サブスキル
+│   ├── software-designing/            # 設計サブスキル（非推奨）
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
@@ -134,7 +152,7 @@ claude_skils/
 │   │   ├── SKILL.md
 │   │   ├── assets/templates/
 │   │   └── references/
-│   └── sdd-document-management/       # ドキュメント管理スキル
+│   └── sdd-document-management/       # ドキュメント管理スキル（非推奨）
 │       ├── SKILL.md
 │       ├── assets/templates/
 │       └── references/
@@ -173,9 +191,11 @@ claude_skils/
 │   ├── depth-interviewing-career/     # キャリアインタビュースキル
 │   │   ├── SKILL.md
 │   │   └── assets/templates/
-│   └── depth-interviewing-product/    # 製品インタビュースキル
-│       ├── SKILL.md
-│       └── assets/templates/
+│   ├── depth-interviewing-product/    # 製品インタビュースキル
+│   │   ├── SKILL.md
+│   │   └── assets/templates/
+│   └── key-needs-interview/           # キーニーズ法ヒアリング＆分析スキル
+│       └── SKILL.md
 │
 ├── knowledge/                         # ナレッジ管理スキル群
 │   ├── knowledge-base/                # ナレッジベース管理スキル（SKILL.mdのみで動作）
@@ -189,6 +209,12 @@ claude_skils/
 │       ├── SKILL.md
 │       └── assets/templates/
 │
+├── project-management/                # プロジェクト管理スキル群
+│   └── project-phase-risk-audit/      # プロジェクトフェーズ別リスク監査スキル（PMO視点）
+│       ├── SKILL.md
+│       ├── assets/templates/
+│       └── references/
+│
 ├── orchestration/                     # オーケストレーションスキル群
 │   └── orchestrating-agents/          # エージェントオーケストレーションスキル
 │       ├── SKILL.md
@@ -196,6 +222,10 @@ claude_skils/
 │       └── references/
 │
 └── utility/                           # ユーティリティスキル群
+    ├── graphify-codebase/             # Graphifyコードベース調査スキル
+    │   ├── SKILL.md
+    │   ├── assets/templates/
+    │   └── references/
     ├── jules-api/                     # Jules API統合スキル
     │   ├── SKILL.md
     │   ├── references/

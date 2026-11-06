@@ -360,6 +360,8 @@ SDDフェーズ          並列処理          条件・トリガー            
 
 **使用フェーズ**: ドキュメント管理（sdd-document-management）フルスキャン時
 
+> `sdd-document-management` は非推奨です。既存 `docs/sdd/` を保守する場合にのみ適用されます。
+
 **Agent tool呼び出しパターン（レポート作成 → worktreeあり）**:
 
 ```text

@@ -21,8 +21,11 @@ metadata:
 |------|----------|------|
 | 1 | `JULES_API_KEY_OP_URI` / `GITHUB_TOKEN_OP_URI` | 1Passwordシークレット参照（`op://<vault>/<item>/<field>`）。実行時に`op read`で取得 |
 | 2 | `JULES_API_KEY` / `GITHUB_TOKEN` | シークレットの直接指定（後方互換） |
+| 3 | `JULES_USE_CLOUD_CREDENTIAL=1` | Jules宛リクエストの認証をClaude Codeクラウド環境のAPI credentials機能に委ねる（下記「クラウド環境でAPI credentialsを使う場合」参照）。GitHub側（`get-pr-branch`）は対象外で、従来通り`GITHUB_TOKEN_OP_URI`/`GITHUB_TOKEN`が必要 |
 
 **1Passwordシークレット参照を推奨する。** 環境変数には参照URIのみが載り、シークレット本体はプロセス環境・シェル履歴・設定ファイルに残らない。1Password CLI（`op`）のインストールとサインインが前提。
+
+`JULES_USE_CLOUD_CREDENTIAL=1`を設定した場合、`JULES_API_KEY_OP_URI`または`JULES_API_KEY`が同時に設定されているとスクリプトはエラーで停止する（どちらの認証方式を使うか曖昧なまま進めないため）。
 
 Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/settings.json`）に設定する例:
 
@@ -37,6 +40,32 @@ Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/setti
 
 `JULES_API_KEY_OP_URI`の設定時に`op`コマンドの不在や`op read`の失敗を検知した場合、スクリプトはエラーで停止する（直接指定へ黙ってフォールバックしない）。
 
+### クラウド環境でAPI credentialsを使う場合
+
+この方式を使う場合、`settings.json`に`JULES_API_KEY_OP_URI`/`JULES_API_KEY`を設定しないこと（上記「Claude Codeの`settings.json`に設定する例」とは併用しない。既に設定済みなら削除してから使う。同時設定はスクリプトがエラーで停止する）。
+
+Claude Code のクラウド環境設定 → 対象環境を編集 →
+「認証情報を追加」で以下を入力する。
+
+| 項目               | 値                                    |
+|--------------------|----------------------------------------|
+| 追加先             | 対象のCloud environment                |
+| 名前               | 任意（例: Jules API）                  |
+| 認証情報タイプ     | Bearer のまま                          |
+| 許可ウェブサイト   | jules.googleapis.com                   |
+| カスタムヘッダー名 | x-goog-api-key に書き換える            |
+| プレフィックス     | 空にする（Bearer のままだと認証失敗する）|
+| 値                 | jules.google.com の Settings で発行したAPIキー |
+
+保存後は新しいセッションを開始してから反映される
+（実行中のセッションには反映されない）。
+
+設定後は以下で疎通確認する:
+
+```bash
+JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
+```
+
 ## スクリプト
 
 `scripts/jules.sh`のサブコマンドでAPIを操作する（`jq`依存）:
@@ -45,14 +74,17 @@ Claude Codeの`settings.json`（`.claude/settings.json`または`~/.claude/setti
 |-------------|------|------|
 | `list-sources` | — | 接続済みリポジトリ一覧（全ページを自動取得） |
 | `create-session` | `<source> <branch> <title> [--force]` / prompt: stdin | セッション作成（同名タイトルの重複作成を自動検知して中断） |
-| `list-sessions` | `[page_size=10]` | セッション一覧 |
+| `list-sessions` | `[page_size=100]` | セッション一覧（全ページを自動取得。`page_size`は1リクエストあたりの件数） |
 | `get-session` | `<session_id>` | セッション詳細・状態確認 |
 | `approve-plan` | `<session_id>` | プラン承認 |
 | `send-message` | `<session_id>` / message: stdin | メッセージ送信 |
-| `list-activities` | `<session_id> [page_size=20]` | アクティビティ一覧 |
+| `list-activities` | `<session_id> [page_size=100]` | アクティビティ一覧（全ページを自動取得し`createTime`昇順に整列。`.activities[-1]`が最新） |
+| `close-session` | `<session_id>` | セッションを削除（`DELETE`）する。**元に戻せない**ため、PRのマージを確認した後にのみ実行する |
 | `get-pr-branch` | `<owner> <repo> <pr_number>` | PRのheadブランチ名取得 |
 
 ヘルプ表示: `scripts/jules.sh help`
+
+> **ページネーション（最新状況の誤判定防止）**: Activities APIは古い順に返り、1ページ（`pageSize`件）しか返さない。1ページ目だけを見ると、アクティビティが増えたセッションで最新の`agentMessage`・`completed`等が2ページ目以降に隠れ、「Julesが応答なし・停止している」と誤判定する。`list-activities`/`list-sessions`/`list-sources`は`nextPageToken`を辿って全ページを取得するため、**必ずスクリプト経由で確認し、`curl`で1ページ目だけを見て停止判定しないこと**。停止の判断は`.activities[-1]`（最新）の`createTime`と、`get-session`の`state`・`updateTime`の両方で行う。
 
 ## ワークフロー
 
@@ -69,8 +101,9 @@ Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
 ### 基本フロー
 
 ```text
-1. 認証情報の確認（JULES_API_KEY_OP_URI または JULES_API_KEY。手順12のPRブランチ取得まで行う場合は
-   GITHUB_TOKEN_OP_URI または GITHUB_TOKEN も確認。上記「認証情報の設定」参照）
+1. 認証情報の確認（JULES_API_KEY_OP_URI／JULES_API_KEY／JULES_USE_CLOUD_CREDENTIAL=1のいずれか。
+   手順12のPRブランチ取得まで行う場合はGITHUB_TOKEN_OP_URI または GITHUB_TOKEN も確認。
+   上記「認証情報の設定」参照）
 2. scripts/jules.sh list-sources でソース名（sources/github/{owner}/{repo}）を確認
    （全ページを自動取得するため、対象リポジトリが多数の接続先の後方にあっても見落とさない）
 3. docs/sdd/tasks/ でTODOタスクを確認・選択
@@ -387,6 +420,8 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 **マージ日時**: {日時}
 ```
 
+PRのマージを確認したら`scripts/jules.sh close-session ${SESSION_ID}`でJulesセッションを削除する（下記「PRマージ後のセッションクローズ」参照）。
+
 **段階4（レビュー対応時）**:
 ```markdown
 ## レビュー対応履歴
@@ -396,6 +431,23 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 **指摘内容**: [内容]
 **対応内容**: [要約]
 ```
+
+---
+
+## PRマージ後のセッションクローズ
+
+Julesの作業完了後、PRがマージされたら、`scripts/jules.sh close-session ${SESSION_ID}`でJulesセッションを削除する。
+
+```text
+1. GitHub側でPRがマージ済み（state: merged）であることを確認する
+   （pull_request_read等でmerged: trueを確認。マージ前・マージ判定不明の状態で実行しない）
+2. scripts/jules.sh close-session ${SESSION_ID}
+3. docs/sdd/tasks/のタスクファイルにクローズ日時を記録する
+```
+
+> **注意（元に戻せない）**: `close-session`は`DELETE /v1alpha/sessions/{sessionId}`を呼び出し、Jules側のセッション記録を完全に削除する。復元手段は無い。削除後は`get-session`・`list-activities`が404になるため、PR URL・Julesブランチ名など後で必要な情報は段階1〜3で必ずタスクファイルに記録してから実行すること。PRやコード自体（既にマージ済み）には影響しない。
+>
+> レビュー対応フローで既存セッションを再利用する可能性が残っている間（マージ前）はクローズしない。マージ後にレビュー指摘が来た場合はセッションを再利用できないため、新規セッションまたはローカル修正で対応する。
 
 ## リソース
 

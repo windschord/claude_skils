@@ -1,11 +1,24 @@
 ---
 name: software-designing
-description: 技術設計書を作成・編集する。アーキテクチャ設計、コンポーネント定義、API設計、データベーススキーマの文書化が必要な場合に使用する。設計フェーズのみを単独で実行する際に使用する。Do NOT use for SDDワークフロー全体の管理（sdd-documentationを使用すること）。
+description: 【非推奨】設計書を永続化しない運用へ移行したため非推奨。設計は実装時にPR本文とGitHubコメントへ記載し、要求の管理は requirement-management を使用すること。既存の docs/sdd/design/ を保守・参照する場合にのみ使用する。アーキテクチャ設計、コンポーネント定義、API設計、データベーススキーマのMarkdown文書を作成・編集する。Do NOT use for 新規プロジェクトの設計（設計はPR本文に記載すること）。
 metadata:
   version: "1.0.0"
 ---
 
-# 設計スキル
+# 設計スキル（非推奨）
+
+> **⚠️ このスキルは非推奨です。**
+>
+> 設計書を永続化しない運用へ移行しました。設計書は書いた瞬間から実装とずれ始め、ずれた設計書は整合性チェックの対象を増やすだけになるためです。
+>
+> | | 非推奨（本スキル） | 移行先 |
+> |---|---|---|
+> | 設計の記録先 | `docs/sdd/design/`（永続化） | PR本文とGitHubコメント（永続化しない） |
+> | 要求との紐付け | ドキュメント間の相互リンク | 要求の `verification` とPRのURL（`design_refs`） |
+> | 要求の管理 | requirements-defining | `requirement-management` |
+>
+> 運用の詳細は `sdd/requirement-management/references/design_in_pr_ja.md`、移行手順は同 `references/migration_from_sdd_ja.md` を参照してください。
+> 既存の `docs/sdd/design/` を保守・参照する場合にのみ、以下の手順を使用します。
 
 技術アーキテクチャ、コンポーネント設計、API設計、データベーススキーマを文書化する設計書を作成します。
 
@@ -132,7 +145,7 @@ B) React + JavaScript
 docs/sdd/design/の作成完了後：
 - **task-planning**: design/を基にタスクを分解
 
-task-planningスキルで逆順レビュー（タスク → 設計 → 要件）が行われます。
+task-planningスキルで逆順レビュー（タスク → 要求）が行われます。設計は逆順レビューの対象外です（PR本文の設計ノートと実装を突き合わせます）。
 
 ## リソース
 

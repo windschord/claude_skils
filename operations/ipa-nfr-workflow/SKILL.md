@@ -1,6 +1,6 @@
 ---
 name: ipa-nfr-workflow
-description: ヒアリングからIPA非機能要求グレード2018へのマッピング、人間可読なYAMLデータでの管理（インメモリSQLiteによる制約検証つき）、顧客レビュー用Excel（優先度3段階提示）の出力、顧客指摘の取り込み、運用設計書（Word）の生成までを一貫して行う。非機能要件定義〜運用設計フェーズの運用設計書作成すべてに使用する（旧operations-design・ipa-nfr-operations-designスキルの後継）。Do NOT use for ソフトウェアの機能設計（software-designingを使用すること）。Do NOT use for 業界トレンド調査そのものが目的の場合（WebSearchで直接調査すること）。
+description: ヒアリングからIPA非機能要求グレード2018へのマッピング、人間可読なYAMLデータでの管理（インメモリSQLiteによる制約検証つき）、顧客レビュー用Excel（優先度3段階提示）の出力、顧客指摘の取り込み、運用設計書（Word）の生成までを一貫して行う。非機能要件定義〜運用設計フェーズの運用設計書作成すべてに使用する（旧operations-design・ipa-nfr-operations-designスキルの後継）。Do NOT use for ソフトウェアの機能要求の定義（requirement-managementを使用すること）。Do NOT use for 業界トレンド調査そのものが目的の場合（WebSearchで直接調査すること）。
 metadata:
   version: "1.0.0"
 ---

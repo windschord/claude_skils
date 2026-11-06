@@ -53,8 +53,8 @@ SDDトラブルシューティングスキルにおける分析プロセスの�
 
 ### 2. 仕様との照合
 
-- 要件定義（docs/sdd/requirements/）を参照
-- 設計（docs/sdd/design/）を参照
+- 要求（docs/requirements/）を参照
+- 要求（docs/requirements/）とPR本文の設計ノートを参照
 - 仕様の意図を理解した上で乖離を判定
 
 ### 3. 承認プロセスの遵守

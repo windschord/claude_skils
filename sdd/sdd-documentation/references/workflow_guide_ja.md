@@ -42,14 +42,14 @@
 ```text
 sdd-documentation（オーケストレーター）
     │
-    ├── requirements-defining（要件定義）
-    │       └── docs/sdd/requirements/
-    │               ├── index.md
-    │               ├── stories/US-XXX.md
-    │               └── nfr/*.md
+    ├── requirement-management（要求管理）
+    │       └── docs/requirements/
+    │               ├── glossary.yaml
+    │               ├── <ドメイン>.yaml
+    │               └── generated/（index.md / traceability.md / graph.md）
     │
-    ├── software-designing（設計）
-    │       └── docs/sdd/design/
+    ├── 設計（PR本文とGitHubコメントに記載・永続化しない）
+    │       └── レジストリにはPRのURLを design_refs として残すのみ
     │               ├── index.md
     │               ├── components/*.md
     │               ├── api/*.md
@@ -97,7 +97,7 @@ docs/sdd/
 
 ### フェーズ2: 要件定義
 
-**使用スキル**: `requirements-defining`
+**使用スキル**: `requirement-management`（`requirements-defining` は非推奨）
 
 **目的**: 何を作るかを明確に定義
 
@@ -119,7 +119,7 @@ docs/sdd/
 
 ### フェーズ3: 設計
 
-**使用スキル**: `software-designing`
+**使用スキル**: なし。設計は実装時にPR本文へ記載する（`software-designing` は非推奨）
 
 **目的**: どのように作るかを文書化
 
@@ -187,7 +187,7 @@ docs/sdd/requirements/
 | チェック | 内容 |
 |---------|------|
 | タスク → 設計 | コンポーネント、API、データモデル、技術スタックの整合性 |
-| 設計 → 要件 | 機能カバレッジ、非機能要件対応、過剰設計チェック |
+| タスク → 要求 | 要求カバレッジ、verification へのテスト登録、過剰実装チェック |
 | 過不足 | 要件にない機能がないか、実装漏れがないか |
 
 **不整合発見時**:
@@ -244,8 +244,8 @@ docs/sdd/
 
 | 作業内容 | 使用スキル |
 |---------|-----------|
-| 要件の追加・修正 | `requirements-defining` |
-| 設計の更新 | `software-designing` |
+| 要求の追加・修正 | `requirement-management` |
+| 設計の更新 | PR本文に記載（スキルは使わない） |
 | タスクの追加・更新 | `task-planning` |
 | 整合性チェック | `sdd-documentation` |
 
@@ -311,7 +311,7 @@ SDDワークフローの特定フェーズでAgent tool（`isolation: worktree`�
 
 ### ドキュメント管理での並列処理
 
-フルスキャン時にAgent tool（`isolation: worktree`）で4機能を並列実行:
+フルスキャン時にAgent tool（`isolation: worktree`）で5機能を並列実行:
 
 1. 整合性チェック
 2. 実装同期チェック

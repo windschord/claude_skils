@@ -55,4 +55,4 @@ Acceptance Criteria
 Technical Context
 - フレームワーク: Express.js
 - 認証: JWT (jsonwebtoken)
-- 参照: docs/sdd/design/api/auth.md
+- 参照: REQ-0001, REQ-0002（docs/requirements/auth.yaml）、PR本文の設計ノート
