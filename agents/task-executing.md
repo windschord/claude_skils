@@ -93,6 +93,14 @@ requirement-management  →  task-planning        →  task-executing
 
 **チーム作成プロンプト例**: [sdd/sdd-documentation/references/agent_teams_guide_ja.md](sdd/sdd-documentation/references/agent_teams_guide_ja.md)
 
+### Graphify連携（任意）
+
+Graphifyが導入済みで `graphify-out/graph.json` がある場合に限り、次の用途で使える（`utility/graphify-codebase/SKILL.md`）。未導入なら従来どおり Grep/Read で進める。
+
+- 着手前: `graphify query` / `explain` で触るファイルを絞り、読み込む範囲を限定する（結果は実コードで確認してから採用する）
+- 実装中: 変更シンボルに `graphify affected` を実行し、テスト範囲の漏れを確認する
+- 完了後: `graphify update .` でグラフを更新する（並列実行時は各worktreeで独立に更新し、`graphify-out/` を共有しない）
+
 ### 単一セッション順次実行フロー
 
 ```text

@@ -221,6 +221,12 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/session_state_template_ja.md** - セッション状態テンプレート
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
+### utility/graphify-codebase/
+- **SKILL.md** - Graphifyコードベース調査スキル（導入・更新・照会。設計・レビュー・実装・トラブルシューティングでの影響範囲／依存関係調査用。任意の補助ツールで、未導入時は Grep/Read にフォールバック。グラフの結果は仮説であり実コードで確認する）
+- **references/cli_reference_ja.md** - Graphify CLIリファレンス（query/explain/path/affected/god-nodes/update、終了コード、EXTRACTED/INFERRED）
+- **references/sdd_integration_ja.md** - SDDフェーズ別活用ガイド（設計／タスク計画／実装／レビュー／トラブルシューティング）
+- **assets/templates/impact_analysis_note_template_ja.md** - 影響範囲調査ノート（PR設計ノート・Issue本文に貼る）
+
 ### utility/jules-api/（非推奨 → task-executing）
 > **非推奨**: Julesは2026-12-31にサービス終了（2026-11-11以降は読み取り専用）。新規のタスク実行には使用せず、`task-executing`（Agent tool）を使用する。既存Julesセッションの参照・完了処理（保守）のみ。後継のGoogle Antigravity（Remote Agents）は公開APIがなく第三者ツールからの利用が規約で認められないため、後継スキルは提供しない。
 

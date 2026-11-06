@@ -55,6 +55,7 @@ python3 scripts/package-skills.py   # dist/skills/<スキル名>.zip を生成
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
 | **ユーティリティ** | ~~jules-api~~ | **非推奨**（Julesは2026-12-31にサービス終了）→ task-executing（既存セッションの保守のみ） |
 | | things-url | Things 3とのタスク双方向共有 |
+| | graphify-codebase | Graphifyによるコードベースのナレッジグラフ化と、SDD各フェーズでの影響範囲・依存関係調査（任意の補助ツール） |
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
 
@@ -192,6 +193,10 @@ claude_skils/
 │       └── references/
 │
 └── utility/                           # ユーティリティスキル群
+    ├── graphify-codebase/             # Graphifyコードベース調査スキル
+    │   ├── SKILL.md
+    │   ├── assets/templates/
+    │   └── references/
     ├── jules-api/                     # Jules API統合スキル（非推奨）
     │   ├── SKILL.md
     │   ├── references/
