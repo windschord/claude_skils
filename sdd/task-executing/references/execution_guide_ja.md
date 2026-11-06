@@ -433,7 +433,7 @@ Task 1.1: BLOCKED
 
 ## 実行方式（Agent tool一本化）
 
-タスクの実装は、Agent tool（サブエージェント）による実行に一本化されている。2タスク以上を並列実行する場合は `isolation: worktree` を使用する（詳細は `sdd-documentation/references/agent_teams_guide_ja.md`）。
+タスクの実装は、Agent tool（サブエージェント）による実行に一本化されている。2タスク以上を並列実行する場合は `isolation: worktree` を使用する（詳細は [agent_teams_guide_ja.md](../../sdd-documentation/references/agent_teams_guide_ja.md)）。
 
 外部の非同期コーディングエージェントへの委任（Jules）は、2026-12-31 のサービス終了に伴い廃止した。既存の Jules セッション・PR を保守する場合のみ [jules_integration_ja.md](jules_integration_ja.md)（非推奨）を参照する。
 

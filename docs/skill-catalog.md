@@ -377,12 +377,14 @@ Jules REST APIを使用して、SDDタスクをGoogleの非同期コーディン
 **主な機能（保守用）:**
 
 - 既存セッションの状態確認・アクティビティ参照
-- PRマージ後のセッションクローズ（`close-session`）
+- PRマージ後のセッションクローズ（`close-session`。読み取り専用化後は実行できない可能性があるため、2026-11-11までに実施）
 - 既存セッションへのメッセージ送信（2026-11-11まで）
 
 **前提条件:**
 
-- 環境変数`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、推奨）または`JULES_API_KEY`（直接指定）が設定されている必要がある
+- 認証情報が設定されている必要がある。次のいずれか（設定方法は `utility/jules-api/SKILL.md` の「認証情報の設定」を参照）
+  - 環境変数`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、推奨）または`JULES_API_KEY`（直接指定）
+  - Claude Codeクラウド環境のAPI credentials機能を使う場合は`JULES_USE_CLOUD_CREDENTIAL=1`を設定し、上記2つの環境変数は設定しない（両方設定するとスクリプトがエラーで停止する）
 
 > **後継について**: Google Antigravity（Remote Agents）は、公開APIがなく、第三者ツールからの利用が規約で認められていないため、本スキルの置き換えにはなりません。このリポジトリでは後継スキルを提供せず、タスク実行は `task-executing` に一本化しています。
 
