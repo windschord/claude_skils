@@ -35,9 +35,11 @@ git clone https://github.com/windschord/claude_skils.git
 claude.aiのチャットでは、スキルをzipでアップロードします。zipはスクリプトで生成できます。
 
 ```bash
-python3 scripts/package-skills.py                 # 全スキルを dist/skills/ へ出力
+python3 scripts/package-skills.py                 # 非推奨を除く全スキルを dist/skills/ へ出力
 python3 scripts/package-skills.py task-planning   # 指定スキルのみ
 ```
+
+`description` が「【非推奨】」で始まるスキルは、配布用のzipに含まれません。含めたい場合は、スキル名を指定するか `--include-deprecated` を付けてください。
 
 1. 生成した `dist/skills/<スキル名>.zip` を用意します（`v*` タグを push すると GitHub Release にも添付されます）
 2. claude.aiの「設定 > 機能 > スキル」からzipをアップロードします

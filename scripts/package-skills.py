@@ -9,9 +9,13 @@ claude.ai の「設定 > 機能 > スキル」へアップロードするzipは�
 解決できないため、リンク先ファイルを linked/ 配下へ同梱してリンクを書き換える。
 リポジトリ内のファイルは変更しない（書き換えはzip内のコピーにのみ適用）。
 
+description が「【非推奨】」で始まるスキルは配布対象から除く。スキル名を明示した
+場合と --include-deprecated を付けた場合は含める。
+
 使い方:
-  python3 scripts/package-skills.py                 # 全スキルを dist/skills/ へ出力
-  python3 scripts/package-skills.py task-planning   # 指定スキルのみ
+  python3 scripts/package-skills.py                 # 非推奨を除く全スキルを dist/skills/ へ出力
+  python3 scripts/package-skills.py task-planning   # 指定スキルのみ（非推奨でも出力）
+  python3 scripts/package-skills.py --include-deprecated  # 非推奨も含める
   python3 scripts/package-skills.py --out build/    # 出力先を変更
 """
 from __future__ import annotations
@@ -31,6 +35,7 @@ NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 MAX_NAME_CHARS = 64
 MAX_DESCRIPTION_CHARS = 1024
 MAX_ZIP_BYTES = 30 * 1024 * 1024
+DEPRECATED_MARK = "【非推奨】"
 LINK_RE = re.compile(r"(\]\()([^)\s#]+)((?:#[^)\s]*)?\))")
 FIXED_TIME = (2020, 1, 1, 0, 0, 0)  # 再現可能なzipにするため固定
 
@@ -100,6 +105,15 @@ def validate(skill_dir: Path) -> list[str]:
     return errors
 
 
+def is_deprecated(skill_dir: Path) -> bool:
+    """description が「【非推奨】」で始まるスキルを非推奨とみなす。解析できなければ False（検証側で報告）。"""
+    try:
+        fm = parse_frontmatter(skill_dir / "SKILL.md")
+    except ValueError:
+        return False
+    return fm.get("description", "").startswith(DEPRECATED_MARK)
+
+
 def iter_files(skill_dir: Path):
     for path in sorted(skill_dir.rglob("*")):
         rel = path.relative_to(skill_dir)
@@ -166,7 +180,8 @@ def build_zip(skill_dir: Path, out_dir: Path) -> tuple[Path, list[str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="claude.aiアップロード用のスキルzipを生成する")
-    parser.add_argument("skills", nargs="*", help="対象スキル名（省略時は全スキル）")
+    parser.add_argument("skills", nargs="*", help="対象スキル名（省略時は非推奨を除く全スキル）")
+    parser.add_argument("--include-deprecated", action="store_true", help="非推奨スキルも対象に含める")
     parser.add_argument("--out", default="dist/skills", help="出力先ディレクトリ（既定: dist/skills）")
     args = parser.parse_args()
 
@@ -177,7 +192,15 @@ def main() -> int:
         if missing:
             print(f"[ERR]  スキルが見つかりません: {', '.join(missing)}", file=sys.stderr)
             return 1
-        skills = [by_name[n] for n in args.skills]
+        skills = [by_name[n] for n in args.skills]  # 明示指定は非推奨でも出力する
+    elif not args.include_deprecated:
+        kept = []
+        for skill_dir in skills:
+            if is_deprecated(skill_dir):
+                print(f"[SKIP] {skill_dir.relative_to(ROOT)}: 非推奨のため除外")
+            else:
+                kept.append(skill_dir)
+        skills = kept
 
     out_dir = (ROOT / args.out) if not Path(args.out).is_absolute() else Path(args.out)
     failed = 0
