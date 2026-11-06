@@ -1,11 +1,19 @@
 ---
 name: jules-api
-description: Jules REST APIを使用してタスクを対話的に依頼・管理する。セッション作成・プラン承認・メッセージ送信・進捗監視をAPI経由で行い、Claudeと協調してタスクを完遂する。ベースブランチ指定とPR自動作成に対応。認証はJULES_API_KEY_OP_URI（1Passwordシークレット参照）またはJULES_API_KEYで行う。Do NOT use for 認証情報未設定の環境でのタスク実行（task-executingを使用すること）。
+description: 【非推奨】Jules は 2026-12-31 にサービス終了する（2026-11-11 以降は読み取り専用）。新規のタスク実行には使用せず、task-executing（Agent tool）を使用すること。既存の Jules セッションの参照・完了処理にのみ使用する。Jules REST API（JULES_API_KEY_OP_URI または JULES_API_KEY で認証）でセッション作成・プラン承認・メッセージ送信・進捗監視を行う。Do NOT use for 新規タスクの実行（task-executingを使用すること）。
 metadata:
-  version: "3.0.0"
+  version: "3.1.0"
 ---
 
-# Jules API統合スキル
+# Jules API統合スキル（非推奨）
+
+> **⚠️ このスキルは非推奨です。**
+>
+> Jules は 2026-12-31 にサービスを終了します。2026-11-11 以降は読み取り専用となり、新規セッションの作成・進行中セッションへの指示はできません。
+>
+> - **新規のタスク実行には使用しないこと。** タスクの実装は `task-executing`（Agent tool / `isolation: worktree` による並列実行）を使用する。
+> - 本スキルは、既存の Jules セッション・PR の参照や完了処理（PRのマージ確認、`close-session`）にのみ使用する。
+> - 後継の Google Antigravity（Remote Agents）は、公開APIがなく、第三者ツールからの利用が規約で認められていないため、本スキルの置き換えにはならない。このリポジトリでは後継スキルを提供しない。
 
 ## 前提条件
 

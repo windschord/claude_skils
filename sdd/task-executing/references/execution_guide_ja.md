@@ -26,7 +26,7 @@
   - [レビューの流れ](#レビューの流れ)
   - [チェック項目](#チェック項目)
   - [不整合発見時の報告](#不整合発見時の報告)
-- [Jules API統合実行モード](#jules-api統合実行モード)
+- [実行方式（Agent tool一本化）](#実行方式agent-tool一本化)
 - [制約事項](#制約事項)
   - [自動実行を行わない場合](#自動実行を行わない場合)
 <!-- /TOC -->
@@ -431,9 +431,11 @@ Task 1.1: BLOCKED
 3. 次のタスクに進む（後で対応）
 ```
 
-## Jules API統合実行モード
+## 実行方式（Agent tool一本化）
 
-Jules API（JULES_API_KEY）が利用可能な場合のモード判定、実行ステップ、プラン承認ワークフロー、ハイブリッドモードの詳細は [jules_integration_ja.md](jules_integration_ja.md) を参照。
+タスクの実装は、Agent tool（サブエージェント）による実行に一本化されている。2タスク以上を並列実行する場合は `isolation: worktree` を使用する（詳細は `sdd-documentation/references/agent_teams_guide_ja.md`）。
+
+外部の非同期コーディングエージェントへの委任（Jules）は、2026-12-31 のサービス終了に伴い廃止した。既存の Jules セッション・PR を保守する場合のみ [jules_integration_ja.md](jules_integration_ja.md)（非推奨）を参照する。
 
 ## 制約事項
 

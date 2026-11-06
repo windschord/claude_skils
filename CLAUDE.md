@@ -86,7 +86,7 @@ sdd-documentation（オーケストレーター）
 - **agents/task-executing.md** - エージェント定義ファイル（model: sonnet、Agent toolのsubagent_typeとして使用）
 - **references/execution_guide_ja.md** - 実行ガイド
 - **references/commit_templates_ja.md** - コミットテンプレート
-- **references/jules_integration_ja.md** - Jules連携ガイド
+- **references/jules_integration_ja.md** - Jules連携ガイド（非推奨。Julesは2026-12-31にサービス終了。実行方式はAgent toolに一本化済みで、既存Jules資産の保守のみ）
 
 > **注**: task-executing はSKILL.mdを持たず、エージェント定義は `agents/task-executing.md` に配置。`sdd/task-executing/references/` のリソースを参照して動作する。
 
@@ -221,7 +221,9 @@ sdd-documentation（オーケストレーター）
 - **assets/templates/session_state_template_ja.md** - セッション状態テンプレート
 - **assets/templates/reflection_template_ja.md** - タスク振り返りテンプレート
 
-### utility/jules-api/
+### utility/jules-api/（非推奨 → task-executing）
+> **非推奨**: Julesは2026-12-31にサービス終了（2026-11-11以降は読み取り専用）。新規のタスク実行には使用せず、`task-executing`（Agent tool）を使用する。既存Julesセッションの参照・完了処理（保守）のみ。後継のGoogle Antigravity（Remote Agents）は公開APIがなく第三者ツールからの利用が規約で認められないため、後継スキルは提供しない。
+
 - **SKILL.md** - Jules API統合スキル（スクリプト経由のタスク管理、ベースブランチ指定、プラン承認、Claude協調、1Password連携）
 - **references/api_reference_ja.md** - Jules REST APIリファレンス（エンドポイント、認証、リソース定義）
 - **scripts/jules.sh** - Jules API統合コマンド。サブコマンド: `list-sources`（接続済みリポジトリ一覧）/ `create-session`（セッション作成、prompt: stdin）/ `list-sessions` / `get-session` / `approve-plan` / `send-message`（message: stdin）/ `list-activities` / `get-pr-branch`（GitHubトークン必須）。認証情報は`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、`op read`で解決）優先、`JULES_API_KEY`直接指定にフォールバック。`get-pr-branch`のGitHubトークンも同様に`GITHUB_TOKEN_OP_URI`優先、`GITHUB_TOKEN`フォールバック

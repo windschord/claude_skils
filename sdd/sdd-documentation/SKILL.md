@@ -199,7 +199,7 @@ docs/sdd/
       ↓
 4. task-planning → GitHub Issue起票（デフォルト） / docs/sdd/tasks/（オプション）
       ↓ ★ ユーザーに結果（起票Issue番号一覧）を提示・承認待ち ★（ここで応答を返す）
-5. 実行モード判定: Jules API / Agent tool並列処理（タスク実行フェーズのみ）
+5. 並列処理判定: Agent tool並列処理 / 単一セッション順次実行（タスク実行フェーズのみ）
       ↓
 6. ドキュメント逆順レビュー
       ↓ ★ ユーザーに結果を提示・承認待ち ★（ここで応答を返す）
@@ -225,10 +225,6 @@ docs/sdd/
 **方式**: Agent toolの`isolation: worktree`を使用し、各サブエージェントが独立したgit worktreeで動作。並行作業中の上書き衝突を防止できるが、統合時にマージコンフリクトが発生し得るため必要に応じて手動解決する。
 
 **並列処理パターンと呼び出し例**: [references/agent_teams_guide_ja.md](references/agent_teams_guide_ja.md)
-
-### タスク実行モード判定（Jules API統合）
-
-Jules API（JULES_API_KEY）が利用可能な場合のモード判定とアサイン戦略の詳細は [task-executing/references/jules_integration_ja.md](../task-executing/references/jules_integration_ja.md) を参照。
 
 ### トラブルシューティングフロー（デバッグ・エラー修正時は必須）
 
