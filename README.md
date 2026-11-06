@@ -53,44 +53,11 @@ python3 scripts/package-skills.py   # dist/skills/<スキル名>.zip を生成
 | **SaaS仕様** | saas-spec-document | SaaSサービス仕様書作成（経済産業省ガイドライン準拠） |
 | **プロジェクト管理** | project-phase-risk-audit | マルチベンダー移行プロジェクトの潜在リスク監査（PMO視点、フェーズ別4視点フレームワーク） |
 | **オーケストレーション** | orchestrating-agents | 3階層エージェント構造による自律的タスク完遂基盤 |
-| **ユーティリティ** | jules-api | Jules REST APIによる対話的タスク管理（ベースブランチ指定、プラン承認、Claude協調） |
+| **ユーティリティ** | ~~jules-api~~ | **非推奨**（Julesは2026-12-31にサービス終了）→ task-executing（既存セッションの保守のみ） |
 | | things-url | Things 3とのタスク双方向共有 |
 | | graphify-codebase | Graphifyによるコードベースのナレッジグラフ化と、SDD各フェーズでの影響範囲・依存関係調査（任意の補助ツール） |
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
-
-## 環境変数
-
-一部のスキルでは環境変数の設定が必要です。
-
-| 環境変数 | 対象スキル | 説明 |
-|---------|-----------|------|
-| `JULES_API_KEY_OP_URI` | jules-api | **推奨**。Jules APIキーの1Passwordシークレット参照（`op://<vault>/<item>/<field>`）。スクリプトが実行時に`op read`で解決するため、環境変数にシークレット本体が載らない |
-| `JULES_API_KEY` | jules-api | Jules REST APIの認証キーの直接指定（後方互換）。[Julesウェブアプリ](https://jules.google)のSettingsページで発行 |
-| `GITHUB_TOKEN_OP_URI` | jules-api | GitHubトークンの1Passwordシークレット参照（`get-pr-branch`使用時のみ必要） |
-| `GITHUB_TOKEN` | jules-api | GitHubトークンの直接指定（後方互換） |
-
-1Passwordシークレット参照を使う場合（推奨。[1Password CLI](https://developer.1password.com/docs/cli/)が必要）:
-
-```bash
-export JULES_API_KEY_OP_URI="op://Private/Jules/api-key"
-```
-
-またはClaude Codeの`settings.json`（`.claude/settings.json`）で設定:
-
-```json
-{
-  "env": {
-    "JULES_API_KEY_OP_URI": "op://Private/Jules/api-key"
-  }
-}
-```
-
-直接指定する場合（後方互換）:
-
-```bash
-export JULES_API_KEY="your-api-key-here"
-```
 
 ## ドキュメント
 
@@ -230,7 +197,7 @@ claude_skils/
     │   ├── SKILL.md
     │   ├── assets/templates/
     │   └── references/
-    ├── jules-api/                     # Jules API統合スキル
+    ├── jules-api/                     # Jules API統合スキル（非推奨）
     │   ├── SKILL.md
     │   ├── references/
     │   └── scripts/                   # jules.sh（API統合コマンド）

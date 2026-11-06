@@ -1,11 +1,19 @@
 ---
 name: jules-api
-description: Jules REST APIを使用してタスクを対話的に依頼・管理する。セッション作成・プラン承認・メッセージ送信・進捗監視をAPI経由で行い、Claudeと協調してタスクを完遂する。ベースブランチ指定とPR自動作成に対応。認証はJULES_API_KEY_OP_URI（1Passwordシークレット参照）またはJULES_API_KEYで行う。Do NOT use for 認証情報未設定の環境でのタスク実行（task-executingを使用すること）。
+description: 【非推奨】Jules は 2026-12-31 にサービス終了する（2026-11-11 以降は読み取り専用）。新規のタスク実行には使用せず、task-executing（Agent tool）を使用すること。既存の Jules セッションの参照・完了処理にのみ使用する。Jules REST API（JULES_API_KEY_OP_URI または JULES_API_KEY で認証）でセッション作成・プラン承認・メッセージ送信・進捗監視を行う。Do NOT use for 新規タスクの実行（task-executingを使用すること）。
 metadata:
-  version: "3.0.0"
+  version: "3.1.0"
 ---
 
-# Jules API統合スキル
+# Jules API統合スキル（非推奨）
+
+> **⚠️ このスキルは非推奨です。**
+>
+> Jules は 2026-12-31 にサービスを終了します。2026-11-11 以降は読み取り専用となり、新規セッションの作成・進行中セッションへの指示はできません。
+>
+> - **新規のタスク実行には使用しないこと。** タスクの実装は `task-executing`（Agent tool / `isolation: worktree` による並列実行）を使用する。
+> - 本スキルは、既存の Jules セッション・PR の参照や完了処理（PRのマージ確認、`close-session`）にのみ使用する。読み取り専用化後は `close-session`（DELETE）などの書き込み操作が拒否される可能性があるため、マージとクローズは 2026-11-11 までに済ませる。
+> - 後継の Google Antigravity（Remote Agents）は、公開APIがなく、第三者ツールからの利用が規約で認められていないため、本スキルの置き換えにはならない。このリポジトリでは後継スキルを提供しない。
 
 ## 前提条件
 
@@ -73,7 +81,7 @@ JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
 | サブコマンド | 引数 | 説明 |
 |-------------|------|------|
 | `list-sources` | — | 接続済みリポジトリ一覧（全ページを自動取得） |
-| `create-session` | `<source> <branch> <title> [--force]` / prompt: stdin | セッション作成（同名タイトルの重複作成を自動検知して中断） |
+| `create-session`（廃止） | `<source> <branch> <title> [--force]` / prompt: stdin | 新規セッションは作成しない。参照用（同名タイトルの重複作成を自動検知して中断） |
 | `list-sessions` | `[page_size=100]` | セッション一覧（全ページを自動取得。`page_size`は1リクエストあたりの件数） |
 | `get-session` | `<session_id>` | セッション詳細・状態確認 |
 | `approve-plan` | `<session_id>` | プラン承認 |
@@ -91,14 +99,16 @@ JULES_USE_CLOUD_CREDENTIAL=1 ./scripts/jules.sh list-sources
 ### 起動時の判定
 
 ```text
-Q. ユーザーの依頼はレビュー指摘・仕様変更への対応か？
+Q. ユーザーの依頼は、既存の Jules セッション・PR に対する対応（レビュー指摘・仕様変更・状況確認・完了処理）か？
    YES → レビュー対応フロー（既存セッションを再利用）
-   NO  → 基本フロー（新規セッション作成）
+   NO  → 新規タスクの実装依頼。本スキルでは新規セッションを作成せず、task-executing（Agent tool）へ引き継ぐ
 ```
 
-レビュー指摘対応に新セッションを作成してはならない。新セッションは新ブランチ・新PRを生成し、元のPRを更新できない。
+新規タスクで `create-session` を実行してはならない（Jules は 2026-11-11 以降は読み取り専用で、新規セッションを作成できない）。レビュー指摘対応にも新セッションを作成してはならない。新セッションは新ブランチ・新PRを生成し、元のPRを更新できない。
 
-### 基本フロー
+### 基本フロー（廃止）
+
+> 新規タスクでは使用しない。2026-11-11 より前に作成済みのセッションを引き継ぐ場合の参照用として残している。
 
 ```text
 1. 認証情報の確認（JULES_API_KEY_OP_URI／JULES_API_KEY／JULES_USE_CLOUD_CREDENTIAL=1のいずれか。
@@ -236,6 +246,8 @@ until scripts/jules.sh list-activities ${SESSION_ID} 2>/dev/null \
 
 ## リトライ時の重複防止
 
+> **廃止（参照用）**: 新規セッションの作成は行わない。2026-11-11 より前に `create-session` を実行して応答が曖昧だった場合の、重複セッション確認用として残している。
+
 `scripts/jules.sh create-session` はセッション作成前に同名タイトルの既存セッションを検索し、見つかった場合はエラーで中断する。
 
 **曖昧な失敗（タイムアウト・応答なし等）が起きても、ユーザーの作業承認を待たずに`scripts/jules.sh create-session`を再実行してはならない。** リクエストがJules側では成功していた場合、再実行は同一タスクの重複セッションを生成する。
@@ -246,7 +258,7 @@ until scripts/jules.sh list-activities ${SESSION_ID} 2>/dev/null \
 2. 存在する場合はそのセッションを使う（再作成しない）
 3. 存在しない場合のみ、失敗原因（認証・パラメータ等）を特定してから再実行する
 4. 原因が不明なまま闇雲にリトライしない。2-3回失敗した場合はユーザーに報告し、指示を仰ぐ
-5. 意図的に同名タイトルで再作成する必要がある場合のみ、scripts/jules.sh create-session の第4引数に --force を指定する
+5. 新規セッションの再作成は行わない（`--force` による同名タイトルでの再作成も実行しない）。やり直しが必要な場合は task-executing（Agent tool）で対応する
 ```
 
 ---
@@ -281,6 +293,8 @@ webUrl が取得できない間は `https://jules.google` にアクセスして�
 ---
 
 ## JSONペイロードと特殊文字・日本語
+
+> **廃止（参照用）**: 新規セッションの作成は行わない。`send-message` で特殊文字・日本語を送る際の参考としてのみ使用する。
 
 スクリプト（`scripts/jules.sh create-session`・`scripts/jules.sh send-message`）は内部で `jq --arg` を使用してJSONを生成するため、**バッククォート・シングルクォート・日本語を含む任意のテキストを安全に送れる**。ヒアドキュメント（`<<'EOF'`）を使うとシェル展開なしで渡せる:
 
@@ -327,6 +341,8 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
 
 ## Jules依頼文の形式
 
+> **廃止（参照用）**: 新規セッションの作成は行わない。既存セッションへの `send-message` の書き方の参考としてのみ使用する。
+
 ```text
 タスク: [タスクタイトル]（[TASK-XXX]）
 
@@ -348,6 +364,8 @@ curl -s 'https://jules.googleapis.com/v1alpha/sessions' \
 PRの作成先ブランチは依頼文ではなく`startingBranch`パラメータで指定する。依頼文は日本語で、技術用語・ファイルパスは英語のまま使用する。
 
 ## セッション作成パラメータ
+
+> **廃止（参照用）**: 新規セッションの作成は行わない。既存セッションの `get-session` 出力を読む際の参考としてのみ使用する。
 
 | パラメータ | 型 | 説明 |
 |-----------|-----|------|
@@ -380,11 +398,13 @@ Julesがプランを生成したらClaudeが以下の観点で評価し、ユー
 
 ## 複数タスクの並行処理
 
-依存関係のないタスクは複数セッションを同時作成できる:
+> **廃止（参照用）**: 新規セッションの作成は行わない。新規タスクの並列実行は task-executing（Agent tool / `isolation: worktree`）を使用する。以下は、2026-11-11 より前に作成済みの複数セッションを管理する場合の参照用である。
+
+作成済みの複数セッションは、次の手順で管理する:
 
 ```text
-1. 並行実行可能タスクを特定（依存関係グラフ分析）
-2. 各タスクの scripts/jules.sh create-session（共通ベースブランチ）
+1. scripts/jules.sh list-sessions で作成済みの全セッションを確認
+2. 各セッションの scripts/jules.sh get-session で状態（state）を確認
 3. 全セッションの scripts/jules.sh list-activities を監視
 4. 各セッションのプランを順次確認・承認
 5. 完了後 docs/sdd/tasks/ を更新
@@ -447,7 +467,7 @@ Julesの作業完了後、PRがマージされたら、`scripts/jules.sh close-s
 
 > **注意（元に戻せない）**: `close-session`は`DELETE /v1alpha/sessions/{sessionId}`を呼び出し、Jules側のセッション記録を完全に削除する。復元手段は無い。削除後は`get-session`・`list-activities`が404になるため、PR URL・Julesブランチ名など後で必要な情報は段階1〜3で必ずタスクファイルに記録してから実行すること。PRやコード自体（既にマージ済み）には影響しない。
 >
-> レビュー対応フローで既存セッションを再利用する可能性が残っている間（マージ前）はクローズしない。マージ後にレビュー指摘が来た場合はセッションを再利用できないため、新規セッションまたはローカル修正で対応する。
+> レビュー対応フローで既存セッションを再利用する可能性が残っている間（マージ前）はクローズしない。マージ後にレビュー指摘が来た場合はセッションを再利用できないため、新規セッションは作成せず、task-executing（Agent tool）またはローカル修正で対応する。
 
 ## リソース
 

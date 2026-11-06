@@ -368,30 +368,25 @@ Webサービス/SaaS、EC/マーケットプレイス、金融サービス、メ
 
 ---
 
-### jules-api
+### jules-api（非推奨）
 
-Jules REST APIを使用して、SDDタスク（デフォルト: GitHub Issue `label:sdd:task` / オプション: `docs/sdd/tasks/`）をGoogleの非同期コーディングエージェントJulesに対話的に依頼・管理するスキルです。
+> **⚠️ 非推奨**: Jules は 2026-12-31 にサービスを終了します（2026-11-11 以降は読み取り専用）。新規のタスク実行には使用せず、`task-executing`（Agent tool / `isolation: worktree`）を使用してください。本スキルは、既存の Jules セッション・PR の参照や完了処理にのみ使用します。
 
-**使用開始:**
+Jules REST APIを使用して、SDDタスクをGoogleの非同期コーディングエージェントJulesに依頼・管理するスキルです（保守のみ）。
 
-```text
-次のタスクをJulesに依頼してください
-```
+**主な機能（保守用）:**
 
-**主な機能:**
-
-- SDDタスク（GitHub Issue `label:sdd:task` / `docs/sdd/tasks/`）からタスクを読み取り、選択したタスクをJules APIで依頼
-- ベースブランチの指定によるPR自動作成
-- プラン承認ワークフロー（Claudeがプランを評価し、ユーザーと協議して承認）
-- セッションへのメッセージ送信による対話的な指示追加
-- アクティビティ監視によるリアルタイム進捗追跡
-- Claudeとの協調作業（Julesの出力をClaudeが評価・フィードバック）
-- 複数セッションの並行依頼サポート
+- 既存セッションの状態確認・アクティビティ参照
+- PRマージ後のセッションクローズ（`close-session`。読み取り専用化後は実行できない可能性があるため、2026-11-11までに実施）
+- 既存セッションへのメッセージ送信（2026-11-11まで）
 
 **前提条件:**
 
-- 環境変数`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、推奨）または`JULES_API_KEY`（直接指定）が設定されている必要がある
-- JulesウェブアプリからJules GitHubアプリがリポジトリにインストールされている必要がある
+- 認証情報が設定されている必要がある。次のいずれか（設定方法は `utility/jules-api/SKILL.md` の「認証情報の設定」を参照）
+  - 環境変数`JULES_API_KEY_OP_URI`（1Passwordシークレット参照、推奨）または`JULES_API_KEY`（直接指定）
+  - Claude Codeクラウド環境のAPI credentials機能を使う場合は`JULES_USE_CLOUD_CREDENTIAL=1`を設定し、上記2つの環境変数は設定しない（両方設定するとスクリプトがエラーで停止する）
+
+> **後継について**: Google Antigravity（Remote Agents）は、公開APIがなく、第三者ツールからの利用が規約で認められていないため、本スキルの置き換えにはなりません。このリポジトリでは後継スキルを提供せず、タスク実行は `task-executing` に一本化しています。
 
 ---
 

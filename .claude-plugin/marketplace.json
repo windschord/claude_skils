@@ -58,7 +58,7 @@
     },
     {
       "name": "jules-api",
-      "description": "Jules REST APIを使用してタスクを対話的に依頼・管理します。ベースブランチ指定、プラン承認ワークフロー、対話的フィードバック、Claudeとの協調作業に対応。環境変数JULES_API_KEYが必要です。",
+      "description": "【非推奨】Julesは2026-12-31にサービス終了するため、新規利用はtask-executingを使用してください。既存セッションの保守用です。Jules REST APIを使用してタスクを対話的に依頼・管理します。ベースブランチ指定、プラン承認ワークフロー、対話的フィードバック、Claudeとの協調作業に対応。環境変数JULES_API_KEYが必要です。",
       "source": "./",
       "strict": false,
       "skills": [
