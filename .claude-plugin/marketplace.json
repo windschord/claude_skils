@@ -138,6 +138,15 @@
       ]
     },
     {
+      "name": "model-routing",
+      "description": "会話の内容から実行モデル（Fable/Opus/Sonnet/Haiku）を選び、サブエージェントや別セッションへ委譲するスキルです。分析・レビュー・プロジェクト計画は上位モデル、実装・軽度なタスク計画はSonnet、定型作業はHaikuに振り分け、レビューは作成者より1つ上のモデルに依頼します。Claude CodeとCoworkに対応します。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./utility/model-routing"
+      ]
+    },
+    {
       "name": "pr-comment-fixer",
       "description": "GitHub PRのレビューコメント（インラインスレッド・レビュー本文・Issueコメント）を自動検出し、コード修正を適用するスキルです。CodeRabbit・Copilot等のbotコメントにも対応し、修正→push→再レビュー検出のループを自動化します。",
       "source": "./",

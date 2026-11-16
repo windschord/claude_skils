@@ -56,6 +56,7 @@ python3 scripts/package-skills.py   # dist/skills/<スキル名>.zip を生成
 | **ユーティリティ** | ~~jules-api~~ | **非推奨**（Julesは2026-12-31にサービス終了）→ task-executing（既存セッションの保守のみ） |
 | | things-url | Things 3とのタスク双方向共有 |
 | | graphify-codebase | Graphifyによるコードベースのナレッジグラフ化と、SDD各フェーズでの影響範囲・依存関係調査（任意の補助ツール） |
+| | model-routing | 会話内容からモデル（Fable/Opus/Sonnet/Haiku）を選択して委譲し、レビューは1つ上のモデルへ依頼（Claude Code/Cowork対応） |
 
 各スキルの詳細と使い方は[スキルカタログ](docs/skill-catalog.md)を参照してください。
 
@@ -201,6 +202,10 @@ claude_skils/
     │   ├── SKILL.md
     │   ├── references/
     │   └── scripts/                   # jules.sh（API統合コマンド）
+    ├── model-routing/                 # モデルルーティングスキル
+    │   ├── SKILL.md
+    │   ├── assets/templates/
+    │   └── references/
     └── things-url/                    # Things URLタスク共有スキル
         ├── SKILL.md
         └── references/
