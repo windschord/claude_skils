@@ -227,6 +227,14 @@ sdd-documentation（オーケストレーター）
 - **references/sdd_integration_ja.md** - SDDフェーズ別活用ガイド（設計／タスク計画／実装／レビュー／トラブルシューティング）
 - **assets/templates/impact_analysis_note_template_ja.md** - 影響範囲調査ノート（PR設計ノート・Issue本文に貼る）
 
+### utility/model-routing/
+- **SKILL.md** - モデルルーティングスキル定義（会話内容から実行モデルを選択。分析・レビュー・プロジェクト計画はFable/Opus、実装・軽度なタスク計画はSonnet、定型・機械的な作業はHaiku（条件付き）。レビューは作成者より1つ上のモデル、Fableの成果物は別コンテキストのFable。Claude Code/Cowork対応）
+- **references/routing_criteria_ja.md** - 判定基準（作業種別とティア、昇格・降格、Haikuを使う条件、混在会話の分解例）
+- **references/review_escalation_ja.md** - 1つ上のモデルによるレビュー手順（対応表、Fableの扱い、差し戻し）
+- **references/adapter_claude_code_ja.md** - Claude Code用アダプタ（Agent toolの`model`指定、エージェント定義）
+- **references/adapter_cowork_ja.md** - Cowork用アダプタ（Agent tool／別セッション起動／ユーザー切り替え）
+- **assets/templates/routing_note_template_ja.md** - ルーティング判定メモテンプレート
+
 ### utility/jules-api/（非推奨 → task-executing）
 > **非推奨**: Julesは2026-12-31にサービス終了（2026-11-11以降は読み取り専用）。新規のタスク実行には使用せず、`task-executing`（Agent tool）を使用する。既存Julesセッションの参照・完了処理（保守）のみ。後継のGoogle Antigravity（Remote Agents）は公開APIがなく第三者ツールからの利用が規約で認められないため、後継スキルは提供しない。
 
