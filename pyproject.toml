@@ -1,0 +1,8 @@
+# リンター設定（本リポジトリのPythonスクリプトは日本語メッセージを多用するため、
+# 全角記号を「ambiguous」と誤検知するRuffのルールを抑止する）
+[tool.ruff.lint]
+ignore = [
+    "RUF001", # ambiguous-unicode-character-string（全角（）等は日本語として意図的）
+    "RUF002", # ambiguous-unicode-character-docstring
+    "RUF003", # ambiguous-unicode-character-comment
+]
